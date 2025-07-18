@@ -1,103 +1,197 @@
-import Image from "next/image";
+// app/page.tsx
+"use client";
 
-export default function Home() {
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+
+import ChatHeader from "./components/ChatHeader";
+// import ChatFooter from "./components/ChatInputForm";
+import WelcomeScreen from "./components/WelcomeScreen";
+
+import { useAppStore } from "./lib/store";
+import { v4 as uuidv4 } from "uuid";
+import { streamChatResponse, fetchSessionMessages } from "./lib/api";
+import ChatInputForm from "./components/ChatInputForm";
+import Sidebar from "./components/Sidebar";
+import ChatMessages, { Message } from "./components/ChatMessages";
+// import ChatInput from "./components/ChatInput";
+
+export default function ChatPage() {
+  const router = useRouter();
+  const { user, threadId, setThreadId } = useAppStore();
+  const [isInitialState, setIsInitialState] = useState(true);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!user) router.replace("/login");
+    else if (!threadId) setThreadId(`thread_web_${uuidv4()}`);
+  }, [user, threadId, router, setThreadId]);
+
+  // --- THIS IS THE KEY LOGIC CHANGE ---
+  useEffect(() => {
+    // This effect runs whenever the active threadId changes.
+    async function loadMessages() {
+      if (!threadId) return;
+
+      // Show a loading state briefly
+      setIsLoading(true);
+      try {
+        const historicalMessages = await fetchSessionMessages(threadId);
+
+        if (historicalMessages && historicalMessages.length > 0) {
+          // We have history, so transition to the chat view.
+          setMessages(
+            historicalMessages.map((msg) => ({
+              id: uuidv4(), // Generate a unique ID for the key prop
+              role: msg.role,
+              content: msg.content,
+              timestamp: new Date(msg.timestamp), // Convert ISO string to Date object
+            }))
+          );
+          setIsInitialState(false);
+        } else {
+          // No history, this is a new chat. Stay on the welcome screen.
+          setMessages([]);
+          setIsInitialState(true);
+        }
+      } catch (error) {
+        console.error("Failed to load session history:", error);
+        // Handle error, maybe show a toast notification
+        setMessages([]);
+        setIsInitialState(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadMessages();
+  }, [threadId]); // Dependency array ensures this runs on threadId change.
+
+  useEffect(() => {
+    // Scroll to bottom after messages are loaded or a new one is added
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+  }, [messages]);
+
+  const handleSendMessage = async (input: string) => {
+    if (!threadId || !user) return;
+    if (isInitialState) setIsInitialState(false);
+
+    const userMessage: Message = {
+      id: uuidv4(),
+      role: "user",
+      content: input,
+      timestamp: new Date(),
+    };
+
+    // Use a variable to hold the complete assistant message content as it builds.
+    let assistantContent = "";
+
+    // Create a unique ID for the assistant's message placeholder.
+    const assistantMessageId = uuidv4();
+
+    // Add the user message and an initial, empty assistant message placeholder.
+    setMessages((prev) => [
+      ...prev,
+      userMessage,
+      {
+        id: assistantMessageId,
+        role: "assistant",
+        content: "",
+        timestamp: new Date(),
+        isThinkingPlaceholder: true,
+      },
+    ]);
+
+    setIsLoading(true);
+
+    try {
+      await streamChatResponse(
+        { user_identifier: user.email, user_input: input, thread_id: threadId },
+        (chunk) => {
+          // Append the character chunk to our local variable.
+          assistantContent += chunk;
+
+          // Update the state. This functional form is key.
+          // It finds the correct message by its unique ID and replaces its content.
+          setMessages((prevMessages) =>
+            prevMessages.map((msg) =>
+              msg.id === assistantMessageId
+                ? {
+                    ...msg,
+                    content: assistantContent,
+                    isThinkingPlaceholder: false,
+                  }
+                : msg
+            )
+          );
+        }
+      );
+    } catch (error) {
+      console.error("Streaming failed:", error);
+      // If an error occurs, update the placeholder with an error message.
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantMessageId
+            ? {
+                ...m,
+                content: "An error occurred. Please try again.",
+                isThinkingPlaceholder: false,
+              }
+            : m
+        )
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!user) {
+    return null;
+  }
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="flex h-screen bg-[var(--background)] text-gray-300 overflow-hidden">
+      <Sidebar />
+      <div className="flex flex-col flex-1 h-full">
+        {/* Conditionally render based on initial state OR if loading history */}
+        {isInitialState && !isLoading ? null : <ChatHeader />}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+        <div
+          className={`flex-grow flex flex-col overflow-y-auto custom-scrollbar relative ${
+            isInitialState ? "items-center justify-center" : "items-start"
+          }`}
+        >
+          {isLoading && messages.length === 0 && (
+            <div className="m-auto">Loading chat history...</div>
+          )}
+
+          {!isLoading && isInitialState && (
+            <WelcomeScreen
+              onSendMessage={handleSendMessage}
+              isProcessing={isLoading}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          )}
+
+          {!isInitialState && (
+            <>
+              <ChatMessages messages={messages} />
+              <div ref={messagesEndRef} />
+            </>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Only show footer when in chat view */}
+        {!isInitialState && (
+          <footer className="w-full px-4 md:px-6 pb-4 pt-2 shrink-0 bg-[var(--background)] sticky bottom-0 border-t border-[var(--border-color)]">
+            <ChatInputForm
+              onSendMessage={handleSendMessage}
+              isProcessing={isLoading}
+            />
+          </footer>
+        )}
+      </div>
     </div>
   );
 }
