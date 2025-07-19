@@ -6,14 +6,14 @@ import { useRouter } from "next/navigation";
 
 import ChatHeader from "./components/ChatHeader";
 // import ChatFooter from "./components/ChatInputForm";
-import WelcomeScreen from "./components/WelcomeScreen";
+import { AnimatedAIChat } from "./components/WelcomeScreen";
 
 import { useAppStore } from "./lib/store";
 import { v4 as uuidv4 } from "uuid";
 import { streamChatResponse, fetchSessionMessages } from "./lib/api";
 import ChatInputForm from "./components/ChatInputForm";
 import Sidebar from "./components/Sidebar";
-import ChatMessages, { Message } from "./components/ChatMessages";
+import ChatMessages, { Message, UiComponent } from "./components/ChatMessages";
 // import ChatInput from "./components/ChatInput";
 
 export default function ChatPage() {
@@ -85,13 +85,8 @@ export default function ChatPage() {
       timestamp: new Date(),
     };
 
-    // Use a variable to hold the complete assistant message content as it builds.
-    let assistantContent = "";
-
-    // Create a unique ID for the assistant's message placeholder.
     const assistantMessageId = uuidv4();
-
-    // Add the user message and an initial, empty assistant message placeholder.
+    // Start with the thinking placeholder active
     setMessages((prev) => [
       ...prev,
       userMessage,
@@ -101,48 +96,70 @@ export default function ChatPage() {
         content: "",
         timestamp: new Date(),
         isThinkingPlaceholder: true,
+        uiComponents: [],
       },
     ]);
-
     setIsLoading(true);
+
+    let accumulatedText = "";
 
     try {
       await streamChatResponse(
         { user_identifier: user.email, user_input: input, thread_id: threadId },
-        (chunk) => {
-          // Append the character chunk to our local variable.
-          assistantContent += chunk;
-
-          // Update the state. This functional form is key.
-          // It finds the correct message by its unique ID and replaces its content.
-          setMessages((prevMessages) =>
-            prevMessages.map((msg) =>
-              msg.id === assistantMessageId
-                ? {
-                    ...msg,
-                    content: assistantContent,
-                    isThinkingPlaceholder: false,
-                  }
-                : msg
-            )
-          );
+        {
+          onUiComponent: (components: UiComponent[]) => {
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantMessageId
+                  ? { ...msg, uiComponents: components }
+                  : msg
+              )
+            );
+          },
+          onTextChunk: (chunk: string) => {
+            accumulatedText += chunk;
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantMessageId
+                  ? {
+                      ...msg,
+                      content: accumulatedText,
+                      // THIS IS THE KEY FIX: Turn off the placeholder
+                      // ONLY when the first chunk of text arrives.
+                      isThinkingPlaceholder: false,
+                    }
+                  : msg
+              )
+            );
+          },
+          onError: (error: string) => {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantMessageId
+                  ? { ...m, content: error, isThinkingPlaceholder: false }
+                  : m
+              )
+            );
+          },
+          onClose: () => {
+            setIsLoading(false);
+          },
         }
       );
     } catch (error) {
       console.error("Streaming failed:", error);
-      // If an error occurs, update the placeholder with an error message.
+      // Final state update on error
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantMessageId
             ? {
                 ...m,
-                content: "An error occurred. Please try again.",
+                content: "An error occurred.",
                 isThinkingPlaceholder: false,
               }
             : m
         )
       );
-    } finally {
       setIsLoading(false);
     }
   };
@@ -168,7 +185,7 @@ export default function ChatPage() {
           )}
 
           {!isLoading && isInitialState && (
-            <WelcomeScreen
+            <AnimatedAIChat
               onSendMessage={handleSendMessage}
               isProcessing={isLoading}
             />
