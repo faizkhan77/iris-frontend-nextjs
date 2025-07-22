@@ -201,7 +201,7 @@ export default function ChatPage() {
 
         {/* Only show footer when in chat view */}
         {!isInitialState && (
-          <footer className="w-full px-4 md:px-6 pb-4 pt-2 shrink-0 bg-[var(--background)] sticky bottom-0 border-t border-[var(--border-color)]">
+          <footer className="w-full px-4 md:px-6 pb-4 pt-2 shrink-0 bg-[var(--background)] sticky bottom-0 ">
             <ChatInputForm
               onSendMessage={handleSendMessage}
               isProcessing={isLoading}
