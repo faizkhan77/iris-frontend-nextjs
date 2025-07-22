@@ -7,9 +7,9 @@
 :root {
   --accent-primary: #a855f7; /* purple */
   --accent-secondary: #d8b4fe; /* light purple */
-  
+  --background: #0a0920; 
   /* NEW: Add colors from the target design */
-  --gold-accent: #ad5fff; /* yellow-400, our new primary accent */
+  --gold-accent: #6b21a8; /* yellow-400, our new primary accent */
   --app-bg: #121212;
   --sidebar-bg: #1C1C1C;
   --element-bg-dark: #2A2A2A;
@@ -18,25 +18,61 @@
   --text-secondary: #A3A3A3;
   --border-color-subtle: rgba(255, 255, 255, 0.1);
 
-  --sidebar-bg: #09090B; /* A slightly darker shade for contrast */
+  --sidebar-bg: rgba(20, 18, 51, 0.5);/* A slightly darker shade for contrast */
   --chat-bubble-ai: #242628;
   --chat-bubble-user: #6b21a8; /* Purple-700 from Tailwind for the user bubble */
-  --input-bg: #222222;
-  --input-focus-bg: #242628;
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-focus-bg: rgba(255, 255, 255, 0.1);
+
+  --chat-bubble-ai: rgba(255, 255, 255, 0.1);
+  --chat-bubble-user: rgba(107, 33, 168, 0.3); 
+
   --text-primary: #e5e7eb; /* gray-200 */
   --text-secondary: #9ca3af; /* gray-400 */
   --border-color: rgba(107, 114, 128, 0.4); /* gray-500 with opacity */
-  --accent: oklch(0.967 0.003 264.542); /* purple-500 */ --radius: 0.625rem; --card: oklch(1 0 0); --card-foreground: oklch(0.13 0.028 261.692); --popover: oklch(1 0 0); --popover-foreground: oklch(0.13 0.028 261.692); --primary: oklch(0.21 0.034 264.665); --primary-foreground: oklch(0.985 0.002 247.839); --secondary: oklch(0.967 0.003 264.542); --secondary-foreground: oklch(0.21 0.034 264.665); --muted: oklch(0.967 0.003 264.542); --muted-foreground: oklch(0.551 0.027 264.364); --accent-foreground: oklch(0.21 0.034 264.665); --destructive: oklch(0.577 0.245 27.325); --border: oklch(0.928 0.006 264.531); --input: oklch(0.928 0.006 264.531); --ring: oklch(0.707 0.022 261.325); --chart-1: oklch(0.646 0.222 41.116); --chart-2: oklch(0.6 0.118 184.704); --chart-3: oklch(0.398 0.07 227.392); --chart-4: oklch(0.828 0.189 84.429); --chart-5: oklch(0.769 0.188 70.08); --sidebar: oklch(0.985 0.002 247.839); --sidebar-foreground: oklch(0.13 0.028 261.692); --sidebar-primary: oklch(0.21 0.034 264.665); --sidebar-primary-foreground: oklch(0.985 0.002 247.839); --sidebar-accent: oklch(0.967 0.003 264.542); --sidebar-accent-foreground: oklch(0.21 0.034 264.665); --sidebar-border: oklch(0.928 0.006 264.531); --sidebar-ring: oklch(0.707 0.022 261.325); --background: oklch(0.1881 0.006 285.81); --foreground: oklch(0.13 0.028 261.692);
+  --accent: #a855f7; /* Purple-500 */
+  --glass-border-color: rgba(255, 255, 255, 0.15);
+  --radius: 0.625rem; --card: oklch(1 0 0); --card-foreground: oklch(0.13 0.028 261.692); --popover: oklch(1 0 0); --popover-foreground: oklch(0.13 0.028 261.692); --primary: oklch(0.21 0.034 264.665); --primary-foreground: oklch(0.985 0.002 247.839); --secondary: oklch(0.967 0.003 264.542); --secondary-foreground: oklch(0.21 0.034 264.665); --muted: oklch(0.967 0.003 264.542); --muted-foreground: oklch(0.551 0.027 264.364); --accent-foreground: oklch(0.21 0.034 264.665); --destructive: oklch(0.577 0.245 27.325); --border: oklch(0.928 0.006 264.531); --input: oklch(0.928 0.006 264.531); --ring: oklch(0.707 0.022 261.325); --chart-1: oklch(0.646 0.222 41.116); --chart-2: oklch(0.6 0.118 184.704); --chart-3: oklch(0.398 0.07 227.392); --chart-4: oklch(0.828 0.189 84.429); --chart-5: oklch(0.769 0.188 70.08); --sidebar: oklch(0.985 0.002 247.839); --sidebar-foreground: oklch(0.13 0.028 261.692); --sidebar-primary: oklch(0.21 0.034 264.665); --sidebar-primary-foreground: oklch(0.985 0.002 247.839); --sidebar-accent: oklch(0.967 0.003 264.542); --sidebar-accent-foreground: oklch(0.21 0.034 264.665); --sidebar-border: oklch(0.928 0.006 264.531); --sidebar-ring: oklch(0.707 0.022 261.325); --background: oklch(0.1881 0.006 285.81); --foreground: oklch(0.13 0.028 261.692);
 }
 
 body {
-  color: var(--text-primary);
+  background-size: 400% 400%;
+  animation: gradient 25s ease infinite;
+  color: #e5e7eb; /* Default text color: gray-200 */
   /* background-color: var(--background); */
-  background-color: #000000;
+  background: linear-gradient(-45deg, #0a0920, #211d69, #0f2c57, #231b57);
   min-height: 100vh;
   overflow: hidden;
   /* Add selection color from your example */
   /* selection:bg-purple-500 selection:text-white; */
+}
+
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Custom scrollbar for a modern feel */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 @layer utilities {

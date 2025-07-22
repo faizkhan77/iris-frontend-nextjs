@@ -77,7 +77,6 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
     <main className="w-full max-w-3xl px-4 md:px-6 py-6 space-y-6 flex-grow self-center">
       <AnimatePresence>
         {messages.map((msg) => (
-          // --- MODIFIED: Changed layout to a row with icons ---
           <motion.div
             key={msg.id}
             layout
@@ -89,36 +88,30 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
               msg.role === "user" ? "flex-row-reverse" : "flex-row"
             }`}
           >
-            {/* Render Icon */}
             {msg.role === "user" ? <UserIcon /> : <IrisLogo />}
 
-            {/* Message Bubble */}
+            {/* --- MODIFIED: Added glassmorphism classes --- */}
             <div
-              className={`max-w-[85%] md:max-w-[75%] px-1 py-1 rounded-2xl shadow-md break-words ${
-                msg.role === "user"
-                  ? "bg-[var(--chat-bubble-user)] text-white rounded-br-none"
-                  : "bg-[var(--chat-bubble-ai)] text-gray-200 rounded-bl-none"
-              }`}
+              className={`max-w-[85%] md:max-w-[75%] rounded-2xl break-words
+                        backdrop-blur-md border border-[var(--glass-border-color)] shadow-lg
+                        ${
+                          msg.role === "user"
+                            ? "bg-[var(--chat-bubble-user)] text-white rounded-br-none"
+                            : "bg-[var(--chat-bubble-ai)] text-gray-200 rounded-bl-none"
+                        }`}
             >
-              {/* Render UI components first */}
               {msg.uiComponents && msg.uiComponents.length > 0 && (
                 <div className="p-2">
-                  {" "}
-                  {/* Padding around the chart */}
                   {msg.uiComponents.map(renderUiComponent)}
                 </div>
               )}
 
-              {/* Conditionally render content area ONLY if there is content or it's a placeholder */}
               {(msg.content || msg.isThinkingPlaceholder) && (
                 <div className="px-4 py-2">
-                  {" "}
-                  {/* Consistent padding for text */}
                   {msg.isThinkingPlaceholder ? (
                     <TypingAnimation />
                   ) : (
                     <>
-                      {/* This 'prose' div is essential for Markdown styling */}
                       <div className="prose prose-invert prose-sm md:prose-base max-w-none prose-p:my-2 prose-headings:my-3">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                           {msg.content}

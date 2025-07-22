@@ -72,11 +72,11 @@ export default function Sidebar() {
   const groupedSessions = groupSessionsByDate(sessions);
 
   return (
-    <aside className="flex-shrink-0 flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--text-primary)] w-[280px] p-4 space-y-4">
+    <aside className="flex-shrink-0 flex flex-col h-full  text-[var(--text-primary)] w-[280px] p-4 space-y-4">
       {/* --- MODIFIED: Header now includes the New Chat button --- */}
       <div className="flex items-center justify-between px-1">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-[var(--gold-accent)] rounded-md flex items-center justify-center font-bold text-black text-lg">
+          <div className="w-8 h-8 bg-[var(--gold-accent)] rounded-md flex items-center justify-center font-bold text-lg">
             I
           </div>
           <span className="text-lg font-bold text-white">IRIS</span>
@@ -138,14 +138,14 @@ export default function Sidebar() {
       <div className="flex-shrink-0 pt-2">
         <button
           onClick={handleLogout}
-          className="w-full p-3 rounded-xl bg-[var(--gold-accent)] text-black text-left transition-transform hover:scale-[1.02] shadow-lg shadow-[var(--gold-accent)]/20"
+          className="w-full p-3 rounded-xl bg-[var(--gold-accent)] text-left transition-transform hover:scale-[1.02] shadow-lg shadow-[var(--gold-accent)]/20"
         >
           <div className="flex items-center gap-3">
             <LogOut size={16} />
             <div>
               <div className="font-bold text-sm">Logout</div>
-              <div className="text-xs text-black/70 truncate">
-                {user?.name || user?.email}
+              <div className="text-xs truncate">
+                User: {user?.name || user?.email}
               </div>
             </div>
           </div>

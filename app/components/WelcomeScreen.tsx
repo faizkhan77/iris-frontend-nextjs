@@ -187,7 +187,7 @@ export function AnimatedAIChat({
           <button
             type="submit"
             disabled={isProcessing || !value.trim()}
-            className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-[var(--gold-accent)] text-black disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-110 active:scale-100"
+            className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-[var(--gold-accent)] disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-110 active:scale-100"
           >
             {isProcessing ? (
               <LoaderIcon className="h-5 w-5 animate-spin" />

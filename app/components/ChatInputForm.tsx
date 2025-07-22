@@ -28,14 +28,17 @@ export default function ChatInputForm({
   return (
     // Wrap with the passed className
     <div className={`w-full max-w-3xl mx-auto ${className}`}>
+      {/* --- MODIFIED: Added glassmorphism classes and adjusted background/shadow --- */}
       <form
         onSubmit={handleFormSubmit}
-        className="flex items-center bg-[var(--input-bg)] border border-gray-700/80 shadow-xl focus-within:ring-2 focus-within:ring-[var(--accent)]/50 focus-within:bg-[var(--input-focus-bg)] transition-all duration-300 rounded-2xl"
+        className="flex items-center bg-[var(--input-bg)] border border-[var(--glass-border-color)] shadow-xl 
+                   focus-within:ring-2 focus-within:ring-[var(--accent)]/50 focus-within:bg-[var(--input-focus-bg)] 
+                   transition-all duration-300 rounded-2xl backdrop-blur-lg"
       >
         <button
           type="button"
           title="Attach file"
-          className="p-3.5 text-gray-500 hover:text-[var(--accent)] transition-colors rounded-l-2xl"
+          className="p-3.5 text-gray-400 hover:text-[var(--accent)] transition-colors rounded-l-2xl"
         >
           <Paperclip size={18} />
         </button>
@@ -55,11 +58,12 @@ export default function ChatInputForm({
           type="submit"
           title="Send message"
           disabled={!inputText.trim() || isProcessing}
-          className="p-3.5 text-gray-300 bg-gray-700 hover:bg-gray-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed rounded-r-2xl"
+          // --- MODIFIED: Changed button background for better contrast ---
+          className="p-3.5 text-gray-200 bg-black/20 hover:bg-black/40 transition-colors disabled:opacity-40 disabled:cursor-not-allowed rounded-r-2xl"
         >
           <motion.div
             initial={{ rotate: 0 }}
-            whileHover={{ rotate: 15, scale: 1.1 }}
+            whileHover={{ rotate: -15, scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
             <Send size={18} />
