@@ -8,6 +8,8 @@ import TypingAnimation from "./TypingAnimation";
 // --- NEW: Import the chart component ---
 import { StockPriceChart } from "./charts/StockPriceChart";
 import { RankingBarChart } from "./charts/RankingBarChart";
+import { User } from "lucide-react";
+import IrisLogo from "./IrisLogo";
 
 // Define a type for our specific UI components
 export interface UiComponent {
@@ -36,6 +38,12 @@ interface ChatMessagesProps {
 const messageVariants = {
   // ... (keep this the same)
 };
+
+const UserIcon = () => (
+  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-600 text-gray-300">
+    <User size={18} />
+  </div>
+);
 
 const renderUiComponent = (component: UiComponent, index: number) => {
   switch (component.type) {
@@ -66,9 +74,10 @@ const renderUiComponent = (component: UiComponent, index: number) => {
 
 export default function ChatMessages({ messages }: ChatMessagesProps) {
   return (
-    <main className="w-full max-w-3xl px-4 md:px-6 py-6 space-y-4 flex-grow self-center">
+    <main className="w-full max-w-3xl px-4 md:px-6 py-6 space-y-6 flex-grow self-center">
       <AnimatePresence>
         {messages.map((msg) => (
+          // --- MODIFIED: Changed layout to a row with icons ---
           <motion.div
             key={msg.id}
             layout
@@ -76,13 +85,16 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className={`flex flex-col w-full ${
-              // Ensure full width for proper alignment
-              msg.role === "user" ? "items-end" : "items-start"
+            className={`flex w-full items-end gap-3 ${
+              msg.role === "user" ? "flex-row-reverse" : "flex-row"
             }`}
           >
+            {/* Render Icon */}
+            {msg.role === "user" ? <UserIcon /> : <IrisLogo />}
+
+            {/* Message Bubble */}
             <div
-              className={`max-w-[85%] md:max-w-[75%] px-4 py-2.5 rounded-2xl shadow-md break-words ${
+              className={`max-w-[85%] md:max-w-[75%] px-1 py-1 rounded-2xl shadow-md break-words ${
                 msg.role === "user"
                   ? "bg-[var(--chat-bubble-user)] text-white rounded-br-none"
                   : "bg-[var(--chat-bubble-ai)] text-gray-200 rounded-bl-none"
@@ -99,7 +111,7 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
 
               {/* Conditionally render content area ONLY if there is content or it's a placeholder */}
               {(msg.content || msg.isThinkingPlaceholder) && (
-                <div className="px-4 py-3">
+                <div className="px-4 py-2">
                   {" "}
                   {/* Consistent padding for text */}
                   {msg.isThinkingPlaceholder ? (
