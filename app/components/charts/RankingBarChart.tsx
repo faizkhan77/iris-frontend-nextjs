@@ -24,8 +24,12 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
+export interface ChartDataItem {
+  [key: string]: string | number;
+}
+
 interface RankingBarChartProps {
-  data: any[];
+  data: ChartDataItem[];
   title: string;
   labelKey: string;
   valueKey: string;

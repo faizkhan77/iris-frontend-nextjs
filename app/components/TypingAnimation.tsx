@@ -1,6 +1,6 @@
 // components/TypingAnimation.tsx
 "use client";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 // --- MODIFIED: Added container variants to orchestrate children animations ---
 const containerVariants = {
@@ -12,7 +12,7 @@ const containerVariants = {
   },
 };
 
-const dotVariants = {
+const dotVariants: Variants = {
   initial: {
     y: "0%",
   },
@@ -22,7 +22,7 @@ const dotVariants = {
       duration: 0.5,
       ease: "easeInOut",
       repeat: Infinity,
-      repeatType: "reverse",
+      repeatType: "reverse" as const, // ✅ explicitly a string literal
     },
   },
 };

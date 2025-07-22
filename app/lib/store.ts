@@ -5,7 +5,7 @@ import { persist } from 'zustand/middleware';
 interface User {
   user_id: number;
   email: string;
-  name: str;
+  name: string; 
 }
 
 interface AppState {

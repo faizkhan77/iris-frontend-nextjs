@@ -3,7 +3,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, HelpCircle, Settings, User } from "lucide-react";
+import { HelpCircle, Settings, User } from "lucide-react";
 import IrisLogo from "./IrisLogo";
 
 export default function ChatHeader() {

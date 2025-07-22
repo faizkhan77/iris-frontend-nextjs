@@ -1,4 +1,7 @@
 // lib/api.ts
+import { UiComponent } from "../components/ChatMessages";
+
+
 const API_BASE_URL = "http://localhost:8000";
 
 // --- Types for Login and History (Unchanged) ---
@@ -78,7 +81,7 @@ interface ChatRequest {
 
 // Define a new callbacks interface for handling different event types
 interface StreamCallbacks {
-  onUiComponent: (components: any[]) => void;
+  onUiComponent: (components: UiComponent[]) => void;
   onTextChunk: (chunk: string) => void;
   onError: (error: string) => void;
   onClose: () => void;

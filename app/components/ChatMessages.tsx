@@ -9,13 +9,25 @@ import TypingAnimation from "./TypingAnimation";
 import { StockPriceChart } from "./charts/StockPriceChart";
 import { RankingBarChart } from "./charts/RankingBarChart";
 import { User } from "lucide-react";
+import type { ChartDataPoint } from "./charts/StockPriceChart";
+import type { ChartDataItem } from "./charts/RankingBarChart";
 import IrisLogo from "./IrisLogo";
+
+interface StockPriceDataPoint {
+  date: string;
+  close: number;
+  volume: number;
+}
+
+interface RankingBarDataPoint {
+  [key: string]: string | number;
+}
 
 // Define a type for our specific UI components
 export interface UiComponent {
   type: "stock_price_chart" | "ranking_bar_chart"; // Add the new type
   title: string;
-  data: any[];
+  data: StockPriceDataPoint[] | RankingBarDataPoint[];
   // Add optional keys for the bar chart
   labelKey?: string;
   valueKey?: string;
@@ -51,17 +63,16 @@ const renderUiComponent = (component: UiComponent, index: number) => {
       return (
         <StockPriceChart
           key={index}
-          data={component.data}
+          data={component.data as ChartDataPoint[]} // ✅ <-- Fix
           title={component.title}
         />
       );
     case "ranking_bar_chart":
-      // Ensure the required keys are present before rendering
       if (!component.labelKey || !component.valueKey) return null;
       return (
         <RankingBarChart
           key={index}
-          data={component.data}
+          data={component.data as ChartDataItem[]} // ✅ Fix
           title={component.title}
           labelKey={component.labelKey}
           valueKey={component.valueKey}

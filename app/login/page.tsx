@@ -1,12 +1,11 @@
 // app/login/page.tsx
 "use client";
 
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAppStore } from "../lib/store";
 import { loginUser } from "../lib/api";
-import Scene from "../components/Scene";
 import { HeroGeometric } from "@/components/ui/shape-landing-hero";
 
 export default function LoginPage() {
@@ -29,10 +28,14 @@ export default function LoginPage() {
       const userData = await loginUser({ email, name: name || undefined });
       setUser(userData);
       router.push("/");
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
-    } finally {
-      setIsLoading(false);
+      setIsLoading(false); // add here
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "An unexpected error occurred.");
+      } else {
+        setError("An unexpected error occurred.");
+      }
+      setIsLoading(false); // add here
     }
   };
 

@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 
 // STEP 1: Define the shape of OUR data
-interface ChartDataPoint {
+export interface ChartDataPoint {
   date: string;
   close: number; // This will map to 'desktop'
   volume: number; // This will map to 'mobile'
@@ -73,7 +73,7 @@ export function StockPriceChart({ data, title }: StockPriceChartProps) {
   // STEP 4: Adapt the filtering logic for our dynamic time ranges
   const filteredData = React.useMemo(() => {
     const now = new Date();
-    let startDate = new Date();
+    const startDate = new Date();
 
     if (timeRange === "6m") {
       startDate.setMonth(now.getMonth() - 6);

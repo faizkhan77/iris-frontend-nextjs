@@ -10,11 +10,18 @@ import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+interface Session {
+  id: number;
+  thread_id: string;
+  summary?: string;
+  started_at: string;
+}
+
 // --- HELPER FUNCTION TO GROUP SESSIONS BY DATE (No changes here) ---
-const groupSessionsByDate = (sessions: any[]) => {
+const groupSessionsByDate = (sessions: Session[] = []) => {
   if (!sessions) return {};
 
-  const groups: { [key: string]: any[] } = {
+  const groups: { [key: string]: Session[] } = {
     Today: [],
     Yesterday: [],
     "Last 7 days": [],
