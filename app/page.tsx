@@ -169,7 +169,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-screen bg-[var(--background)] text-gray-300 overflow-hidden">
+    <div className="flex h-screen bg-[#09090B] text-gray-300 overflow-hidden">
       <Sidebar />
       <div className="flex flex-col flex-1 h-full">
         {/* Conditionally render based on initial state OR if loading history */}

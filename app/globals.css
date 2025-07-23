@@ -7,7 +7,7 @@
 :root {
   --accent-primary: #a855f7; /* purple */
   --accent-secondary: #d8b4fe; /* light purple */
-  --background: #0a0920; 
+  --background: #09090B; 
   /* NEW: Add colors from the target design */
   --gold-accent: #6b21a8; /* yellow-400, our new primary accent */
   --app-bg: #121212;
@@ -40,7 +40,7 @@ body {
   animation: gradient 25s ease infinite;
   color: #e5e7eb; /* Default text color: gray-200 */
   /* background-color: var(--background); */
-  background: linear-gradient(-45deg, #0a0920, #211d69, #0f2c57, #231b57);
+
   min-height: 100vh;
   overflow: hidden;
   /* Add selection color from your example */
@@ -221,6 +221,51 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .prose-invert {
+    /* Base text colors */
+    --tw-prose-body: #d1d5db; /* gray-300 */
+    --tw-prose-headings: #ffffff;
+    --tw-prose-lead: #a3a3a3;
+    --tw-prose-links: #ffffff;
+    --tw-prose-bold: #ffffff;
+    --tw-prose-counters: #a3a3a3;
+    --tw-prose-bullets: #a3a3a3;
+    --tw-prose-hr: #4b5563; /* gray-600 */
+    --tw-prose-quotes: #f3f4f6; /* gray-100 */
+    --tw-prose-quote-borders: #4b5563;
+    --tw-prose-captions: #a3a3a3;
+    --tw-prose-code: #ffffff;
+    --tw-prose-pre-code: #d1d5db;
+    --tw-prose-pre-bg: rgba(0, 0, 0, 0.2);
+    --tw-prose-th-borders: #4b5563; /* Table header border color */
+    --tw-prose-td-borders: #374151; /* Table cell border color */
+  }
+
+  /* Explicitly style the table elements within prose-invert */
+  .prose-invert table {
+    @apply w-full my-4 text-sm border-collapse;
+  }
+
+  .prose-invert thead {
+    @apply border-b border-gray-600;
+  }
+  
+  .prose-invert th {
+    @apply px-4 py-2 font-semibold text-left text-white;
+  }
+
+  .prose-invert td {
+    @apply px-4 py-2 align-top;
+  }
+
+  .prose-invert tbody tr {
+    @apply border-b border-gray-700/50;
+  }
+
+  .prose-invert tbody tr:last-child {
+    @apply border-0;
   }
 }
 

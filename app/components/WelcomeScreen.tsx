@@ -25,8 +25,7 @@ const recommendations = [
   {
     icon: <Layers className="w-6 h-6 text-purple-300" />,
     title: "Compare Two Stocks",
-    question:
-      "Compare the P/E ratio and market cap of Reliance Industries and ABB India",
+    question: "Compare the fundamentals of Reliance Industries and HDFC Bank",
   },
   {
     icon: <TrendingUp className="w-6 h-6 text-green-300" />,
@@ -40,13 +39,13 @@ const recommendations = [
   },
   {
     icon: <Briefcase className="w-6 h-6 text-yellow-300" />,
-    title: "Understand a Business",
-    question: "What is the difference between stock and mutual funds?",
+    title: "Shareholding patterns",
+    question: "Shareholding patterns for Titan Company?",
   },
   {
     icon: <BarChart3 className="w-6 h-6 text-red-300" />,
     title: "Check Technicals",
-    question: "What is the RSI for Tata Motors?",
+    question: "Technical Analysis of Tata Motors?",
   },
   {
     icon: <CandlestickChart className="w-6 h-6 text-teal-300" />,
@@ -198,22 +197,29 @@ export function AnimatedAIChat({
         </form>
 
         {/* FIX #2: Your original 6 recommendation cards, styled for the new theme */}
-        <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
           {recommendations.map((rec) => (
             <motion.button
               key={rec.title}
               onClick={() => handleChipClick(rec.question)}
               disabled={isProcessing}
-              whileHover={{ y: -4 }}
-              className="p-4 rounded-xl text-center flex flex-col items-center justify-center gap-3 transition-all duration-300 ease-in-out
-             backdrop-blur-md bg-white/5 border border-white/10
-             shadow-[inset_1px_1px_2px_rgba(255,255,255,0.1),inset_-1px_-1px_2px_rgba(0,0,0,0.15),0_8px_24px_rgba(0,0,0,0.2)]
-             hover:shadow-[inset_1px_1px_2px_rgba(255,255,255,0.15),inset_-1px_-1px_2px_rgba(0,0,0,0.2),0_12px_32px_rgba(0,0,0,0.25)]
-             hover:scale-[1.03] active:scale-[0.98]
-             disabled:cursor-not-allowed disabled:opacity-50"
+              whileHover={{ y: -3, scale: 1.01 }}
+              whileTap={{ scale: 0.97 }}
+              className="group relative rounded-lg border border-white/10 bg-white/[0.02] backdrop-blur-md
+        shadow-[0_0_0_1px_rgba(255,255,255,0.03),0_4px_12px_rgba(0,0,0,0.3)]
+        hover:shadow-[0_0_10px_rgba(168,85,247,0.2),0_6px_20px_rgba(0,0,0,0.4)]
+        hover:border-purple-400/30 transition-all duration-300 ease-in-out
+        px-3 py-3 text-white/90 flex flex-col items-center gap-2 text-center
+        disabled:opacity-50 disabled:cursor-not-allowed h-[100px]"
             >
-              <div className="text-white">{rec.icon}</div>
-              <span className="text-sm font-medium text-white text-center h-10 flex items-center justify-center leading-snug">
+              <div className="relative w-8 h-8 flex items-center justify-center rounded-full bg-purple-500/10 group-hover:bg-purple-500/20 transition duration-300">
+                <div className="text-base text-purple-300 group-hover:scale-105 transition-transform duration-300">
+                  {rec.icon}
+                </div>
+                <div className="absolute inset-0 rounded-full border border-purple-300/20 group-hover:border-purple-400/30" />
+              </div>
+
+              <span className="text-xs font-medium text-white/90 text-center leading-tight line-clamp-2">
                 {rec.title}
               </span>
             </motion.button>

@@ -3,35 +3,44 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import remarkGfm from "remark-gfm"; // This plugin is essential for tables
 import TypingAnimation from "./TypingAnimation";
-// --- NEW: Import the chart component ---
-import { StockPriceChart } from "./charts/StockPriceChart";
-import { RankingBarChart } from "./charts/RankingBarChart";
 import { User } from "lucide-react";
-import type { ChartDataPoint } from "./charts/StockPriceChart";
-import type { ChartDataItem } from "./charts/RankingBarChart";
 import IrisLogo from "./IrisLogo";
 
-interface StockPriceDataPoint {
-  date: string;
-  close: number;
-  volume: number;
-}
+// Import ALL chart components and their data types
+import {
+  StockPriceChart,
+  type ChartDataPoint as StockPriceDataPoint,
+} from "./charts/StockPriceChart";
+import {
+  RankingBarChart,
+  type ChartDataItem as RankingBarDataPoint,
+} from "./charts/RankingBarChart";
+import {
+  ShareholdingPieChart,
+  type ShareholdingDataItem,
+} from "./charts/ShareholdingPieChart";
 
-interface RankingBarDataPoint {
-  [key: string]: string | number;
-}
-
-// Define a type for our specific UI components
-export interface UiComponent {
-  type: "stock_price_chart" | "ranking_bar_chart"; // Add the new type
-  title: string;
-  data: StockPriceDataPoint[] | RankingBarDataPoint[];
-  // Add optional keys for the bar chart
-  labelKey?: string;
-  valueKey?: string;
-}
+// Define a comprehensive UiComponent type
+export type UiComponent =
+  | {
+      type: "stock_price_chart";
+      title: string;
+      data: StockPriceDataPoint[];
+    }
+  | {
+      type: "ranking_bar_chart";
+      title: string;
+      data: RankingBarDataPoint[];
+      labelKey: string;
+      valueKey: string;
+    }
+  | {
+      type: "pie_chart";
+      title: string;
+      data: ShareholdingDataItem[];
+    };
 
 export interface Message {
   id: string;
@@ -39,7 +48,6 @@ export interface Message {
   content: string;
   timestamp: Date;
   isThinkingPlaceholder?: boolean;
-  // --- NEW: Add uiComponents to the message type ---
   uiComponents?: UiComponent[];
 }
 
@@ -48,7 +56,9 @@ interface ChatMessagesProps {
 }
 
 const messageVariants = {
-  // ... (keep this the same)
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1 },
+  exit: { y: -20, opacity: 0 },
 };
 
 const UserIcon = () => (
@@ -63,22 +73,30 @@ const renderUiComponent = (component: UiComponent, index: number) => {
       return (
         <StockPriceChart
           key={index}
-          data={component.data as ChartDataPoint[]} // ✅ <-- Fix
+          data={component.data}
           title={component.title}
         />
       );
     case "ranking_bar_chart":
-      if (!component.labelKey || !component.valueKey) return null;
       return (
         <RankingBarChart
           key={index}
-          data={component.data as ChartDataItem[]} // ✅ Fix
+          data={component.data}
           title={component.title}
           labelKey={component.labelKey}
           valueKey={component.valueKey}
         />
       );
+    case "pie_chart":
+      return (
+        <ShareholdingPieChart
+          key={index}
+          data={component.data}
+          title={component.title}
+        />
+      );
     default:
+      const exhaustiveCheck: never = component;
       return null;
   }
 };
@@ -101,7 +119,6 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
           >
             {msg.role === "user" ? <UserIcon /> : <IrisLogo />}
 
-            {/* --- MODIFIED: Added glassmorphism classes --- */}
             <div
               className={`max-w-[85%] md:max-w-[75%] rounded-2xl break-words
                         backdrop-blur-md border border-[var(--glass-border-color)] shadow-lg
@@ -123,7 +140,14 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
                     <TypingAnimation />
                   ) : (
                     <>
-                      <div className="prose prose-invert prose-sm md:prose-base max-w-none prose-p:my-2 prose-headings:my-3">
+                      {/* --- THIS IS THE FIX --- */}
+                      <div
+                        className="prose prose-invert prose-sm md:prose-base max-w-none 
+                                   prose-p:my-2 prose-headings:my-3
+                                   prose-table:w-full prose-table:text-sm 
+                                   prose-th:p-2 prose-th:font-semibold prose-th:text-left
+                                   prose-td:p-2 prose-td:border-t prose-td:border-gray-700"
+                      >
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                           {msg.content}
                         </ReactMarkdown>
