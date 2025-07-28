@@ -16,7 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
+import type { PieLabelRenderProps } from "recharts";
 // STEP 1: Define the shape of OUR data from the backend
 export interface ShareholdingDataItem {
   name: string; // e.g., "Promoters", "FIIs"
@@ -103,26 +103,19 @@ export function ShareholdingPieChart({
             {/* The Pie component now uses our prepared 'chartData' */}
             <Pie
               data={chartData}
-              dataKey="value" // Our data uses 'value'
-              nameKey="name" // Our data uses 'name'
-              innerRadius={60} // Creates the "donut" effect
+              dataKey="value"
+              nameKey="name"
+              innerRadius={60}
               strokeWidth={5}
               outerRadius={100}
-              // This function renders the labels on the chart itself
-              label={({
-                payload,
-                ...props
-              }: {
-                payload: { name: string; value: number };
-                [key: string]: any;
-              }) => {
+              label={({ payload, ...props }: PieLabelRenderProps) => {
                 return (
                   <text
                     {...props}
                     className="fill-white text-[10px]"
                     textAnchor={props.textAnchor}
                   >
-                    {`${payload.value}%`}
+                    {`${payload?.value}%`}
                   </text>
                 );
               }}
@@ -140,7 +133,10 @@ export function ShareholdingPieChart({
               const config = chartConfig[key];
               if (typeof config !== "object" || !config) return null;
               return (
-                <div key={config.label} className="flex items-center gap-1.5">
+                <div
+                  key={String(config.label || key)}
+                  className="flex items-center gap-1.5"
+                >
                   <div
                     className="h-2.5 w-2.5 shrink-0 rounded-sm"
                     style={{ backgroundColor: config.color }}

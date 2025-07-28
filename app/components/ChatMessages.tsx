@@ -96,7 +96,7 @@ const renderUiComponent = (component: UiComponent, index: number) => {
         />
       );
     default:
-      const exhaustiveCheck: never = component;
+      void (component satisfies never);
       return null;
   }
 };
