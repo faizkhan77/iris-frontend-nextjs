@@ -12,68 +12,96 @@ import { useAppStore } from "./lib/store";
 import { v4 as uuidv4 } from "uuid";
 import { streamChatResponse, fetchSessionMessages } from "./lib/api";
 import ChatInputForm from "./components/ChatInputForm";
-import Sidebar from "./components/Sidebar";
+// import Sidebar from "./components/Sidebar";
+import { motion, AnimatePresence } from "framer-motion";
 import ChatMessages, { Message, UiComponent } from "./components/ChatMessages";
-// import ChatInput from "./components/ChatInput";
 
-export default function ChatPage() {
+import SecondarySidebar from "./components/layout/SecondarySidebar";
+
+import ScreenerPage from "./analysis_components/ScreenerPage";
+
+// --- Placeholder component for other tabs ---
+const PlaceholderScreen = ({ title }: { title: string }) => (
+  <div className="flex h-full w-full items-center justify-center">
+    <div className="text-center">
+      <h1 className="text-4xl font-bold text-text-primary">{title}</h1>
+      <p className="mt-2 text-text-secondary">This feature is coming soon.</p>
+    </div>
+  </div>
+);
+
+// --- ANIMATION VARIANTS FOR THE SIDEBAR ---
+const sidebarVariants = {
+  initial: { x: "-100%", opacity: 0 },
+  animate: {
+    x: 0,
+    opacity: 1,
+    transition: { duration: 0.3, ease: "easeInOut" },
+  },
+  exit: {
+    x: "-100%",
+    opacity: 0,
+    transition: { duration: 0.3, ease: "easeInOut" },
+  },
+};
+
+export default function MainPage() {
   const router = useRouter();
-  const { user, threadId, setThreadId } = useAppStore();
+  const {
+    user,
+    threadId,
+    setThreadId,
+    activePrimaryTab,
+    isSecondarySidebarOpen,
+  } = useAppStore();
+
   const [isInitialState, setIsInitialState] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // All your existing useEffect hooks for auth, history, and scrolling remain unchanged
   useEffect(() => {
     if (!user) router.replace("/login");
     else if (!threadId) setThreadId(`thread_web_${uuidv4()}`);
   }, [user, threadId, router, setThreadId]);
 
-  // --- THIS IS THE KEY LOGIC CHANGE ---
   useEffect(() => {
-    // This effect runs whenever the active threadId changes.
     async function loadMessages() {
       if (!threadId) return;
-
-      // Show a loading state briefly
       setIsLoading(true);
       try {
         const historicalMessages = await fetchSessionMessages(threadId);
-
         if (historicalMessages && historicalMessages.length > 0) {
-          // We have history, so transition to the chat view.
           setMessages(
             historicalMessages.map((msg) => ({
-              id: uuidv4(), // Generate a unique ID for the key prop
+              id: uuidv4(),
               role: msg.role,
               content: msg.content,
-              timestamp: new Date(msg.timestamp), // Convert ISO string to Date object
+              timestamp: new Date(msg.timestamp),
             }))
           );
           setIsInitialState(false);
         } else {
-          // No history, this is a new chat. Stay on the welcome screen.
           setMessages([]);
           setIsInitialState(true);
         }
       } catch (error) {
         console.error("Failed to load session history:", error);
-        // Handle error, maybe show a toast notification
         setMessages([]);
         setIsInitialState(true);
       } finally {
         setIsLoading(false);
       }
     }
-
     loadMessages();
-  }, [threadId]); // Dependency array ensures this runs on threadId change.
+  }, [threadId]);
 
   useEffect(() => {
-    // Scroll to bottom after messages are loaded or a new one is added
-    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading]);
 
+  // Your robust handleSendMessage function remains unchanged
   const handleSendMessage = async (input: string) => {
     if (!threadId || !user) return;
     if (isInitialState) setIsInitialState(false);
@@ -84,9 +112,7 @@ export default function ChatPage() {
       content: input,
       timestamp: new Date(),
     };
-
     const assistantMessageId = uuidv4();
-    // Start with the thinking placeholder active
     setMessages((prev) => [
       ...prev,
       userMessage,
@@ -102,7 +128,6 @@ export default function ChatPage() {
     setIsLoading(true);
 
     let accumulatedText = "";
-
     try {
       await streamChatResponse(
         { user_identifier: user.email, user_input: input, thread_id: threadId },
@@ -124,8 +149,6 @@ export default function ChatPage() {
                   ? {
                       ...msg,
                       content: accumulatedText,
-                      // THIS IS THE KEY FIX: Turn off the placeholder
-                      // ONLY when the first chunk of text arrives.
                       isThinkingPlaceholder: false,
                     }
                   : msg
@@ -148,7 +171,6 @@ export default function ChatPage() {
       );
     } catch (error) {
       console.error("Streaming failed:", error);
-      // Final state update on error
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantMessageId
@@ -165,59 +187,73 @@ export default function ChatPage() {
   };
 
   const handleClarificationClick = (query: string) => {
-    // This function is simple: it just re-uses the robust handleSendMessage
-    // function to submit the query from the clicked tab.
     handleSendMessage(query);
   };
 
-  if (!user) {
-    return null;
-  }
-
-  return (
-    <div className="flex h-screen bg-[#09090B] text-gray-300 overflow-hidden">
-      <Sidebar />
-      <div className="flex flex-col flex-1 h-full">
-        {/* Conditionally render based on initial state OR if loading history */}
-        {isInitialState && !isLoading ? null : <ChatHeader />}
-
-        <div
-          className={`flex-grow flex flex-col overflow-y-auto custom-scrollbar relative ${
-            isInitialState ? "items-center justify-center" : "items-start"
-          }`}
-        >
-          {isLoading && messages.length === 0 && (
-            <div className="m-auto">Loading chat history...</div>
-          )}
-
-          {!isLoading && isInitialState && (
-            <AnimatedAIChat
-              onSendMessage={handleSendMessage}
-              isProcessing={isLoading}
-            />
-          )}
-
-          {!isInitialState && (
-            <>
-              <ChatMessages
-                messages={messages}
-                onClarificationOptionClick={handleClarificationClick} // <--- CHANGE THIS
-              />
-              <div ref={messagesEndRef} />
-            </>
-          )}
-        </div>
-
-        {/* Only show footer when in chat view */}
+  const renderIrisContent = () => (
+    <div className="flex flex-1 flex-col h-full overflow-y-auto custom-scrollbar">
+      {/* {isInitialState && !isLoading ? null : <ChatHeader />} */}
+      <div
+        className={`flex-grow flex flex-col relative ${
+          isInitialState ? "items-center justify-center" : ""
+        }`}
+      >
+        {isLoading && messages.length === 0 && (
+          <div className="m-auto text-text-secondary">
+            Loading chat history...
+          </div>
+        )}
+        {!isLoading && isInitialState && (
+          <AnimatedAIChat
+            onSendMessage={handleSendMessage}
+            isProcessing={isLoading}
+          />
+        )}
         {!isInitialState && (
-          <footer className="w-full px-4 md:px-6 pb-4 pt-2 shrink-0 bg-[var(--background)] sticky bottom-0 ">
-            <ChatInputForm
-              onSendMessage={handleSendMessage}
-              isProcessing={isLoading}
+          <>
+            <ChatMessages
+              messages={messages}
+              onClarificationOptionClick={handleClarificationClick}
             />
-          </footer>
+            <div ref={messagesEndRef} />
+          </>
         )}
       </div>
+      {!isInitialState && (
+        <footer className="w-full px-4 md:px-6 pb-4 pt-2 shrink-0 bg-content-bg sticky bottom-0">
+          <ChatInputForm
+            onSendMessage={handleSendMessage}
+            isProcessing={isLoading}
+          />
+        </footer>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="flex h-screen w-full bg-content-bg">
+      {/* --- WRAP THE SIDEBAR IN ANIMATION COMPONENTS --- */}
+      <AnimatePresence>
+        {activePrimaryTab === "iris" && isSecondarySidebarOpen && (
+          <motion.div
+            key="secondary-sidebar"
+            variants={sidebarVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <SecondarySidebar />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <main className="flex-1 flex flex-col h-full overflow-hidden">
+        {activePrimaryTab === "iris" && renderIrisContent()}
+        {activePrimaryTab === "screener" && <ScreenerPage />}
+        {activePrimaryTab === "profile" && (
+          <PlaceholderScreen title="User Profile" />
+        )}
+      </main>
     </div>
   );
 }

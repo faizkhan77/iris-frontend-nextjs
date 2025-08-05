@@ -29,26 +29,22 @@ const dotVariants: Variants = {
 
 export default function TypingAnimation() {
   return (
-    <motion.div
-      className="flex items-center space-x-1.5 p-2"
-      // --- MODIFIED: Added variants to the container ---
-      variants={containerVariants}
-      initial="initial"
-      animate="animate"
-    >
-      {/* --- MODIFIED: Each dot now uses variants to be animated by the parent --- */}
+    <div className="flex items-center space-x-3 px-4 py-2 rounded-md shadow-inner">
+      <span className="text-sm font-medium text-text-secondary">Analyzing</span>
       <motion.div
-        className="h-2 w-2 bg-purple-400 rounded-full"
-        variants={dotVariants}
-      />
-      <motion.div
-        className="h-2 w-2 bg-purple-400 rounded-full"
-        variants={dotVariants}
-      />
-      <motion.div
-        className="h-2 w-2 bg-purple-400 rounded-full"
-        variants={dotVariants}
-      />
-    </motion.div>
+        className="flex items-center space-x-2"
+        variants={containerVariants}
+        initial="initial"
+        animate="animate"
+      >
+        {[...Array(3)].map((_, index) => (
+          <motion.div
+            key={index}
+            className="h-2.5 w-2.5 rounded-full bg-[#0dd3ff] shadow-md"
+            variants={dotVariants}
+          />
+        ))}
+      </motion.div>
+    </div>
   );
 }

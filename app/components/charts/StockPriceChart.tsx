@@ -1,6 +1,7 @@
 // components/charts/StockPriceChart.tsx
 "use client";
 
+import { useTheme } from "next-themes";
 import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"; // Added YAxis for proper scaling
 
@@ -58,19 +59,23 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+// This is the full function with the required changes applied.
 export function StockPriceChart({ data, title }: StockPriceChartProps) {
   const [timeRange, setTimeRange] = React.useState("1y");
+  const { theme } = useTheme();
 
-  // STEP 3: Map OUR data to the format the template expects
+  // This variable is now used for the stroke color of the price line
+  const strokeColor = theme === "dark" ? "#10b981" : "#059669";
+
+  // Your data mapping logic remains untouched
   const chartData = React.useMemo(() => {
     return data.map((item) => ({
       date: item.date,
-      desktop: item.close, // Map 'close' to 'desktop'
-      mobile: item.volume, // Map 'volume' to 'mobile'
+      desktop: item.close,
+      mobile: item.volume,
     }));
   }, [data]);
 
-  // STEP 4: Adapt the filtering logic for our dynamic time ranges
   const filteredData = React.useMemo(() => {
     const now = new Date();
     const startDate = new Date();
@@ -80,38 +85,35 @@ export function StockPriceChart({ data, title }: StockPriceChartProps) {
     } else if (timeRange === "3m") {
       startDate.setMonth(now.getMonth() - 3);
     } else {
-      // Default to "1y"
       startDate.setFullYear(now.getFullYear() - 1);
     }
 
     return chartData.filter((item) => {
       const date = new Date(item.date);
-      // Ensure date is valid before comparing
       return !isNaN(date.getTime()) && date >= startDate;
     });
   }, [chartData, timeRange]);
 
   return (
-    // Use the exact same Card component and structure
-    <Card className="border-gray-800 bg-black/20 backdrop-blur-sm w-full pt-0">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b border-gray-800 py-5 sm:flex-row">
+    // THEME-AWARE STYLING: Replaced hardcoded colors with theme variables
+    <Card className="w-full border-element-border bg-background pt-0">
+      <CardHeader className="flex items-center gap-2 space-y-0 border-b border-element-border py-5 sm:flex-row">
         <div className="grid flex-1 gap-1">
-          <CardTitle className="text-base font-bold text-white">
+          <CardTitle className="text-base font-bold text-text-primary">
             {title}
           </CardTitle>
-          <CardDescription className="text-sm text-gray-400">
+          <CardDescription className="text-sm text-text-secondary">
             Price and volume over the selected period
           </CardDescription>
         </div>
-        {/* Use our time range state and options */}
         <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger
-            className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex border-gray-700 bg-gray-800/50 text-gray-300"
+            className="hidden w-[160px] rounded-lg border-element-border bg-element-bg text-text-primary sm:ml-auto sm:flex"
             aria-label="Select a value"
           >
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
-          <SelectContent className="rounded-xl border-gray-700 bg-gray-900 text-gray-200">
+          <SelectContent className="rounded-xl border-element-border bg-background text-text-primary">
             <SelectItem value="1y" className="rounded-lg">
               Last 1 Year
             </SelectItem>
@@ -129,20 +131,12 @@ export function StockPriceChart({ data, title }: StockPriceChartProps) {
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
         >
-          {/* THE FIX: Add a negative margin to the chart itself */}
           <AreaChart data={filteredData} margin={{ left: -24, right: -24 }}>
             <defs>
+              {/* These definitions remain untouched */}
               <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
+                <stop offset="5%" stopColor={strokeColor} stopOpacity={0.4} />
+                <stop offset="95%" stopColor={strokeColor} stopOpacity={0.1} />
               </linearGradient>
               <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
                 <stop
@@ -157,7 +151,7 @@ export function StockPriceChart({ data, title }: StockPriceChartProps) {
                 />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} stroke="white" />
+            <CartesianGrid vertical={false} stroke="var(--border)" />
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -172,7 +166,6 @@ export function StockPriceChart({ data, title }: StockPriceChartProps) {
                 });
               }}
             />
-            {/* Minimal necessary change: Add Y-axes to prevent data squashing */}
             <YAxis
               yAxisId="left"
               orientation="left"
@@ -189,31 +182,31 @@ export function StockPriceChart({ data, title }: StockPriceChartProps) {
               cursor={false}
               content={
                 <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
+                  labelFormatter={(value) =>
+                    new Date(value).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
-                    });
-                  }}
+                    })
+                  }
                   indicator="dot"
                 />
               }
             />
-            {/* The Area components are identical to the template */}
             <Area
               dataKey="mobile"
-              yAxisId="left" // Assign volume to one axis
+              yAxisId="left"
               type="natural"
               fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
+              stroke="#0dd3ff" // Use theme variable for consistency
               stackId="a"
             />
             <Area
               dataKey="desktop"
-              yAxisId="right" // Assign price to the other axis
+              yAxisId="right"
               type="natural"
-              fill="url(#fillDesktop)"
-              stroke="purple"
+              // --- YOUR CORE REQUIREMENT FULFILLED HERE ---
+              fill={theme === "light" ? "white" : "url(#fillDesktop)"}
+              stroke={strokeColor} // Use dynamic stroke color
               stackId="a"
             />
             <ChartLegend content={<ChartLegendContent />} />

@@ -3,42 +3,134 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Theme derived from your ChatPage.jsx */
 :root {
-  --accent-primary: #a855f7; /* purple */
-  --accent-secondary: #d8b4fe; /* light purple */
-  --background: #09090B; 
-  /* NEW: Add colors from the target design */
-  --gold-accent: #6b21a8; /* yellow-400, our new primary accent */
-  --app-bg: #121212;
-  --sidebar-bg: #1C1C1C;
-  --element-bg-dark: #2A2A2A;
-  --element-bg-light: #333333;
-  --text-primary: #E5E5E5;
-  --text-secondary: #A3A3A3;
-  --border-color-subtle: rgba(255, 255, 255, 0.1);
+  /* Bhindi Dark Palette */
+  --dark-bg: #111213;
+  --dark-sidebar-primary: #111213;
+  --dark-sidebar-secondary: #181818;
+  --dark-content: #111213;
+  --dark-element: #27272a;
+  --dark-element-hover: #3f3f46;
+  --dark-border: #27272a;
+  --dark-border-hover: #3f3f46;
+  --dark-accent: #0dd3ff;
+  --dark-accent-hover: #0dd3ff;
+  --dark-text-primary: #f4f4f5;
+  --dark-text-secondary: #a1a1aa;
+  --dark-text-tertiary: #71717a;
 
-  --sidebar-bg: rgba(20, 18, 51, 0.5);/* A slightly darker shade for contrast */
-  --chat-bubble-ai: #242628;
-  --chat-bubble-user: #6b21a8; /* Purple-700 from Tailwind for the user bubble */
-  --input-bg: rgba(255, 255, 255, 0.05);
-  --input-focus-bg: rgba(255, 255, 255, 0.1);
+  /* Bhindi Light Palette */
+  --light-bg: #ffffff;
+  --light-sidebar-primary: #e4e4e7;
+  --light-sidebar-secondary: #f4f4f5;
+  --light-content: #ffffff;
+  --light-element: #e4e4e7;
+  --light-element-hover: #d4d4d8;
+  --light-border: #d4d4d8;
+  --light-border-hover: #a1a1aa;
+  --light-accent: #0dd3ff; /* Darker green for contrast on light bg */
+  --light-accent-hover: #0dd3ff;
+  --light-text-primary: #18181b;
+  --light-text-secondary: #52525b;
+  --light-text-tertiary: #71717a;
 
-  --chat-bubble-ai: rgba(255, 255, 255, 0.1);
-  --chat-bubble-user: rgba(107, 33, 168, 0.3); 
+  --accent-foreground: #ffffff; /* Same for both themes */
+  --radius: 0.75rem;
 
-  --text-primary: #e5e7eb; /* gray-200 */
-  --text-secondary: #9ca3af; /* gray-400 */
-  --border-color: rgba(107, 114, 128, 0.4); /* gray-500 with opacity */
-  --accent: #a855f7; /* Purple-500 */
-  --glass-border-color: rgba(255, 255, 255, 0.15);
-  --radius: 0.625rem; --card: oklch(1 0 0); --card-foreground: oklch(0.13 0.028 261.692); --popover: oklch(1 0 0); --popover-foreground: oklch(0.13 0.028 261.692); --primary: oklch(0.21 0.034 264.665); --primary-foreground: oklch(0.985 0.002 247.839); --secondary: oklch(0.967 0.003 264.542); --secondary-foreground: oklch(0.21 0.034 264.665); --muted: oklch(0.967 0.003 264.542); --muted-foreground: oklch(0.551 0.027 264.364); --accent-foreground: oklch(0.21 0.034 264.665); --destructive: oklch(0.577 0.245 27.325); --border: oklch(0.928 0.006 264.531); --input: oklch(0.928 0.006 264.531); --ring: oklch(0.707 0.022 261.325); --chart-1: oklch(0.646 0.222 41.116); --chart-2: oklch(0.6 0.118 184.704); --chart-3: oklch(0.398 0.07 227.392); --chart-4: oklch(0.828 0.189 84.429); --chart-5: oklch(0.769 0.188 70.08); --sidebar: oklch(0.985 0.002 247.839); --sidebar-foreground: oklch(0.13 0.028 261.692); --sidebar-primary: oklch(0.21 0.034 264.665); --sidebar-primary-foreground: oklch(0.985 0.002 247.839); --sidebar-accent: oklch(0.967 0.003 264.542); --sidebar-accent-foreground: oklch(0.21 0.034 264.665); --sidebar-border: oklch(0.928 0.006 264.531); --sidebar-ring: oklch(0.707 0.022 261.325); --background: oklch(0.1881 0.006 285.81); --foreground: oklch(0.13 0.028 261.692);
+  /* --- 
+    LIGHT THEME MAPPING (DEFAULT)
+    These variables are used by your components. We map them to our Light Theme palette.
+  --- */
+  --background: var(--light-content);
+  --foreground: var(--light-text-primary);
+  
+  --card: var(--light-content);
+  --card-foreground: var(--light-text-primary);
+  
+  --popover: var(--light-content);
+  --popover-foreground: var(--light-text-primary);
+  
+  --primary: var(--light-text-primary);
+  --primary-foreground: var(--light-content);
+  
+  --secondary: var(--light-element);
+  --secondary-foreground: var(--light-text-primary);
+  
+  --muted: var(--light-element);
+  --muted-foreground: var(--light-text-secondary);
+  
+  --accent: var(--light-accent);
+  
+  --destructive: oklch(0.65 0.22 25); /* A generic destructive color */
+  
+  --border: var(--light-border);
+  --input: var(--light-border);
+  --ring: var(--light-accent);
+  
+  --sidebar-primary-bg: var(--light-sidebar-primary);
+  --sidebar-secondary-bg: var(--light-sidebar-secondary);
+  --content-bg: var(--light-content);
+  --element-bg: var(--light-element);
+  --element-bg-hover: var(--light-element-hover);
+  --element-border: var(--light-border);
+  --element-border-hover: var(--light-border-hover);
+
+  --text-primary: var(--light-text-primary);
+  --text-secondary: var(--light-text-secondary);
+  --text-tertiary: var(--light-text-tertiary);
+  --text-on-accent: var(--accent-foreground);
 }
+
+.dark {
+  /* --- 
+    DARK THEME MAPPING
+    Here we re-map the same component variables to our Dark Theme palette.
+  --- */
+  --background: var(--dark-content);
+  --foreground: var(--dark-text-primary);
+
+  --card: var(--dark-content);
+  --card-foreground: var(--dark-text-primary);
+  
+  --popover: var(--dark-content);
+  --popover-foreground: var(--dark-text-primary);
+  
+  --primary: var(--dark-text-primary);
+  --primary-foreground: var(--dark-content);
+  
+  --secondary: var(--dark-element);
+  --secondary-foreground: var(--dark-text-primary);
+  
+  --muted: var(--dark-element);
+  --muted-foreground: var(--dark-text-secondary);
+  
+  --accent: var(--dark-accent);
+  
+  --destructive: oklch(0.65 0.22 25);
+  
+  --border: var(--dark-border);
+  --input: var(--dark-border);
+  --ring: var(--dark-accent);
+
+  --sidebar-primary-bg: var(--dark-sidebar-primary);
+  --sidebar-secondary-bg: var(--dark-sidebar-secondary);
+  --content-bg: var(--dark-content);
+  --element-bg: var(--dark-element);
+  --element-bg-hover: var(--dark-element-hover);
+  --element-border: var(--dark-border);
+  --element-border-hover: var(--dark-border-hover);
+
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --text-tertiary: var(--dark-text-tertiary);
+  --text-on-accent: var(--accent-foreground);
+}
+
 
 body {
   background-size: 400% 400%;
   animation: gradient 25s ease infinite;
-  color: #e5e7eb; /* Default text color: gray-200 */
+  /* color: #e5e7eb; Default text color: gray-200 */
   /* background-color: var(--background); */
 
   min-height: 100vh;
@@ -181,39 +273,7 @@ body {
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-.dark {
-  --background: oklch(0.13 0.028 261.692);
-  --foreground: oklch(0.985 0.002 247.839);
-  --card: oklch(0.21 0.034 264.665);
-  --card-foreground: oklch(0.985 0.002 247.839);
-  --popover: oklch(0.21 0.034 264.665);
-  --popover-foreground: oklch(0.985 0.002 247.839);
-  --primary: oklch(0.928 0.006 264.531);
-  --primary-foreground: oklch(0.21 0.034 264.665);
-  --secondary: oklch(0.278 0.033 256.848);
-  --secondary-foreground: oklch(0.985 0.002 247.839);
-  --muted: oklch(0.278 0.033 256.848);
-  --muted-foreground: oklch(0.707 0.022 261.325);
-  --accent: oklch(0.278 0.033 256.848);
-  --accent-foreground: oklch(0.985 0.002 247.839);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.034 264.665);
-  --sidebar-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-accent: oklch(0.278 0.033 256.848);
-  --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
-}
+
 
 @layer base {
   * {
@@ -244,27 +304,30 @@ body {
   }
 
   /* Explicitly style the table elements within prose-invert */
-  .prose-invert table {
+  .prose table {
     @apply w-full my-4 text-sm border-collapse;
   }
-
-  .prose-invert thead {
-    @apply border-b border-gray-600;
+  
+  .prose thead {
+    @apply border-b;
+    border-bottom-color: var(--element-border-hover);
   }
   
-  .prose-invert th {
-    @apply px-4 py-2 font-semibold text-left text-white;
+  .prose th {
+    @apply px-4 py-2 font-semibold text-left;
+    color: var(--text-primary);
   }
-
-  .prose-invert td {
+  
+  .prose td {
     @apply px-4 py-2 align-top;
   }
-
-  .prose-invert tbody tr {
-    @apply border-b border-gray-700/50;
+  
+  .prose tbody tr {
+    @apply border-b;
+    border-bottom-color: var(--element-border);
   }
-
-  .prose-invert tbody tr:last-child {
+  
+  .prose tbody tr:last-child {
     @apply border-0;
   }
 }
@@ -327,22 +390,22 @@ body {
     transform: rotate(90deg);
     box-shadow:
       0 10px 20px 0 #fff inset,
-      0 20px 30px 0 #ad5fff inset,
-      0 60px 60px 0 #471eec inset;
+      0 20px 30px 0 #0dd3ff inset,
+      0 60px 60px 0 #0dd3ff inset;
   }
   50% {
     transform: rotate(270deg);
     box-shadow:
       0 10px 20px 0 #fff inset,
-      0 20px 10px 0 #d60a47 inset,
-      0 40px 60px 0 #311e80 inset;
+      0 20px 10px 0 #0dd3ff inset,
+      0 40px 60px 0 #0dd3ff inset;
   }
   100% {
     transform: rotate(450deg);
     box-shadow:
       0 10px 20px 0 #fff inset,
-      0 20px 30px 0 #ad5fff inset,
-      0 60px 60px 0 #471eec inset;
+      0 20px 30px 0 #0dd3ff inset,
+      0 60px 60px 0 #0dd3ff inset;
   }
 }
 

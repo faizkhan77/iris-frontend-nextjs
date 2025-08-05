@@ -1,15 +1,14 @@
-// components/ChatMessages.tsx
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm"; // This plugin is essential for tables
+import remarkGfm from "remark-gfm";
 import TypingAnimation from "./TypingAnimation";
-import { User } from "lucide-react";
-import IrisLogo from "./IrisLogo";
+import { User, BotMessageSquare } from "lucide-react";
 import ClarificationTabs from "./ClarificationTabs";
+import { cn } from "@/lib/utils";
 
-// Import ALL chart components and their data types
+// Import ALL chart components and their data types (assuming these exist)
 import {
   StockPriceChart,
   type ChartDataPoint as StockPriceDataPoint,
@@ -23,13 +22,9 @@ import {
   type ShareholdingDataItem,
 } from "./charts/ShareholdingPieChart";
 
-// Define a comprehensive UiComponent type
+// The UI Component and Message types remain unchanged
 export type UiComponent =
-  | {
-      type: "stock_price_chart";
-      title: string;
-      data: StockPriceDataPoint[];
-    }
+  | { type: "stock_price_chart"; title: string; data: StockPriceDataPoint[] }
   | {
       type: "ranking_bar_chart";
       title: string;
@@ -37,13 +32,8 @@ export type UiComponent =
       labelKey: string;
       valueKey: string;
     }
+  | { type: "pie_chart"; title: string; data: ShareholdingDataItem[] }
   | {
-      type: "pie_chart";
-      title: string;
-      data: ShareholdingDataItem[];
-    }
-  | {
-      // <!--- THIS IS THE NEW TYPE
       type: "clarification_options";
       title: string;
       options: { label: string; query: string }[];
@@ -60,18 +50,25 @@ export interface Message {
 
 interface ChatMessagesProps {
   messages: Message[];
-  onClarificationOptionClick: (query: string) => void; // <!--- ADD THIS
+  onClarificationOptionClick: (query: string) => void;
 }
 
 const messageVariants = {
   hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1 },
-  exit: { y: -20, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.3, ease: "easeOut" } },
+  exit: { opacity: 0 },
 };
 
+// --- NEW THEME-AWARE ICONS ---
 const UserIcon = () => (
-  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-600 text-gray-300">
+  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-element-bg text-text-secondary">
     <User size={18} />
+  </div>
+);
+
+const IrisIcon = () => (
+  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-element-bg text-text-secondary">
+    <BotMessageSquare size={18} />
   </div>
 );
 
@@ -80,6 +77,7 @@ const renderUiComponent = (
   index: number,
   onOptionClick: (query: string) => void
 ) => {
+  // This function remains unchanged as it renders functional components
   switch (component.type) {
     case "stock_price_chart":
       return (
@@ -107,7 +105,6 @@ const renderUiComponent = (
           title={component.title}
         />
       );
-      return null; // Placeholder
     case "clarification_options":
       return (
         <ClarificationTabs
@@ -128,8 +125,8 @@ export default function ChatMessages({
   onClarificationOptionClick,
 }: ChatMessagesProps) {
   return (
-    <main className="w-full max-w-3xl px-4 md:px-6 py-6 space-y-6 flex-grow self-center">
-      <AnimatePresence>
+    <main className="w-full max-w-4xl px-4 md:px-6 py-6 space-y-8 flex-grow self-center">
+      <AnimatePresence initial={false}>
         {messages.map((msg) => (
           <motion.div
             key={msg.id}
@@ -138,44 +135,41 @@ export default function ChatMessages({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className={`flex w-full items-end gap-3 ${
-              msg.role === "user" ? "flex-row-reverse" : "flex-row"
-            }`}
+            className={cn("flex w-full items-start gap-3", {
+              "flex-row-reverse justify-start": msg.role === "user",
+              "flex-row": msg.role === "assistant",
+            })}
           >
-            {msg.role === "user" ? <UserIcon /> : <IrisLogo />}
+            {msg.role === "user" ? <UserIcon /> : <IrisIcon />}
 
+            {/* --- COMPLETELY RESTYLED CHAT BUBBLE --- */}
             <div
-              className={`max-w-[85%] md:max-w-[75%] rounded-2xl break-words
-                        backdrop-blur-md border border-[var(--glass-border-color)] shadow-lg
-                        ${
-                          msg.role === "user"
-                            ? "bg-[var(--chat-bubble-user)] text-white rounded-br-none"
-                            : "bg-[var(--chat-bubble-ai)] text-gray-200 rounded-bl-none"
-                        }`}
+              className={cn("max-w-[85%] rounded-2xl p-4 break-words", {
+                "bg-accent text-black rounded-br-none": msg.role === "user",
+                "bg-element-bg text-text-primary rounded-bl-none":
+                  msg.role === "assistant",
+              })}
             >
               {msg.uiComponents && msg.uiComponents.length > 0 && (
-                <div className="p-3">
+                <div className="space-y-4">
                   {msg.uiComponents.map((comp, i) =>
-                    // --- PASS THE HANDLER HERE ---
                     renderUiComponent(comp, i, onClarificationOptionClick)
                   )}
                 </div>
               )}
 
               {(msg.content || msg.isThinkingPlaceholder) && (
-                <div className="px-4 py-2">
+                <div
+                  className={cn({
+                    "mt-2": msg.uiComponents && msg.uiComponents.length > 0,
+                  })}
+                >
                   {msg.isThinkingPlaceholder ? (
                     <TypingAnimation />
                   ) : (
                     <>
-                      {/* --- THIS IS THE FIX --- */}
-                      <div
-                        className="prose prose-invert prose-sm md:prose-base max-w-none 
-                                   prose-p:my-2 prose-headings:my-3
-                                   prose-table:w-full prose-table:text-sm 
-                                   prose-th:p-2 prose-th:font-semibold prose-th:text-left
-                                   prose-td:p-2 prose-td:border-t prose-td:border-gray-700"
-                      >
+                      {/* --- CLEANED UP PROSE STYLING --- */}
+                      <div className="prose prose-sm md:prose-base max-w-none prose-p:my-2 prose-headings:my-3">
                         <div className="overflow-x-auto">
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {msg.content}
@@ -183,9 +177,10 @@ export default function ChatMessages({
                         </div>
                       </div>
                       <p
-                        className={`text-xs mt-2 opacity-70 ${
-                          msg.role === "user" ? "text-right" : "text-left"
-                        }`}
+                        className={cn("text-xs mt-2 text-text-secondary", {
+                          "text-right": msg.role === "user",
+                          "text-left": msg.role === "assistant",
+                        })}
                       >
                         {msg.timestamp.toLocaleTimeString([], {
                           hour: "2-digit",
