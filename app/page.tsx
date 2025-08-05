@@ -164,6 +164,12 @@ export default function ChatPage() {
     }
   };
 
+  const handleClarificationClick = (query: string) => {
+    // This function is simple: it just re-uses the robust handleSendMessage
+    // function to submit the query from the clicked tab.
+    handleSendMessage(query);
+  };
+
   if (!user) {
     return null;
   }
@@ -193,7 +199,10 @@ export default function ChatPage() {
 
           {!isInitialState && (
             <>
-              <ChatMessages messages={messages} />
+              <ChatMessages
+                messages={messages}
+                onClarificationOptionClick={handleClarificationClick} // <--- CHANGE THIS
+              />
               <div ref={messagesEndRef} />
             </>
           )}

@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm"; // This plugin is essential for tables
 import TypingAnimation from "./TypingAnimation";
 import { User } from "lucide-react";
 import IrisLogo from "./IrisLogo";
+import ClarificationTabs from "./ClarificationTabs";
 
 // Import ALL chart components and their data types
 import {
@@ -40,6 +41,12 @@ export type UiComponent =
       type: "pie_chart";
       title: string;
       data: ShareholdingDataItem[];
+    }
+  | {
+      // <!--- THIS IS THE NEW TYPE
+      type: "clarification_options";
+      title: string;
+      options: { label: string; query: string }[];
     };
 
 export interface Message {
@@ -53,6 +60,7 @@ export interface Message {
 
 interface ChatMessagesProps {
   messages: Message[];
+  onClarificationOptionClick: (query: string) => void; // <!--- ADD THIS
 }
 
 const messageVariants = {
@@ -67,7 +75,11 @@ const UserIcon = () => (
   </div>
 );
 
-const renderUiComponent = (component: UiComponent, index: number) => {
+const renderUiComponent = (
+  component: UiComponent,
+  index: number,
+  onOptionClick: (query: string) => void
+) => {
   switch (component.type) {
     case "stock_price_chart":
       return (
@@ -95,13 +107,26 @@ const renderUiComponent = (component: UiComponent, index: number) => {
           title={component.title}
         />
       );
+      return null; // Placeholder
+    case "clarification_options":
+      return (
+        <ClarificationTabs
+          key={index}
+          title={component.title}
+          options={component.options}
+          onOptionClick={onOptionClick}
+        />
+      );
     default:
-      void (component satisfies never);
+      const _exhaustiveCheck: never = component;
       return null;
   }
 };
 
-export default function ChatMessages({ messages }: ChatMessagesProps) {
+export default function ChatMessages({
+  messages,
+  onClarificationOptionClick,
+}: ChatMessagesProps) {
   return (
     <main className="w-full max-w-3xl px-4 md:px-6 py-6 space-y-6 flex-grow self-center">
       <AnimatePresence>
@@ -129,8 +154,11 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
                         }`}
             >
               {msg.uiComponents && msg.uiComponents.length > 0 && (
-                <div className="p-2">
-                  {msg.uiComponents.map(renderUiComponent)}
+                <div className="p-3">
+                  {msg.uiComponents.map((comp, i) =>
+                    // --- PASS THE HANDLER HERE ---
+                    renderUiComponent(comp, i, onClarificationOptionClick)
+                  )}
                 </div>
               )}
 
@@ -148,9 +176,11 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
                                    prose-th:p-2 prose-th:font-semibold prose-th:text-left
                                    prose-td:p-2 prose-td:border-t prose-td:border-gray-700"
                       >
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {msg.content}
-                        </ReactMarkdown>
+                        <div className="overflow-x-auto">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {msg.content}
+                          </ReactMarkdown>
+                        </div>
                       </div>
                       <p
                         className={`text-xs mt-2 opacity-70 ${

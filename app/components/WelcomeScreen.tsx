@@ -25,7 +25,7 @@ const recommendations = [
   {
     icon: <Layers className="w-6 h-6 text-purple-300" />,
     title: "Compare Two Stocks",
-    question: "Compare the fundamentals of Reliance Industries and HDFC Bank",
+    question: "Compare the fundamentals of ICICI Bank and HDFC Bank",
   },
   {
     icon: <TrendingUp className="w-6 h-6 text-green-300" />,
