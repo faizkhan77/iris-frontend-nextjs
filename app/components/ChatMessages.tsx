@@ -8,6 +8,8 @@ import { User, BotMessageSquare } from "lucide-react";
 import ClarificationTabs from "./ClarificationTabs";
 import { cn } from "@/lib/utils";
 
+import VerticalSuggestionTabs from "../analysis_components/VerticalSuggestionTabs";
+
 // Import ALL chart components and their data types (assuming these exist)
 import {
   StockPriceChart,
@@ -35,6 +37,11 @@ export type UiComponent =
   | { type: "pie_chart"; title: string; data: ShareholdingDataItem[] }
   | {
       type: "clarification_options";
+      title: string;
+      options: { label: string; query: string }[];
+    }
+  | {
+      type: "vertical_suggestions";
       title: string;
       options: { label: string; query: string }[];
     };
@@ -114,6 +121,15 @@ const renderUiComponent = (
           onOptionClick={onOptionClick}
         />
       );
+    case "vertical_suggestions":
+      return (
+        <VerticalSuggestionTabs
+          key={index}
+          title={component.title}
+          options={component.options}
+          onOptionClick={onOptionClick}
+        />
+      );
     default:
       const _exhaustiveCheck: never = component;
       return null;
@@ -142,7 +158,6 @@ export default function ChatMessages({
           >
             {msg.role === "user" ? <UserIcon /> : <IrisIcon />}
 
-            {/* --- COMPLETELY RESTYLED CHAT BUBBLE --- */}
             <div
               className={cn("max-w-[85%] rounded-2xl p-4 break-words", {
                 "bg-accent text-black rounded-br-none": msg.role === "user",
@@ -161,14 +176,13 @@ export default function ChatMessages({
               {(msg.content || msg.isThinkingPlaceholder) && (
                 <div
                   className={cn({
-                    "mt-2": msg.uiComponents && msg.uiComponents.length > 0,
+                    "mt-4": msg.uiComponents && msg.uiComponents.length > 0,
                   })}
                 >
                   {msg.isThinkingPlaceholder ? (
                     <TypingAnimation />
                   ) : (
                     <>
-                      {/* --- CLEANED UP PROSE STYLING --- */}
                       <div className="prose prose-sm md:prose-base max-w-none prose-p:my-2 prose-headings:my-3">
                         <div className="overflow-x-auto">
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>

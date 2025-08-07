@@ -73,14 +73,45 @@ export default function MainPage() {
       try {
         const historicalMessages = await fetchSessionMessages(threadId);
         if (historicalMessages && historicalMessages.length > 0) {
-          setMessages(
-            historicalMessages.map((msg) => ({
+          // --- THIS IS THE ONLY CODE BLOCK YOU NEED TO CHANGE ---
+          const formattedMessages = historicalMessages.map((msg): Message => {
+            let content = "";
+            let uiComponents: UiComponent[] = [];
+
+            // This logic correctly handles both old string messages and new structured JSON messages
+            try {
+              // Try to parse the content string from the database
+              const parsedContent = JSON.parse(msg.content);
+
+              // Check if it's the structured object we expect
+              if (
+                parsedContent &&
+                typeof parsedContent === "object" &&
+                "text_response" in parsedContent
+              ) {
+                content = parsedContent.text_response;
+                uiComponents = parsedContent.ui_components || [];
+              } else {
+                // It was valid JSON, but not our structured format, so treat it as a plain string.
+                content = msg.content;
+              }
+            } catch (error) {
+              // If JSON.parse fails, it's just a plain string message.
+              content = msg.content;
+            }
+
+            return {
               id: uuidv4(),
-              role: msg.role,
-              content: msg.content,
+              role: msg.role as "user" | "assistant",
+              content: content,
               timestamp: new Date(msg.timestamp),
-            }))
-          );
+              uiComponents: uiComponents,
+            };
+          });
+
+          setMessages(formattedMessages);
+          // --- END OF THE CHANGED CODE BLOCK ---
+
           setIsInitialState(false);
         } else {
           setMessages([]);
@@ -96,7 +127,6 @@ export default function MainPage() {
     }
     loadMessages();
   }, [threadId]);
-
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
