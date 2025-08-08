@@ -59,13 +59,35 @@ export default function BalanceSheetSection({
   const { theme } = useTheme();
 
   const chartColors = useMemo(() => {
-    // Using HSL values from globals.css for shadcn chart colors
+    // We use two distinct palettes for Liabilities and Assets
+    if (theme === "light") {
+      return {
+        // Liabilities (cooler tones)
+        equity: "#3b82f6", // Blue 500
+        reserves: "#60a5fa", // Blue 400
+        borrowings: "#f97316", // Orange 500
+        otherLiabilities: "#fbbf24", // Amber 400
+        // Assets (warmer/earthy tones)
+        fixedAssets: "#16a34a", // Green 600
+        cwip: "#4ade80", // Green 400
+        investments: "#a855f7", // Purple 500
+        otherAssets: "#d8b4fe", // Purple 300
+        grid: "#e5e7eb",
+      };
+    }
+    // Dark Theme Palette
     return {
-      c1: `hsl(var(--chart-1))`,
-      c2: `hsl(var(--chart-2))`,
-      c3: `hsl(var(--chart-3))`,
-      c4: `hsl(var(--chart-4))`,
-      c5: `hsl(var(--chart-5))`,
+      // Liabilities
+      equity: "#60a5fa", // Blue 400
+      reserves: "#93c5fd", // Blue 300
+      borrowings: "#fb923c", // Orange 400
+      otherLiabilities: "#facc15", // Yellow 400
+      // Assets
+      fixedAssets: "#22c55e", // Green 500
+      cwip: "#86efac", // Green 300
+      investments: "#c084fc", // Purple 400
+      otherAssets: "#e9d5ff", // Purple 200
+      grid: "rgba(255, 255, 255, 0.1)",
     };
   }, [theme]);
 
@@ -117,41 +139,49 @@ export default function BalanceSheetSection({
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="var(--element-border)"
+                    stroke={chartColors.grid}
                   />
                   <XAxis
                     dataKey="name"
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
                   <YAxis
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
-                  <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-                  <Legend wrapperStyle={{ fontSize: "12px" }} />
+                  <Tooltip
+                    content={<ChartTooltipContent indicator="dot" />}
+                    cursor={{ fill: "rgba(128, 128, 128, 0.1)" }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      fontSize: "12px",
+                      color: "var(--text-secondary)",
+                    }}
+                  />
                   <Bar
                     dataKey="Equity Capital"
                     stackId="a"
-                    fill="var(--color-Equity Capital)"
+                    fill={chartColors.equity}
                     name="Equity"
                   />
                   <Bar
                     dataKey="Reserves"
                     stackId="a"
-                    fill="var(--color-Reserves)"
+                    fill={chartColors.reserves}
                     name="Reserves"
                   />
                   <Bar
                     dataKey="Borrowings"
                     stackId="a"
-                    fill="var(--color-Borrowings)"
+                    fill={chartColors.borrowings}
                     name="Borrowings"
                   />
                   <Bar
                     dataKey="Other Liabilities"
                     stackId="a"
-                    fill="var(--color-Other Liabilities)"
+                    fill={chartColors.otherLiabilities}
                     name="Other Liab."
                   />
                 </BarChart>
@@ -170,41 +200,49 @@ export default function BalanceSheetSection({
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="var(--element-border)"
+                    stroke={chartColors.grid}
                   />
                   <XAxis
                     dataKey="name"
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
                   <YAxis
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
-                  <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-                  <Legend wrapperStyle={{ fontSize: "12px" }} />
+                  <Tooltip
+                    content={<ChartTooltipContent indicator="dot" />}
+                    cursor={{ fill: "rgba(128, 128, 128, 0.1)" }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      fontSize: "12px",
+                      color: "var(--text-secondary)",
+                    }}
+                  />
                   <Bar
                     dataKey="Fixed Assets"
                     stackId="a"
-                    fill="var(--color-Fixed Assets)"
+                    fill={chartColors.fixedAssets}
                     name="Fixed Assets"
                   />
                   <Bar
                     dataKey="CWIP"
                     stackId="a"
-                    fill="var(--color-CWIP)"
+                    fill={chartColors.cwip}
                     name="CWIP"
                   />
                   <Bar
                     dataKey="Investments"
                     stackId="a"
-                    fill="var(--color-Investments)"
+                    fill={chartColors.investments}
                     name="Investments"
                   />
                   <Bar
                     dataKey="Other Assets"
                     stackId="a"
-                    fill="var(--color-Other Assets)"
+                    fill={chartColors.otherAssets}
                     name="Other Assets"
                   />
                 </BarChart>

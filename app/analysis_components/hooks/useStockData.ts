@@ -22,7 +22,7 @@ export function useStockData(stockData: RawStockData) {
         dividendYieldFormatted: stockData.dividendYieldFormatted ?? 'N/A',
         roceFormatted: stockData.roceFormatted ?? 'N/A',
         roeFormatted: stockData.roeFormatted ?? 'N/A',
-        rsiValue: stockData.rsiValue?.toFixed(2) ?? 'N/A',
+        rsiValue: typeof stockData.rsiValue === 'number' ? stockData.rsiValue.toFixed(2) : 'N/A',
         faceValue: stockData.faceValue,
     };
 

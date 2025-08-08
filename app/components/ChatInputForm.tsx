@@ -47,7 +47,7 @@ export default function ChatInputForm({
     <div className="w-full max-w-3xl mx-auto">
       <form
         onSubmit={handleFormSubmit}
-        className="relative flex items-center rounded-2xl border border-element-border bg-content-bg shadow-sm focus-within:ring-1 focus-within:ring-accent dark:bg-sidebar-secondary-bg"
+        className="relative flex items-center rounded-2xl border border-element-border bg-background shadow-sm focus-within:ring-1 focus-within:ring-accent dark:bg-sidebar-secondary-bg"
       >
         {/* --- MODIFIED: Question Hub Popover is now a controlled component --- */}
         <Popover open={isQuestionHubOpen} onOpenChange={setIsQuestionHubOpen}>

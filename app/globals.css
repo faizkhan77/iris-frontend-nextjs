@@ -367,7 +367,7 @@ body {
   font-family: "Inter", sans-serif;
   font-size: 1.2em;
   font-weight: 300;
-  color: white;
+  color: var(--text-primary);
   border-radius: 50%;
   background-color: transparent;
   user-select: none;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useMemo } from "react";
 import { useTheme } from "next-themes";
 import {
   ResponsiveContainer,
@@ -62,6 +62,22 @@ export default function PeerComparisonSection({
   const peChartRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
 
+  const chartColors = useMemo(() => {
+    if (theme === "light") {
+      return {
+        cmpBar: "#1e3a8a", // Navy Blue
+        peBar: "#047857", // Dark Emerald Green
+        grid: "#e5e7eb",
+      };
+    }
+    // Dark Theme Palette
+    return {
+      cmpBar: "#3b82f6", // Bright Blue
+      peBar: "#2dd4bf", // Bright Teal
+      grid: "rgba(255, 255, 255, 0.1)",
+    };
+  }, [theme]);
+
   const chartFillColor1 =
     theme === "light" ? "hsl(var(--chart-1))" : "hsl(var(--chart-2))";
   const chartFillColor2 =
@@ -106,7 +122,6 @@ export default function PeerComparisonSection({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard title={peerCmpChartData.title} chartRef={cmpChartRef}>
           <div className="h-[300px] w-full">
-            {/* --- WRAP WITH ChartContainer --- */}
             <ChartContainer config={chartConfig} className="w-full h-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
@@ -116,27 +131,30 @@ export default function PeerComparisonSection({
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="var(--element-border)"
+                    stroke={chartColors.grid}
                     horizontal={false}
                   />
                   <XAxis
                     type="number"
                     dataKey="cmp"
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
                   <YAxis
                     dataKey="name"
                     type="category"
                     width={80}
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                     interval={0}
                   />
-                  <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+                  <Tooltip
+                    content={<ChartTooltipContent indicator="dot" />}
+                    cursor={{ fill: "rgba(128, 128, 128, 0.1)" }}
+                  />
                   <Bar
                     dataKey="cmp"
-                    fill="var(--color-cmp)"
+                    fill={chartColors.cmpBar}
                     name="CMP (₹)"
                     radius={[0, 4, 4, 0]}
                   />
@@ -147,7 +165,6 @@ export default function PeerComparisonSection({
         </ChartCard>
         <ChartCard title={peerPeChartData.title} chartRef={peChartRef}>
           <div className="h-[300px] w-full">
-            {/* --- WRAP WITH ChartContainer --- */}
             <ChartContainer config={chartConfig} className="w-full h-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
@@ -157,27 +174,30 @@ export default function PeerComparisonSection({
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="var(--element-border)"
+                    stroke={chartColors.grid}
                     horizontal={false}
                   />
                   <XAxis
                     type="number"
                     dataKey="pe"
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
                   <YAxis
                     dataKey="name"
                     type="category"
                     width={80}
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                     interval={0}
                   />
-                  <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+                  <Tooltip
+                    content={<ChartTooltipContent indicator="dot" />}
+                    cursor={{ fill: "rgba(128, 128, 128, 0.1)" }}
+                  />
                   <Bar
                     dataKey="pe"
-                    fill="var(--color-pe)"
+                    fill={chartColors.peBar}
                     name="P/E Ratio"
                     radius={[0, 4, 4, 0]}
                   />

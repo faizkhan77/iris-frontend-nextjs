@@ -56,15 +56,21 @@ export default function ProfitAndLossSection({
   const annualChartRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
 
-  const { revenueColor, profitColor } = useMemo(() => {
+  const chartColors = useMemo(() => {
+    if (theme === "light") {
+      return {
+        revenueLine: "#0e7490", // Dark Cyan
+        profitLine: "#7e22ce", // Dark Purple
+        grid: "#e5e7eb",
+      };
+    }
+    // Dark Theme Palette
     return {
-      revenueColor:
-        theme === "light" ? "hsl(var(--chart-1))" : "hsl(var(--chart-1))",
-      profitColor:
-        theme === "light" ? "hsl(var(--chart-2))" : "hsl(var(--chart-2))",
+      revenueLine: "#22d3ee", // Bright Cyan
+      profitLine: "#c084fc", // Bright Purple
+      grid: "rgba(255, 255, 255, 0.1)",
     };
   }, [theme]);
-
   const onSummarizeRequest = useCallback(async (): Promise<string | void> => {
     console.log("Summarizing Profit & Loss...");
     // Placeholder for Gemini summarization logic
@@ -101,7 +107,7 @@ export default function ProfitAndLossSection({
       <ChartCard
         title="Annual Revenue & Net Profit (Cr)"
         chartRef={annualChartRef}
-        onSummarizeRequest={() => Promise.resolve()}
+        onSummarizeRequest={onSummarizeRequest}
       >
         <div className="h-[300px] w-full">
           <ChartContainer config={chartConfig} className="w-full h-full">
@@ -112,21 +118,35 @@ export default function ProfitAndLossSection({
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="var(--element-border)"
+                  stroke={chartColors.grid}
                 />
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 10 }}
-                  stroke="var(--text-secondary)"
+                  tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                  stroke="var(--element-border)"
                 />
-                <YAxis tick={{ fontSize: 10 }} stroke="var(--text-secondary)" />
-                <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-                <Legend wrapperStyle={{ fontSize: "12px" }} />
+                <YAxis
+                  tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                  stroke="var(--element-border)"
+                />
+                <Tooltip
+                  content={<ChartTooltipContent indicator="dot" />}
+                  cursor={{
+                    stroke: "var(--text-secondary)",
+                    strokeDasharray: "3 3",
+                  }}
+                />
+                <Legend
+                  wrapperStyle={{
+                    fontSize: "12px",
+                    color: "var(--text-secondary)",
+                  }}
+                />
                 <Line
                   type="monotone"
                   dataKey="sales"
                   name="Revenue"
-                  stroke="var(--color-sales)"
+                  stroke={chartColors.revenueLine}
                   strokeWidth={2}
                   dot={false}
                 />
@@ -134,7 +154,7 @@ export default function ProfitAndLossSection({
                   type="monotone"
                   dataKey="netProfit"
                   name="Net Profit"
-                  stroke="var(--color-netProfit)"
+                  stroke={chartColors.profitLine}
                   strokeWidth={2}
                   dot={false}
                 />

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useMemo } from "react";
 import { useTheme } from "next-themes";
 import {
   ResponsiveContainer,
@@ -54,6 +54,24 @@ export default function QuarterlyResultsSection({
   const financialsChartRef = useRef<HTMLDivElement>(null);
   const epsChartRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
+
+  const chartColors = useMemo(() => {
+    if (theme === "light") {
+      return {
+        revenueLine: "#1d4ed8", // Strong Blue
+        profitLine: "#5b21b6", // Deep Violet
+        epsLine: "#047857", // Dark Emerald
+        grid: "#e5e7eb",
+      };
+    }
+    // Dark Theme Palette
+    return {
+      revenueLine: "#60a5fa", // Light Blue
+      profitLine: "#a78bfa", // Light Violet
+      epsLine: "#34d399", // Bright Emerald
+      grid: "rgba(255, 255, 255, 0.1)",
+    };
+  }, [theme]);
 
   const chartStrokeColor1 =
     theme === "light" ? "hsl(var(--chart-1))" : "hsl(var(--chart-1))";
@@ -109,24 +127,35 @@ export default function QuarterlyResultsSection({
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="var(--element-border)"
+                    stroke={chartColors.grid}
                   />
                   <XAxis
                     dataKey="name"
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
                   <YAxis
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
-                  <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-                  <Legend wrapperStyle={{ fontSize: "12px" }} />
+                  <Tooltip
+                    content={<ChartTooltipContent indicator="dot" />}
+                    cursor={{
+                      stroke: "var(--text-secondary)",
+                      strokeDasharray: "3 3",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      fontSize: "12px",
+                      color: "var(--text-secondary)",
+                    }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="sales"
                     name="Revenue"
-                    stroke="var(--color-sales)"
+                    stroke={chartColors.revenueLine}
                     strokeWidth={2}
                     dot={false}
                   />
@@ -134,7 +163,7 @@ export default function QuarterlyResultsSection({
                     type="monotone"
                     dataKey="netProfit"
                     name="Net Profit"
-                    stroke="var(--color-netProfit)"
+                    stroke={chartColors.profitLine}
                     strokeWidth={2}
                     dot={false}
                   />
@@ -153,16 +182,16 @@ export default function QuarterlyResultsSection({
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="var(--element-border)"
+                    stroke={chartColors.grid}
                   />
                   <XAxis
                     dataKey="name"
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
                   <YAxis
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
                   <Tooltip
                     content={
@@ -171,13 +200,22 @@ export default function QuarterlyResultsSection({
                         formatter={(value) => `₹${Number(value).toFixed(2)}`}
                       />
                     }
+                    cursor={{
+                      stroke: "var(--text-secondary)",
+                      strokeDasharray: "3 3",
+                    }}
                   />
-                  <Legend wrapperStyle={{ fontSize: "12px" }} />
+                  <Legend
+                    wrapperStyle={{
+                      fontSize: "12px",
+                      color: "var(--text-secondary)",
+                    }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="eps"
                     name="EPS"
-                    stroke="var(--color-eps)"
+                    stroke={chartColors.epsLine}
                     strokeWidth={2}
                     dot={false}
                   />
