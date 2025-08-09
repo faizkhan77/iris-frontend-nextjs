@@ -4,6 +4,7 @@ import { ThemeProvider } from "./components/providers/ThemeProvider";
 import PrimarySidebar from "./components/layout/PrimarySidebar";
 import { cn } from "@/lib/utils";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "IRIS | AI Financial Analyst",
@@ -30,6 +31,8 @@ export default function RootLayout({
 
           {/* The main content area, offset to the right of the primary sidebar */}
           <main className="pl-20 h-screen">{children}</main>
+
+          <Toaster theme="dark" position="bottom-right" />
         </ThemeProvider>
       </body>
     </html>

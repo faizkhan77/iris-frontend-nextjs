@@ -1,7 +1,7 @@
 // app/share/[messageId]/page.tsx. This page will fetch and display a single message.
 
 // app/share/[messageId]/page.tsx
-
+import { Suspense } from "react";
 import ChatMessages, {
   Message,
   UiComponent,
@@ -81,5 +81,10 @@ export default async function SharePage(props: SharePageProps) {
   }
 
   // Pass the resolved data to the Client Component for rendering
-  return <ShareDisplay message={messageData} />;
+  return (
+    // --- Wrap the client component in Suspense ---
+    <Suspense fallback={<div>Loading...</div>}>
+      <ShareDisplay message={messageData} />
+    </Suspense>
+  );
 }

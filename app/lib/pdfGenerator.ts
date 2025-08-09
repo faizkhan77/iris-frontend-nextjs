@@ -8,41 +8,39 @@ export const generatePdf = async (element: HTMLElement, fileName: string) => {
     return;
   }
 
-  // Capture the entire component, no matter how tall it is
+  // Wait for charts to render fully before capturing
+  await new Promise((resolve) => setTimeout(resolve, 1000));  // Adjust delay as needed for chart rendering
+
+  // Capture the entire element as a canvas
   const canvas = await html2canvas(element, {
-    scale: 2, // Higher scale for better quality
+    scale: 2,
     useCORS: true,
-    // The onclone fix is still best practice to avoid global CSS issues
     onclone: (clonedDoc) => {
       const links = clonedDoc.querySelectorAll('link[rel="stylesheet"]');
-      links.forEach((link) => link.remove());
+      links.forEach((link) => link.remove());  // Remove external stylesheets to avoid issues
     },
   });
 
   const imgData = canvas.toDataURL("image/png");
-
-  // Get the dimensions of the captured image
-  const imgWidth = canvas.width;
-  const imgHeight = canvas.height;
-
-  // Create a new PDF in Portrait mode, using pixels as units
   const pdf = new jsPDF({
     orientation: "p",
     unit: "px",
-    format: "a4", // Use A4 as the base aspect ratio
+    format: "a4",
+    hotfixes: ["px_scaling"], // Important for accurate pixel scaling
   });
 
-  // Get the page dimensions from the PDF library
   const pdfPageWidth = pdf.internal.pageSize.getWidth();
   const pdfPageHeight = pdf.internal.pageSize.getHeight();
   
-  // Calculate the aspect ratio of the captured image
-  const canvasAspectRatio = imgWidth / imgHeight;
-  
-  // Calculate the height the image should have in the PDF to maintain its aspect ratio
-  const scaledImgHeight = pdfPageWidth / canvasAspectRatio;
+  const canvasWidth = canvas.width;
+  const canvasHeight = canvas.height;
 
-  // This is the core logic for splitting the image across multiple pages
+  // Calculate the aspect ratio of the captured image
+  const ratio = canvasWidth / canvasHeight;
+  
+  // Calculate the height the image should have in the PDF to fit the width
+  const scaledImgHeight = pdfPageWidth / ratio;
+
   let heightLeft = scaledImgHeight;
   let position = 0;
 
@@ -50,14 +48,15 @@ export const generatePdf = async (element: HTMLElement, fileName: string) => {
   pdf.addImage(imgData, "PNG", 0, position, pdfPageWidth, scaledImgHeight);
   heightLeft -= pdfPageHeight;
 
-  // Add more pages if the content is taller than one page
+  // --- THIS IS THE CORRECTED LOOP LOGIC ---
   while (heightLeft > 0) {
-    position = -heightLeft; // The y-position is negative to "pull up" the image
+    position -= pdfPageHeight; // Move to the next page
     pdf.addPage();
     pdf.addImage(imgData, "PNG", 0, position, pdfPageWidth, scaledImgHeight);
     heightLeft -= pdfPageHeight;
   }
+  // --- END OF CORRECTED LOGIC ---
 
-  // Save the complete PDF
+  // Save the generated PDF
   pdf.save(fileName);
 };

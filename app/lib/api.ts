@@ -52,6 +52,7 @@ export const fetchChatHistory = async (
 };
 
 export interface ChatMessage {
+  id: number; 
   role: "user" | "assistant";
   content: string;
   timestamp: string;

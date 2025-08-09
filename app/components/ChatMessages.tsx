@@ -62,6 +62,7 @@ interface ChatMessagesProps {
   onClarificationOptionClick: (query: string) => void;
   onShareClick: (message: Message) => void;
   onDownloadClick: (message: Message) => void;
+  isDownloading: boolean;
 }
 
 const messageVariants = {
@@ -145,6 +146,7 @@ export default function ChatMessages({
   onClarificationOptionClick,
   onShareClick,
   onDownloadClick,
+  isDownloading,
 }: ChatMessagesProps) {
   return (
     <main className="w-full max-w-4xl px-4 md:px-6 py-6 space-y-8 flex-grow self-center">
@@ -157,7 +159,7 @@ export default function ChatMessages({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className={cn("flex w-full items-start gap-3", {
+            className={cn("flex w-full items-start gap-3 group", {
               "flex-row-reverse justify-start": msg.role === "user",
               "flex-row": msg.role === "assistant",
             })}
@@ -217,22 +219,25 @@ export default function ChatMessages({
             {msg.role === "assistant" &&
               !msg.isThinkingPlaceholder &&
               msg.messageId && (
-                <div className="flex self-end items-center gap-1.5 ml-2">
+                <div className="flex self-end items-center gap-1.5 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <button
                     onClick={() => onShareClick(msg)}
+                    disabled={isDownloading}
                     title="Share"
-                    className="p-1.5 text-text-tertiary rounded-md hover:bg-element-bg-hover hover:text-text-primary transition-colors"
+                    // --- MODIFIED CLASSES ---
+                    className="p-1.5 text-text-tertiary rounded-md transition-all duration-200 ease-in-out transform hover:scale-110 hover:text-cyan-400 disabled:scale-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Share2 size={14} />
                   </button>
                   <button
                     onClick={() => onDownloadClick(msg)}
                     title="Download as PDF"
-                    className="p-1.5 text-text-tertiary rounded-md hover:bg-element-bg-hover hover:text-text-primary transition-colors"
+                    disabled={isDownloading}
+                    // --- MODIFIED CLASSES ---
+                    className="p-1.5 text-text-tertiary rounded-md transition-all duration-200 ease-in-out transform hover:scale-110 hover:text-cyan-400 disabled:scale-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Download size={14} />
                   </button>
-                  {/* Add other icons like Copy here later if needed */}
                 </div>
               )}
           </motion.div>

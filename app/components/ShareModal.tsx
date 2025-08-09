@@ -6,12 +6,15 @@ import { useState } from "react";
 import { X, Copy, Check, MessageSquareText } from "lucide-react";
 import { FaWhatsapp, FaTwitter, FaFacebook } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { Switch } from "@/components/ui/switch"; // <-- Import Switch
+import { Label } from "@/components/ui/label"; // <-- Import Label
 
 interface ShareModalProps {
   isOpen: boolean;
   onClose: () => void;
   messageContent: string;
   messageId: number;
+  userName: string;
 }
 
 const SocialButton = ({
@@ -41,12 +44,18 @@ export default function ShareModal({
   onClose,
   messageContent,
   messageId,
+  userName,
 }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
 
+  const [isAnonymous, setIsAnonymous] = useState(true); // Default to true
+
   if (!isOpen) return null;
 
-  const shareUrl = `${window.location.origin}/share/${messageId}`;
+  // --- MODIFIED: URL now includes the sender if not anonymous ---
+  const shareUrl = `${window.location.origin}/share/${messageId}${
+    !isAnonymous ? `?sender=${encodeURIComponent(userName)}` : ""
+  }`;
   const shareText = `Check out this financial insight from IRIS:`;
 
   const handleCopy = () => {
@@ -72,6 +81,25 @@ export default function ShareModal({
             className="relative w-full max-w-md rounded-2xl border border-element-border bg-background p-6 shadow-xl dark:bg-sidebar-secondary-bg"
             onClick={(e) => e.stopPropagation()}
           >
+            <div className="flex items-center justify-between mt-6 rounded-lg border border-element-border p-3">
+              <Label
+                htmlFor="anonymous-toggle"
+                className="flex flex-col space-y-1"
+              >
+                <span className="font-medium text-text-primary">
+                  Send Anonymously
+                </span>
+                <span className="text-xs text-text-secondary">
+                  Hide your username from the shared page.
+                </span>
+              </Label>
+              <Switch
+                id="anonymous-toggle"
+                checked={isAnonymous}
+                onCheckedChange={setIsAnonymous}
+              />
+            </div>
+
             {/* The shared message content preview */}
             <div className="h-48 overflow-y-auto rounded-xl bg-content-bg p-4 custom-scrollbar">
               <p className="text-sm text-text-primary whitespace-pre-wrap">

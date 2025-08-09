@@ -3,14 +3,20 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import ChatHeader from "./components/ChatHeader";
+
 // import ChatFooter from "./components/ChatInputForm";
 import { AnimatedAIChat } from "./components/WelcomeScreen";
 
 import { useAppStore } from "./lib/store";
 import { v4 as uuidv4 } from "uuid";
-import { streamChatResponse, fetchSessionMessages } from "./lib/api";
+import {
+  streamChatResponse,
+  fetchSessionMessages,
+  ChatMessage,
+} from "./lib/api";
 import ChatInputForm from "./components/ChatInputForm";
 // import Sidebar from "./components/Sidebar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -67,27 +73,37 @@ export default function MainPage() {
   const [messageToDownload, setMessageToDownload] = useState<Message | null>(
     null
   );
+  const [isDownloading, setIsDownloading] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const pdfLayoutRef = useRef<HTMLDivElement>(null);
 
-  // This useEffect is now solely for triggering the PDF generation
-  useEffect(() => {
-    const createPdf = async () => {
-      // It only runs if we are in the "generating" state and have the necessary elements
-      if (isGeneratingPdf && messageToDownload && pdfLayoutRef.current) {
+  // --- THIS IS THE NEW, ROBUST DOWNLOAD HANDLER ---
+  const handleDownloadClick = (msg: Message) => {
+    if (isDownloading) return; // Prevent multiple clicks
+
+    // --- ADD THIS LINE ---
+    toast.info("Preparing your PDF report, download will start shortly...");
+
+    // 1. Set the downloading state for immediate UI feedback
+    setIsDownloading(true);
+    // 2. Set the data for the hidden component, which triggers a re-render
+    setMessageToDownload(msg);
+
+    // 3. Use setTimeout to wait for the next "tick" of the browser's event loop.
+    // This gives React enough time to finish its re-render and update the DOM.
+    setTimeout(async () => {
+      if (pdfLayoutRef.current) {
+        // 4. Now that the component is rendered, generate the PDF
         await generatePdf(
           pdfLayoutRef.current,
-          `IRIS-Report-${messageToDownload.messageId}.pdf`
+          `IRIS-Report-${msg.messageId}.pdf`
         );
-        // Reset both states after the PDF is saved
-        setMessageToDownload(null);
-        setIsGeneratingPdf(false);
       }
-    };
-
-    createPdf();
-    // This effect depends on the 'isGeneratingPdf' flag
-  }, [isGeneratingPdf, messageToDownload]);
+      // 5. Reset the states after generation is complete
+      setIsDownloading(false);
+      setMessageToDownload(null);
+    }, 100); // 100ms is a safe delay
+  };
 
   // All your existing useEffect hooks for auth, history, and scrolling remain unchanged
   useEffect(() => {
@@ -106,35 +122,45 @@ export default function MainPage() {
           const formattedMessages = historicalMessages.map((msg): Message => {
             let content = "";
             let uiComponents: UiComponent[] = [];
+            // By default, the messageId is the ID from the database row.
+            // This ensures old plain-text messages still get their ID.
+            let messageId: number | undefined = msg.id;
 
-            // This logic correctly handles both old string messages and new structured JSON messages
             try {
               // Try to parse the content string from the database
               const parsedContent = JSON.parse(msg.content);
 
-              // Check if it's the structured object we expect
               if (
                 parsedContent &&
                 typeof parsedContent === "object" &&
                 "text_response" in parsedContent
               ) {
+                // It's our new structured format
                 content = parsedContent.text_response;
                 uiComponents = parsedContent.ui_components || [];
+                // If the structured content has an ID, it's more authoritative. Use it.
+                // This handles the case where you might re-save messages.
+                if (parsedContent.message_id) {
+                  messageId = parsedContent.message_id;
+                }
               } else {
-                // It was valid JSON, but not our structured format, so treat it as a plain string.
+                // It was valid JSON, but not our format (e.g., a simple string in quotes)
                 content = msg.content;
               }
             } catch (error) {
               // If JSON.parse fails, it's just a plain string message.
+              // We don't need to do anything here, because messageId is already set
+              // from the database row, and content is already correct.
               content = msg.content;
             }
 
             return {
-              id: uuidv4(),
+              id: uuidv4(), // The client-side unique ID for React keys
               role: msg.role as "user" | "assistant",
               content: content,
               timestamp: new Date(msg.timestamp),
               uiComponents: uiComponents,
+              messageId: messageId, // Assign the final determined ID
             };
           });
 
@@ -265,12 +291,6 @@ export default function MainPage() {
     handleSendMessage(query);
   };
 
-  // The new, robust download handler
-  const handleDownloadClick = (msg: Message) => {
-    setMessageToDownload(msg); // 1. Set the data for the hidden component
-    setIsGeneratingPdf(true); // 2. Flip the flag to trigger the useEffect
-  };
-
   const renderIrisContent = () => (
     <div className="flex flex-1 flex-col h-full overflow-y-auto custom-scrollbar">
       {/* {isInitialState && !isLoading ? null : <ChatHeader />} */}
@@ -296,7 +316,8 @@ export default function MainPage() {
               messages={messages}
               onClarificationOptionClick={handleClarificationClick}
               onShareClick={handleShareClick}
-              onDownloadClick={handleDownloadClick}
+              onDownloadClick={handleDownloadClick} // Pass the new handler
+              isDownloading={isDownloading} // Pass the state for UI feedback
             />
             <div ref={messagesEndRef} />
           </>
@@ -343,6 +364,7 @@ export default function MainPage() {
         onClose={() => setShareModalData(null)}
         messageContent={shareModalData?.content || ""}
         messageId={shareModalData?.messageId || 0}
+        userName={user?.name || "User"}
       />
 
       {/* The hidden component is always in the DOM but only gets data when needed */}
