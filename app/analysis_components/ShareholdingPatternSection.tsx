@@ -45,11 +45,11 @@ interface ShareholdingPatternSectionProps {
 }
 
 const chartConfig = {
-  Promoters: { label: "Promoters", color: "hsl(var(--chart-1))" },
-  FII: { label: "FII", color: "hsl(var(--chart-2))" },
-  DII: { label: "DII", color: "hsl(var(--chart-3))" },
-  Public: { label: "Public", color: "hsl(var(--chart-4))" },
-  Others: { label: "Others", color: "hsl(var(--chart-5))" },
+  Promoters: { label: "Promoters" },
+  FII: { label: "FII" },
+  DII: { label: "DII" },
+  Public: { label: "Public" },
+  Others: { label: "Others" },
 } satisfies ChartConfig;
 
 // Custom active shape for the Pie Chart
@@ -114,14 +114,26 @@ export default function ShareholdingPatternSection({
   const { theme } = useTheme();
 
   const chartColors = useMemo(() => {
-    return {
-      c1: `hsl(var(--chart-1))`,
-      c2: `hsl(var(--chart-2))`,
-      c3: `hsl(var(--chart-3))`,
-      c4: `hsl(var(--chart-4))`,
-      c5: `hsl(var(--chart-5))`,
+    // Using a consistent color mapping for both charts
+    const colors = {
+      promoters: theme === "light" ? "#1d4ed8" : "#93c5fd", // Blue
+      fii: theme === "light" ? "#047857" : "#6ee7b7", // Green
+      dii: theme === "light" ? "#9a3412" : "#fdba74", // Orange
+      public: theme === "light" ? "#7e22ce" : "#d8b4fe", // Purple
+      others: theme === "light" ? "#be185d" : "#fb7185", // Pink
+      grid: theme === "light" ? "#e5e7eb" : "rgba(255, 255, 255, 0.1)",
     };
+    return colors;
   }, [theme]);
+
+  // Create an ordered array for the Pie Chart cells
+  const pieColorArray = [
+    chartColors.promoters,
+    chartColors.fii,
+    chartColors.dii,
+    chartColors.public,
+    chartColors.others,
+  ];
 
   const onPieEnter = useCallback(
     (_: any, index: number) => setActiveIndex(index),
@@ -184,14 +196,21 @@ export default function ShareholdingPatternSection({
                     onMouseEnter={onPieEnter}
                     onMouseLeave={onPieLeave}
                   >
-                    {shareholdingPieData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={`var(--color-${entry.name})`}
-                      />
-                    ))}
+                    {shareholdingPieData.map(
+                      (_entry: PieData, index: number) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={pieColorArray[index % pieColorArray.length]}
+                        />
+                      )
+                    )}
                   </Pie>
-                  <Legend wrapperStyle={{ fontSize: "12px" }} />
+                  <Legend
+                    wrapperStyle={{
+                      fontSize: "12px",
+                      color: "var(--text-secondary)",
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -207,45 +226,56 @@ export default function ShareholdingPatternSection({
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="var(--element-border)"
+                    stroke={chartColors.grid}
                   />
                   <XAxis
                     dataKey="date"
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
                   <YAxis
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                     unit="%"
                   />
-                  <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-                  <Legend wrapperStyle={{ fontSize: "12px" }} />
+                  <Tooltip
+                    content={<ChartTooltipContent indicator="dot" />}
+                    cursor={{
+                      stroke: "var(--text-secondary)",
+                      strokeDasharray: "3 3",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      fontSize: "12px",
+                      color: "var(--text-secondary)",
+                    }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="Promoters"
-                    stroke="var(--color-Promoters)"
+                    stroke={chartColors.promoters}
                     dot={false}
                     strokeWidth={2}
                   />
                   <Line
                     type="monotone"
                     dataKey="FII"
-                    stroke="var(--color-FII)"
+                    stroke={chartColors.fii}
                     dot={false}
                     strokeWidth={2}
                   />
                   <Line
                     type="monotone"
                     dataKey="DII"
-                    stroke="var(--color-DII)"
+                    stroke={chartColors.dii}
                     dot={false}
                     strokeWidth={2}
                   />
                   <Line
                     type="monotone"
                     dataKey="Public"
-                    stroke="var(--color-Public)"
+                    stroke={chartColors.public}
                     dot={false}
                     strokeWidth={2}
                   />

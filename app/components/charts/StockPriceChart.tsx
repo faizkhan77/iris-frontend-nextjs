@@ -38,6 +38,7 @@ export interface ChartDataPoint {
 interface StockPriceChartProps {
   data: ChartDataPoint[];
   title: string;
+  animationDuration?: number;
 }
 
 // STEP 2: Configure the chart. We will map our data keys to the template's keys.
@@ -60,7 +61,11 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 // This is the full function with the required changes applied.
-export function StockPriceChart({ data, title }: StockPriceChartProps) {
+export function StockPriceChart({
+  data,
+  title,
+  animationDuration = 500,
+}: StockPriceChartProps) {
   const [timeRange, setTimeRange] = React.useState("1y");
   const { theme } = useTheme();
 
@@ -131,7 +136,11 @@ export function StockPriceChart({ data, title }: StockPriceChartProps) {
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
         >
-          <AreaChart data={filteredData} margin={{ left: -24, right: -24 }}>
+          <AreaChart
+            data={filteredData}
+            margin={{ left: -24, right: -24 }}
+            animationDuration={animationDuration}
+          >
             <defs>
               {/* These definitions remain untouched */}
               <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">

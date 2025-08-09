@@ -33,6 +33,7 @@ interface RankingBarChartProps {
   title: string;
   labelKey: string;
   valueKey: string;
+  animationDuration?: number;
 }
 
 const formatIndianCurrency = (value: number) => {
@@ -46,6 +47,7 @@ export function RankingBarChart({
   title,
   labelKey,
   valueKey,
+  animationDuration = 500,
 }: RankingBarChartProps) {
   /* --- 1.   Tell <ChartContainer> which colour to propagate ------------ */
   const chartConfig: ChartConfig = {
@@ -75,6 +77,7 @@ export function RankingBarChart({
             data={chartData}
             layout="vertical"
             margin={{ left: 0, right: 50 }}
+            animationDuration={animationDuration}
           >
             {/* faint grid lines like the shot */}
             <CartesianGrid horizontal={false} stroke="rgba(255,255,255,0.08)" />

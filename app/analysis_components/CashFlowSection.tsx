@@ -53,11 +53,22 @@ export default function CashFlowSection({
   const { theme } = useTheme();
 
   const chartColors = useMemo(() => {
+    if (theme === "light") {
+      return {
+        operating: "#2563eb", // Blue 600
+        investing: "#dc2626", // Red 600
+        financing: "#16a34a", // Green 600
+        netChange: "#f59e0b", // Amber 500
+        grid: "#e5e7eb",
+      };
+    }
+    // Dark Theme Palette
     return {
-      operating: `hsl(var(--chart-1))`,
-      investing: `hsl(var(--chart-2))`,
-      financing: `hsl(var(--chart-3))`,
-      netChange: `hsl(var(--chart-5))`,
+      operating: "#60a5fa", // Blue 400
+      investing: "#f87171", // Red 400
+      financing: "#4ade80", // Green 400
+      netChange: "#fbbf24", // Amber 400
+      grid: "rgba(255, 255, 255, 0.1)",
     };
   }, [theme]);
 
@@ -93,11 +104,10 @@ export default function CashFlowSection({
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold text-text-primary">Cash Flows</h2>
-
       <ChartCard
         title="Annual Cash Flow Analysis (Cr)"
         chartRef={chartRef}
-        onSummarizeRequest={() => Promise.resolve()}
+        onSummarizeRequest={onSummarizeRequest}
       >
         <div className="h-[300px] w-full">
           <ChartContainer config={chartConfig} className="w-full h-full">
@@ -108,38 +118,49 @@ export default function CashFlowSection({
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="var(--element-border)"
+                  stroke={chartColors.grid}
                 />
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 10 }}
-                  stroke="var(--text-secondary)"
+                  tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                  stroke="var(--element-border)"
                 />
-                <YAxis tick={{ fontSize: 10 }} stroke="var(--text-secondary)" />
-                <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-                <Legend wrapperStyle={{ fontSize: "12px" }} />
+                <YAxis
+                  tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                  stroke="var(--element-border)"
+                />
+                <Tooltip
+                  content={<ChartTooltipContent indicator="dot" />}
+                  cursor={{ fill: "rgba(128, 128, 128, 0.1)" }}
+                />
+                <Legend
+                  wrapperStyle={{
+                    fontSize: "12px",
+                    color: "var(--text-secondary)",
+                  }}
+                />
                 <Bar
                   dataKey="cashFromOperating"
                   name="Operating"
-                  fill="var(--color-cashFromOperating)"
+                  fill={chartColors.operating}
                 />
                 <Bar
                   dataKey="cashFromInvesting"
                   name="Investing"
-                  fill="var(--color-cashFromInvesting)"
+                  fill={chartColors.investing}
                 />
                 <Bar
                   dataKey="cashFromFinancing"
                   name="Financing"
-                  fill="var(--color-cashFromFinancing)"
+                  fill={chartColors.financing}
                 />
                 <Line
                   type="monotone"
                   dataKey="netCashFlow"
                   name="Net Flow"
-                  stroke="var(--color-netCashFlow)"
+                  stroke={chartColors.netChange}
                   strokeWidth={2}
-                  dot={false}
+                  dot={{ r: 3, strokeWidth: 1, fill: chartColors.netChange }}
                 />
               </ComposedChart>
             </ResponsiveContainer>

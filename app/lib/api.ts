@@ -83,6 +83,7 @@ interface ChatRequest {
 interface StreamCallbacks {
   onUiComponent: (components: UiComponent[]) => void;
   onTextChunk: (chunk: string) => void;
+  onMessageComplete: (data: { messageId: number }) => void; 
   onError: (error: string) => void;
   onClose: () => void;
 }
@@ -96,7 +97,7 @@ export const streamChatResponse = async (
   payload: ChatRequest,
   callbacks: StreamCallbacks
 ) => {
-  const { onUiComponent, onTextChunk, onError, onClose } = callbacks;
+  const { onUiComponent, onTextChunk, onMessageComplete, onError, onClose } = callbacks;
 
   try {
     const response = await fetch(`${API_BASE_URL}/chat`, {
@@ -153,6 +154,9 @@ export const streamChatResponse = async (
             case "text_chunk":
               onTextChunk(data.chunk);
               break;
+            case "message_complete":
+                onMessageComplete(data);
+                break;
             case "error":
               onError(data.error);
               break;

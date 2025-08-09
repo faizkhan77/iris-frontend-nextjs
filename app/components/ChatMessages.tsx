@@ -7,6 +7,7 @@ import TypingAnimation from "./TypingAnimation";
 import { User, BotMessageSquare } from "lucide-react";
 import ClarificationTabs from "./ClarificationTabs";
 import { cn } from "@/lib/utils";
+import { Share2, Download } from "lucide-react";
 
 import VerticalSuggestionTabs from "../analysis_components/VerticalSuggestionTabs";
 
@@ -53,11 +54,14 @@ export interface Message {
   timestamp: Date;
   isThinkingPlaceholder?: boolean;
   uiComponents?: UiComponent[];
+  messageId?: number;
 }
 
 interface ChatMessagesProps {
   messages: Message[];
   onClarificationOptionClick: (query: string) => void;
+  onShareClick: (message: Message) => void;
+  onDownloadClick: (message: Message) => void;
 }
 
 const messageVariants = {
@@ -139,6 +143,8 @@ const renderUiComponent = (
 export default function ChatMessages({
   messages,
   onClarificationOptionClick,
+  onShareClick,
+  onDownloadClick,
 }: ChatMessagesProps) {
   return (
     <main className="w-full max-w-4xl px-4 md:px-6 py-6 space-y-8 flex-grow self-center">
@@ -206,6 +212,29 @@ export default function ChatMessages({
                 </div>
               )}
             </div>
+
+            {/* --- NEW: ACTION ICONS FOR ASSISTANT MESSAGES --- */}
+            {msg.role === "assistant" &&
+              !msg.isThinkingPlaceholder &&
+              msg.messageId && (
+                <div className="flex self-end items-center gap-1.5 ml-2">
+                  <button
+                    onClick={() => onShareClick(msg)}
+                    title="Share"
+                    className="p-1.5 text-text-tertiary rounded-md hover:bg-element-bg-hover hover:text-text-primary transition-colors"
+                  >
+                    <Share2 size={14} />
+                  </button>
+                  <button
+                    onClick={() => onDownloadClick(msg)}
+                    title="Download as PDF"
+                    className="p-1.5 text-text-tertiary rounded-md hover:bg-element-bg-hover hover:text-text-primary transition-colors"
+                  >
+                    <Download size={14} />
+                  </button>
+                  {/* Add other icons like Copy here later if needed */}
+                </div>
+              )}
           </motion.div>
         ))}
       </AnimatePresence>

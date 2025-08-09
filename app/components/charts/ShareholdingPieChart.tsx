@@ -26,6 +26,7 @@ export interface ShareholdingDataItem {
 interface ShareholdingPieChartProps {
   data: ShareholdingDataItem[];
   title: string;
+  animationDuration?: number;
 }
 
 // STEP 2: Create a dynamic ChartConfig based on the data
@@ -61,6 +62,7 @@ const generateChartConfig = (data: ShareholdingDataItem[]): ChartConfig => {
 export function ShareholdingPieChart({
   data,
   title,
+  animationDuration = 800,
 }: ShareholdingPieChartProps) {
   // Generate the config dynamically from the passed-in data
   const chartConfig = generateChartConfig(data);
@@ -89,7 +91,7 @@ export function ShareholdingPieChart({
           config={chartConfig}
           className="mx-auto aspect-square max-h-[300px]" // Increased max height slightly
         >
-          <PieChart>
+          <PieChart animationDuration={animationDuration}>
             <ChartTooltip
               cursor={false}
               content={

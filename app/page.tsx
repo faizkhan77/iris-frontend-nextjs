@@ -20,6 +20,10 @@ import SecondarySidebar from "./components/layout/SecondarySidebar";
 
 import ScreenerPage from "./analysis_components/ScreenerPage";
 
+import ShareModal from "./components/ShareModal";
+import { PdfDocumentLayout } from "./components/PdfDocumentLayout"; // <-- Import PDF layout
+import { generatePdf } from "./lib/pdfGenerator"; // <-- Import PDF generator function
+
 // --- Placeholder component for other tabs ---
 const PlaceholderScreen = ({ title }: { title: string }) => (
   <div className="flex h-full w-full items-center justify-center">
@@ -59,6 +63,31 @@ export default function MainPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [shareModalData, setShareModalData] = useState<Message | null>(null);
+  const [messageToDownload, setMessageToDownload] = useState<Message | null>(
+    null
+  );
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const pdfLayoutRef = useRef<HTMLDivElement>(null);
+
+  // This useEffect is now solely for triggering the PDF generation
+  useEffect(() => {
+    const createPdf = async () => {
+      // It only runs if we are in the "generating" state and have the necessary elements
+      if (isGeneratingPdf && messageToDownload && pdfLayoutRef.current) {
+        await generatePdf(
+          pdfLayoutRef.current,
+          `IRIS-Report-${messageToDownload.messageId}.pdf`
+        );
+        // Reset both states after the PDF is saved
+        setMessageToDownload(null);
+        setIsGeneratingPdf(false);
+      }
+    };
+
+    createPdf();
+    // This effect depends on the 'isGeneratingPdf' flag
+  }, [isGeneratingPdf, messageToDownload]);
 
   // All your existing useEffect hooks for auth, history, and scrolling remain unchanged
   useEffect(() => {
@@ -194,6 +223,17 @@ export default function MainPage() {
               )
             );
           },
+
+          // --- MODIFICATION: Handle the new message_complete event ---
+          onMessageComplete: (data: { messageId: number }) => {
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantMessageId
+                  ? { ...msg, messageId: data.messageId }
+                  : msg
+              )
+            );
+          },
           onClose: () => {
             setIsLoading(false);
           },
@@ -216,8 +256,19 @@ export default function MainPage() {
     }
   };
 
+  // --- NEW: Handler to open the modal ---
+  const handleShareClick = (messageToShare: Message) => {
+    setShareModalData(messageToShare);
+  };
+
   const handleClarificationClick = (query: string) => {
     handleSendMessage(query);
+  };
+
+  // The new, robust download handler
+  const handleDownloadClick = (msg: Message) => {
+    setMessageToDownload(msg); // 1. Set the data for the hidden component
+    setIsGeneratingPdf(true); // 2. Flip the flag to trigger the useEffect
   };
 
   const renderIrisContent = () => (
@@ -244,6 +295,8 @@ export default function MainPage() {
             <ChatMessages
               messages={messages}
               onClarificationOptionClick={handleClarificationClick}
+              onShareClick={handleShareClick}
+              onDownloadClick={handleDownloadClick}
             />
             <div ref={messagesEndRef} />
           </>
@@ -284,6 +337,19 @@ export default function MainPage() {
           <PlaceholderScreen title="User Profile" />
         )}
       </main>
+
+      <ShareModal
+        isOpen={!!shareModalData}
+        onClose={() => setShareModalData(null)}
+        messageContent={shareModalData?.content || ""}
+        messageId={shareModalData?.messageId || 0}
+      />
+
+      {/* The hidden component is always in the DOM but only gets data when needed */}
+      <PdfDocumentLayout
+        forwardedRef={pdfLayoutRef}
+        message={messageToDownload}
+      />
     </div>
   );
 }

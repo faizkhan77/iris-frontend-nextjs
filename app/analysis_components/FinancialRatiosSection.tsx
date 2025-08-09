@@ -57,14 +57,24 @@ export default function FinancialRatiosSection({
   const { theme } = useTheme();
 
   const chartColors = useMemo(() => {
+    if (theme === "light") {
+      return {
+        debtor: "#c026d3", // Fuchsia 600
+        inventory: "#ea580c", // Orange 600
+        payable: "#2563eb", // Blue 600
+        roce: "#16a34a", // Green 600
+        grid: "#e5e7eb",
+      };
+    }
+    // Dark Theme Palette
     return {
-      c1: `hsl(var(--chart-1))`,
-      c2: `hsl(var(--chart-2))`,
-      c3: `hsl(var(--chart-3))`,
-      c4: `hsl(var(--chart-4))`,
+      debtor: "#f0abfc", // Fuchsia 300
+      inventory: "#fb923c", // Orange 400
+      payable: "#93c5fd", // Blue 300
+      roce: "#4ade80", // Green 400
+      grid: "rgba(255, 255, 255, 0.1)",
     };
   }, [theme]);
-
   const onSummarizeRequest = useCallback(async (): Promise<string | void> => {
     console.log("Summarizing Financial Ratios...");
     return `Summary for ${stockName} financial ratios...`; // Placeholder
@@ -111,30 +121,41 @@ export default function FinancialRatiosSection({
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="var(--element-border)"
+                    stroke={chartColors.grid}
                   />
                   <XAxis
                     dataKey="name"
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
                   <YAxis
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
-                  <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-                  <Legend wrapperStyle={{ fontSize: "12px" }} />
+                  <Tooltip
+                    content={<ChartTooltipContent indicator="dot" />}
+                    cursor={{
+                      stroke: "var(--text-secondary)",
+                      strokeDasharray: "3 3",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      fontSize: "12px",
+                      color: "var(--text-secondary)",
+                    }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="Debtor Days"
-                    stroke="var(--color-Debtor Days)"
+                    stroke={chartColors.debtor}
                     dot={false}
                     strokeWidth={2}
                   />
                   <Line
                     type="monotone"
                     dataKey="Inventory Days"
-                    stroke="var(--color-Inventory Days)"
+                    stroke={chartColors.inventory}
                     dot={false}
                     strokeWidth={2}
                     name="Inv. Days"
@@ -142,7 +163,7 @@ export default function FinancialRatiosSection({
                   <Line
                     type="monotone"
                     dataKey="Payable Days"
-                    stroke="var(--color-Payable Days)"
+                    stroke={chartColors.payable}
                     dot={false}
                     strokeWidth={2}
                   />
@@ -161,16 +182,16 @@ export default function FinancialRatiosSection({
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="var(--element-border)"
+                    stroke={chartColors.grid}
                   />
                   <XAxis
                     dataKey="name"
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                   />
                   <YAxis
-                    tick={{ fontSize: 10 }}
-                    stroke="var(--text-secondary)"
+                    tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
+                    stroke="var(--element-border)"
                     tickFormatter={(value) => `${value}%`}
                   />
                   <Tooltip
@@ -180,12 +201,10 @@ export default function FinancialRatiosSection({
                         formatter={(value) => `${Number(value).toFixed(2)}%`}
                       />
                     }
+                    cursor={{ fill: "rgba(128, 128, 128, 0.1)" }}
                   />
-                  <Bar
-                    dataKey="ROCE %"
-                    fill="var(--color-ROCE %)"
-                    name="ROCE %"
-                  />
+                  {/* --- THIS IS THE FIX: ROCE Bar fill --- */}
+                  <Bar dataKey="ROCE %" fill={chartColors.roce} name="ROCE %" />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
