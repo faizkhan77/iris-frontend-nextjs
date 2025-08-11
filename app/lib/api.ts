@@ -1,8 +1,18 @@
 // lib/api.ts
+import { ScreenCategory, Stock } from "./types"; 
 import { UiComponent } from "../components/ChatMessages";
 
 
 const API_BASE_URL = "http://localhost:8000";
+
+
+export const fetchScreenerStrategies = async (): Promise<Record<string, Screen[]>> => {
+  const response = await fetch(`${API_BASE_URL}/api/screener/strategies`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch screener strategies");
+  }
+  return response.json();
+};
 
 // --- Types for Login and History (Unchanged) ---
 export interface LoginCredentials {
@@ -39,6 +49,16 @@ export interface ChatSession {
   created_at: string;
   started_at: string;
   last_message_at: string;
+}
+
+export interface Stock {
+  symbol: string;
+  companyName: string;
+  sector: string;
+  price: number;
+  marketCap: number;
+  peRatio: number | null;
+  changePercent: number | null; 
 }
 
 export const fetchChatHistory = async (
@@ -176,3 +196,37 @@ export const streamChatResponse = async (
   }
 };
 // --- END: NEW AND UPDATED STREAMING LOGIC ---
+
+
+
+export const fetchScreenerResults = async (
+  screenerNames: string[]
+): Promise<Stock[]> => {
+  const response = await fetch(`${API_BASE_URL}/api/screener/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ screener_names: screenerNames }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.detail || "Failed to fetch screener results");
+  }
+  return response.json();
+};
+
+
+export const fetchPriceChanges = async (
+  fincodes: number[]
+): Promise<Record<number, number>> => {
+  if (fincodes.length === 0) return {};
+  const response = await fetch(`${API_BASE_URL}/api/screener/prices/changes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fincodes }),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch price changes");
+  }
+  return response.json();
+};

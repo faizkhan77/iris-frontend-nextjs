@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -29,6 +29,15 @@ import ScreenerPage from "./analysis_components/ScreenerPage";
 import ShareModal from "./components/ShareModal";
 import { PdfDocumentLayout } from "./components/PdfDocumentLayout"; // <-- Import PDF layout
 import { generatePdf } from "./lib/pdfGenerator"; // <-- Import PDF generator function
+
+// --- NEW: Screener Components ---
+import { Screen, ScreenCategory, Stock } from "./lib/types"; // Create a types.ts file in /lib
+import ScreenerHeader from "./components/screener_components/Header";
+import ScreenerSidebar from "./components/screener_components/Sidebar";
+import ScreenerDashboard from "./components/screener_components/ScreenerDashboard";
+import ScreenerCategoryPage from "./components/screener_components/ScreenerCategoryPage";
+import ScreenerResultsPage from "./components/screener_components/ScreenerResultsPage";
+import CombineModeBar from "./components/screener_components/CombineModeBar";
 
 // --- Placeholder component for other tabs ---
 const PlaceholderScreen = ({ title }: { title: string }) => (
@@ -65,17 +74,89 @@ export default function MainPage() {
     isSecondarySidebarOpen,
   } = useAppStore();
 
-  const [isInitialState, setIsInitialState] = useState(true);
+  // Auto-open screener sidebar when switching to Screener tab
+  useEffect(() => {
+    if (activePrimaryTab === "screener" && !isSecondarySidebarOpen) {
+      useAppStore.setState({ isSecondarySidebarOpen: true });
+    }
+  }, [activePrimaryTab, isSecondarySidebarOpen]);
+
+  // IRIS Chat State
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isInitialState, setIsInitialState] = useState(true);
   const [shareModalData, setShareModalData] = useState<Message | null>(null);
   const [messageToDownload, setMessageToDownload] = useState<Message | null>(
     null
   );
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const pdfLayoutRef = useRef<HTMLDivElement>(null);
+
+  // Screener State
+  const [screenerPage, setScreenerPage] = useState<
+    "dashboard" | "category" | "results"
+  >("dashboard");
+  const [activeCategory, setActiveCategory] = useState<ScreenCategory | null>(
+    null
+  );
+  const [activeScreens, setActiveScreens] = useState<Screen[]>([]);
+  const [isCombining, setIsCombining] = useState(false);
+  const [selectedForCombination, setSelectedForCombination] = useState<
+    Screen[]
+  >([]);
+  const [globalSearch, setGlobalSearch] = useState("");
+  const [selectedSectors, setSelectedSectors] = useState<string[]>(["All"]);
+  const [sectorSearch, setSectorSearch] = useState("");
+  const [screenerCategories, setScreenerCategories] = useState<
+    ScreenCategory[]
+  >([]);
+  const [isStrategiesLoading, setIsStrategiesLoading] = useState(true);
+
+  // --- Combined Loading State ---
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // --- DERIVED STATE ---
+  const allScreens = useMemo(
+    () => screenerCategories.flatMap((cat) => cat.screens),
+    [screenerCategories]
+  );
+  const popularScreens = useMemo(
+    () =>
+      screenerCategories.find((cat) => cat.title === "Popular Themes")
+        ?.screens || [],
+    [screenerCategories]
+  );
+  const growthScreens = useMemo(
+    () =>
+      screenerCategories.find((cat) => cat.title === "Growth Screens")
+        ?.screens || [],
+    [screenerCategories]
+  );
+
+  useEffect(() => {
+    if (activePrimaryTab === "screener" && !isSecondarySidebarOpen) {
+      useAppStore.setState({ isSecondarySidebarOpen: true });
+    }
+  }, [activePrimaryTab, isSecondarySidebarOpen]);
+
+  useEffect(() => {
+    async function getStrategies() {
+      setIsStrategiesLoading(true);
+      try {
+        const strategiesData = await fetchScreenerStrategies();
+        const categories = Object.entries(strategiesData).map(
+          ([title, screens]) => ({ title, screens })
+        );
+        setScreenerCategories(categories);
+      } catch (error) {
+        console.error("Failed to load screener strategies:", error);
+        toast.error("Could not load screener strategies.");
+      } finally {
+        setIsStrategiesLoading(false);
+      }
+    }
+    getStrategies();
+  }, []);
 
   // --- THIS IS THE NEW, ROBUST DOWNLOAD HANDLER ---
   const handleDownloadClick = (msg: Message) => {
@@ -291,6 +372,60 @@ export default function MainPage() {
     handleSendMessage(query);
   };
 
+  // --- NEW: Handlers for Screener Logic ---
+  const handleRunScreen = (screen: Screen) => {
+    setActiveScreens([screen]);
+    setScreenerPage("results");
+  };
+
+  const handleSeeAll = (category: ScreenCategory) => {
+    setActiveCategory(category);
+    setScreenerPage("category");
+  };
+
+  const handleBackToDashboard = () => {
+    setActiveCategory(null);
+    setActiveScreens([]);
+    setScreenerPage("dashboard");
+  };
+
+  const handleToggleCombineMode = () => {
+    setIsCombining(!isCombining);
+    setSelectedForCombination([]); // Reset selection when toggling
+  };
+
+  const handleSelectForCombination = (screen: Screen) => {
+    setSelectedForCombination((prev) =>
+      prev.some((s) => s.title === screen.title)
+        ? prev.filter((s) => s.title !== screen.title)
+        : [...prev, screen]
+    );
+  };
+
+  const handleRunCombination = () => {
+    if (selectedForCombination.length > 0) {
+      setActiveScreens(selectedForCombination);
+      setScreenerPage("results");
+      setIsCombining(false);
+      setSelectedForCombination([]);
+    }
+  };
+
+  const handleSelectSector = (sector: string) => {
+    if (sector === "All") {
+      setSelectedSectors(["All"]);
+      return;
+    }
+    setSelectedSectors((prev) => {
+      const newSectors = prev.includes(sector)
+        ? prev.filter((s) => s !== sector)
+        : [...prev.filter((s) => s !== "All"), sector];
+
+      if (newSectors.length === 0) return ["All"];
+      return newSectors;
+    });
+  };
+
   const renderIrisContent = () => (
     <div className="flex flex-1 flex-col h-full overflow-y-auto custom-scrollbar">
       {/* {isInitialState && !isLoading ? null : <ChatHeader />} */}
@@ -334,31 +469,115 @@ export default function MainPage() {
     </div>
   );
 
-  return (
-    <div className="flex h-screen w-full bg-content-bg">
-      {/* --- WRAP THE SIDEBAR IN ANIMATION COMPONENTS --- */}
+  const renderScreenerContent = () => (
+    <div className="flex h-full w-full">
       <AnimatePresence>
-        {activePrimaryTab === "iris" && isSecondarySidebarOpen && (
+        {isSecondarySidebarOpen && (
           <motion.div
-            key="secondary-sidebar"
+            key="screener-sidebar"
             variants={sidebarVariants}
             initial="initial"
             animate="animate"
             exit="exit"
           >
-            <SecondarySidebar />
+            <ScreenerSidebar
+              selectedSectors={selectedSectors}
+              onSelectSector={handleSelectSector}
+              sectorSearch={sectorSearch}
+              onSectorSearchChange={setSectorSearch}
+              onRunScreen={handleRunScreen}
+              popularScreens={popularScreens}
+              growthScreens={growthScreens}
+              allScreens={allScreens}
+            />
           </motion.div>
         )}
       </AnimatePresence>
-
-      <main className="flex-1 flex flex-col h-full overflow-hidden">
-        {activePrimaryTab === "iris" && renderIrisContent()}
-        {activePrimaryTab === "screener" && <ScreenerPage />}
-        {activePrimaryTab === "profile" && (
-          <PlaceholderScreen title="User Profile" />
+      <div className="flex-1 p-6 overflow-y-auto">
+        {screenerPage === "dashboard" && (
+          <ScreenerDashboard
+            screenCategories={screenerCategories}
+            isLoading={isStrategiesLoading}
+            onSeeAll={handleSeeAll}
+            onRunScreen={handleRunScreen}
+            globalSearch={globalSearch}
+            isCombining={isCombining}
+            selectedForCombination={selectedForCombination}
+            onSelectForCombination={handleSelectForCombination}
+          />
         )}
-      </main>
+        {screenerPage === "category" && activeCategory && (
+          <ScreenerCategoryPage
+            category={activeCategory}
+            onClose={handleBackToDashboard}
+            onRunScreen={handleRunScreen}
+            isCombining={isCombining}
+            selectedForCombination={selectedForCombination}
+            onSelectForCombination={handleSelectForCombination}
+          />
+        )}
+        {screenerPage === "results" && activeScreens.length > 0 && (
+          <ScreenerResultsPage
+            initialScreens={activeScreens}
+            onClose={handleBackToDashboard}
+            selectedSectors={selectedSectors}
+            allScreens={allScreens}
+          />
+        )}
+      </div>
+    </div>
+  );
 
+  return (
+    // --- 1. Change the root to be a vertical flex container ---
+    <div className="flex flex-col h-screen w-full bg-content-bg">
+      {/* --- The Header is now the first item in the vertical stack --- */}
+      {activePrimaryTab === "screener" && (
+        <ScreenerHeader
+          globalSearch={globalSearch}
+          onGlobalSearchChange={setGlobalSearch}
+          isCombining={isCombining}
+          onToggleCombineMode={handleToggleCombineMode}
+        />
+      )}
+
+      {/* --- 2. Create a new div to handle the horizontal layout for the main content --- */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* --- SIMPLIFIED: This block now ONLY handles the IRIS chat sidebar --- */}
+        <AnimatePresence>
+          {activePrimaryTab === "iris" && isSecondarySidebarOpen && (
+            <motion.div
+              key="iris-sidebar"
+              variants={sidebarVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <SecondarySidebar />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <main className="flex-1 flex flex-col h-full overflow-hidden">
+          {activePrimaryTab === "iris" && renderIrisContent()}
+          {activePrimaryTab === "analysis" && <ScreenerPage />}
+          {activePrimaryTab === "screener" && renderScreenerContent()}
+          {activePrimaryTab === "profile" && (
+            <PlaceholderScreen title="User Profile" />
+          )}
+        </main>
+      </div>
+
+      {/* --- The CombineModeBar remains at the bottom, outside the main scroll area --- */}
+      {isCombining && (
+        <CombineModeBar
+          selectedCount={selectedForCombination.length}
+          onCancel={handleToggleCombineMode}
+          onSave={handleRunCombination}
+        />
+      )}
+
+      {/* ... (Modals and hidden layouts are unaffected) ... */}
       <ShareModal
         isOpen={!!shareModalData}
         onClose={() => setShareModalData(null)}
@@ -366,8 +585,6 @@ export default function MainPage() {
         messageId={shareModalData?.messageId || 0}
         userName={user?.name || "User"}
       />
-
-      {/* The hidden component is always in the DOM but only gets data when needed */}
       <PdfDocumentLayout
         forwardedRef={pdfLayoutRef}
         message={messageToDownload}

@@ -1,7 +1,14 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { BotMessageSquare, LayoutGrid, Moon, Sun, User } from "lucide-react";
+import {
+  BotMessageSquare,
+  LayoutGrid,
+  Moon,
+  Sun,
+  User,
+  BarChartHorizontalBig,
+} from "lucide-react";
 import { useAppStore, PrimaryTab } from "@/app/lib/store";
 import { cn } from "@/lib/utils"; // Assuming you have a cn utility from shadcn/ui or similar
 import IrisLogo from "../IrisLogo";
@@ -83,11 +90,18 @@ export default function PrimarySidebar() {
           isActive={activePrimaryTab === "iris"}
           onClick={handleIrisTabClick}
         />
+
         <SidebarButton
           label="Screener"
-          icon={<LayoutGrid className="h-6 w-6" />}
+          icon={<BarChartHorizontalBig className="h-6 w-6" />}
           isActive={activePrimaryTab === "screener"}
           onClick={() => handleTabClick("screener")}
+        />
+        <SidebarButton
+          label="Analysis"
+          icon={<LayoutGrid className="h-6 w-6" />}
+          isActive={activePrimaryTab === "analysis"}
+          onClick={() => handleTabClick("analysis")}
         />
       </div>
 

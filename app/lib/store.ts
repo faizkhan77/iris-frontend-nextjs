@@ -10,7 +10,7 @@ interface User {
 
 
 
-export type PrimaryTab = "iris" | "screener" | "profile";
+export type PrimaryTab = "iris" | "screener" | "analysis" | "profile";
 
 interface AppState {
   // Existing State
