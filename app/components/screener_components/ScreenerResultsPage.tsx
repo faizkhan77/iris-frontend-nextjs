@@ -7,6 +7,10 @@ import { ArrowLeftIcon, SpinnerIcon } from "./Icons"; // Adjust path
 import ScreenCombiner from "./ScreenCombiner"; // Adjust path
 import { fetchScreenerResults, fetchPriceChanges } from "../../lib/api";
 import { SECTOR_MAPPINGS } from "@/app/lib/constants";
+import ExportBtn from "./exportbtn";
+import { toast } from "sonner";
+
+import * as XLSX from "xlsx";
 
 // --- NEW: Utility function to format market cap ---
 const formatMarketCap = (value: number) => {
@@ -136,6 +140,51 @@ export default function ScreenerResultsPage({
       ? currentScreens[0].description
       : `Intersection of ${currentScreens.length} screens, showing stocks that match all criteria.`;
 
+  const handleExport = () => {
+    if (filteredStocks.length === 0) {
+      toast.error("No data available to export.");
+      return;
+    }
+
+    // 1. Format the data for a clean export (rename headers, format values)
+    const dataToExport = filteredStocks.map((stock) => ({
+      Symbol: stock.symbol,
+      "Company Name": stock.companyName,
+      Sector: stock.sector,
+      "Price (₹)": stock.price?.toFixed(2) ?? "N/A",
+      "Change (%)": stock.changePercent?.toFixed(2) ?? "N/A",
+      "Market Cap (Cr)": (stock.marketCap / 10000000).toFixed(2), // Convert to Crores
+      "P/E Ratio": stock.peRatio?.toFixed(2) ?? "N/A",
+    }));
+
+    // 2. Create a worksheet from the formatted data
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+
+    // 3. Create a new workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Screener Results");
+
+    // Optional: Adjust column widths
+    const columnWidths = [
+      { wch: 15 }, // Symbol
+      { wch: 40 }, // Company Name
+      { wch: 25 }, // Sector
+      { wch: 15 }, // Price
+      { wch: 15 }, // Change %
+      { wch: 20 }, // Market Cap
+      { wch: 15 }, // P/E Ratio
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    // 4. Generate a dynamic filename and trigger the download
+    const fileName = `${mainTitle.replace(
+      / /g,
+      "_"
+    )}_Results_${new Date().toLocaleDateString("en-CA")}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+    toast.success("Export successful!");
+  };
+
   return (
     <div className="col-span-9 bg-brand-container border border-brand-border rounded-xl">
       {/* --- Header Section (Unchanged) --- */}
@@ -172,7 +221,7 @@ export default function ScreenerResultsPage({
             currentScreens={currentScreens}
             onAddScreen={handleAddScreen}
           />
-          {/* We'll handle save combination later */}
+          <ExportBtn onClick={handleExport} />
         </div>
       </div>
 

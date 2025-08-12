@@ -465,3 +465,38 @@ body {
     transform: translateY(0);
   }
 }
+
+
+/* Hide scrollbar but still allow scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Custom cyan scrollbar */
+.scrollbar-cyan {
+  scrollbar-width: thin;
+  scrollbar-color: #06b6d4 transparent; /* Cyan track for Firefox */
+}
+
+.scrollbar-cyan::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-cyan::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-cyan::-webkit-scrollbar-thumb {
+  background-color: #06b6d4; /* Tailwind cyan-500 */
+  border-radius: 9999px;
+  border: 2px solid transparent; /* Padding effect */
+}
+
+.scrollbar-cyan::-webkit-scrollbar-thumb:hover {
+  background-color: #22d3ee; /* Tailwind cyan-400 */
+}

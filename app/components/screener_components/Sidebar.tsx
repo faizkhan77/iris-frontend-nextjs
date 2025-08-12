@@ -39,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
   return (
-    <aside className="w-72 h-full bg-sidebar-bg border-r border-element-border flex flex-col">
+    <aside className="w-72 h-full bg-sidebar-bg border-r border-element-border flex flex-col scrollbar-cyan">
       {/* Header for the Sidebar */}
       <div className="p-4 border-b border-element-border">
         <h2 className="text-lg font-semibold text-text-primary relative pb-1">
