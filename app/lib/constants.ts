@@ -1,22 +1,71 @@
 import { Screen, ScreenCategory } from './types';
 
+// --- NEW: Define a type for our mapping for type safety ---
+export interface SectorMapping {
+  displayName: string; // What the user sees in the UI
+  dbValues: string[];   // The corresponding values from your database
+}
+
 export const USER_NAME = "John Doe";
 
-export const SECTORS: string[] = [
-  'All',
-  'Technology',
-  'Healthcare',
-  'Financial Services',
-  'Consumer Cyclical',
-  'Industrials',
-  'Energy',
-  'Real Estate',
-  'Utilities',
-  'Basic Materials',
-  'Communication Services',
-  'Consumer Defensive',
+// --- NEW: The robust sector mapping system ---
+export const SECTOR_MAPPINGS: SectorMapping[] = [
+  { displayName: 'All Sectors', dbValues: ['All'] }, // Special case for 'All'
+  { 
+    displayName: 'Finance & Banking', 
+    dbValues: [
+      'Bank - Private', 
+      'Bank - Public', 
+      'Finance - NBFC', 
+      'Finance - Housing',
+      'Insurance' // Assuming Insurance falls under Finance
+    ] 
+  },
+  { 
+    displayName: 'Information Technology', 
+    dbValues: ['IT - Software'] 
+  },
+  { 
+    displayName: 'Healthcare', 
+    dbValues: ['Pharmaceuticals & Drugs'] 
+  },
+  { 
+    displayName: 'Defence', 
+    dbValues: ['Defence'] 
+  },
+  { 
+    displayName: 'Consumer Cyclical', 
+    dbValues: ['Consumer Cyclical', 'e-Commerce'] // Grouping e-Commerce here
+  },
+  { 
+    displayName: 'Industrials & Engineering', 
+    dbValues: ['Industrials', 'Engineering - Construction'] 
+  },
+  { 
+    displayName: 'Energy', 
+    dbValues: ['Energy'] 
+  },
+  { 
+    displayName: 'Real Estate', 
+    dbValues: ['Real Estate'] 
+  },
+  { 
+    displayName: 'Utilities', 
+    dbValues: ['Utilities'] 
+  },
+  { 
+    displayName: 'Basic Materials', 
+    dbValues: ['Basic Materials'] 
+  },
+  { 
+    displayName: 'Communication Services', 
+    dbValues: ['Communication Services'] 
+  },
+  { 
+    displayName: 'Consumer Defensive', 
+    dbValues: ['Consumer Defensive'] 
+  },
 ];
-
 export const SCREEN_CATEGORIES: ScreenCategory[] = [
   {
     title: 'Popular Themes',

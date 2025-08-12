@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  SECTORS,
+  SECTOR_MAPPINGS,
   RECENTLY_USED_SCREENS,
   MOST_USED_SCREENS,
   ALL_SCREENS,
@@ -10,13 +10,13 @@ import { MenuAlt2Icon } from "./Icons";
 import { Screen } from "@/app/lib/types";
 
 interface SidebarProps {
-  selectedSectors: string[];
-  onSelectSector: (sector: string) => void;
+  // --- MODIFICATION: The selectedSectors prop now holds the `displayName` of the mapping ---
+  selectedSectors: string[]; // e.g., ['All Sectors'], ['Finance & Banking']
+  onSelectSector: (sectorDisplayName: string) => void; // Pass the displayName on click
   sectorSearch: string;
   onSectorSearchChange: (value: string) => void;
-  nseOnly: boolean;
-  setNseOnly: (enabled: boolean) => void;
   onRunScreen: (screen: Screen) => void;
+  // nseOnly and setNseOnly are not used, so they are removed for clarity
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -24,12 +24,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   onSelectSector,
   sectorSearch,
   onSectorSearchChange,
-  nseOnly,
-  setNseOnly,
   onRunScreen,
 }) => {
-  const filteredSectors = SECTORS.filter((s) =>
-    s.toLowerCase().includes(sectorSearch.toLowerCase())
+  const filteredSectors = SECTOR_MAPPINGS.filter((mapping) =>
+    mapping.displayName.toLowerCase().includes(sectorSearch.toLowerCase())
   );
 
   const handleRunScreenByName = (screenName: string) => {
@@ -40,7 +38,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       console.warn(`Screen "${screenName}" not found.`);
     }
   };
-
   return (
     <aside className="w-72 h-full bg-sidebar-bg border-r border-element-border flex flex-col">
       {/* Header for the Sidebar */}
@@ -82,24 +79,26 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           <nav className="flex flex-col space-y-1">
-            {filteredSectors.map((sector) => {
-              const isSelected = selectedSectors.includes(sector);
+            {filteredSectors.map((sectorMapping) => {
+              const isSelected = selectedSectors.includes(
+                sectorMapping.displayName
+              );
               return (
                 <button
-                  key={sector}
-                  onClick={() => onSelectSector(sector)}
+                  key={sectorMapping.displayName}
+                  onClick={() => onSelectSector(sectorMapping.displayName)}
                   className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-all flex items-center gap-3 ${
                     isSelected
-                      ? "bg-cyan-500 border border-cyan-400"
-                      : "text-brand-text-secondary hover:bg-cyan-50 hover:text-cyan-700"
+                      ? "bg-cyan-500 border border-cyan-400 text-white font-medium"
+                      : "text-brand-text-secondary hover:bg-brand-bg-hover"
                   }`}
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      isSelected ? "bg-cyan-500" : "bg-brand-text-tertiary"
+                      isSelected ? "bg-white" : "bg-brand-text-tertiary"
                     }`}
                   ></span>
-                  {sector}
+                  {sectorMapping.displayName}
                 </button>
               );
             })}

@@ -1,11 +1,12 @@
 // components/screener_components/ScreenerResultsPage.tsx
 "use client"; // This component now uses hooks, so it must be a client component.
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Screen, Stock } from "../../lib/types"; // Adjust path
 import { ArrowLeftIcon, SpinnerIcon } from "./Icons"; // Adjust path
 import ScreenCombiner from "./ScreenCombiner"; // Adjust path
-import { fetchScreenerResults, fetchPriceChanges } from "../../lib/api"; // <-- IMPORT OUR NEW API FUNCTION
+import { fetchScreenerResults, fetchPriceChanges } from "../../lib/api";
+import { SECTOR_MAPPINGS } from "@/app/lib/constants";
 
 // --- NEW: Utility function to format market cap ---
 const formatMarketCap = (value: number) => {
@@ -88,9 +89,26 @@ export default function ScreenerResultsPage({
     runScreener();
   }, [currentScreens]);
 
-  const filteredStocks = selectedSectors.includes("All")
-    ? stocks
-    : stocks.filter((stock) => selectedSectors.includes(stock.sector));
+  const filteredStocks = useMemo(() => {
+    // If 'All Sectors' is selected, no filtering is needed.
+    if (selectedSectors.includes("All Sectors")) {
+      return stocks;
+    }
+
+    // 1. Get all the allowed DB values from the selected UI displayNames.
+    const allowedDbSectors = selectedSectors.flatMap((displayName) => {
+      const mapping = SECTOR_MAPPINGS.find(
+        (m) => m.displayName === displayName
+      );
+      return mapping ? mapping.dbValues : [];
+    });
+
+    // 2. Create a Set for efficient lookup.
+    const allowedDbSectorsSet = new Set(allowedDbSectors);
+
+    // 3. Filter the stocks.
+    return stocks.filter((stock) => allowedDbSectorsSet.has(stock.sector));
+  }, [stocks, selectedSectors]);
 
   const handleShowMore = () => {
     setVisibleRows(stocks.length); // Show all remaining stocks
