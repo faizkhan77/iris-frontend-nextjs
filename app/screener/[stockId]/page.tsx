@@ -1,35 +1,43 @@
-// app/screener/[stockId]/page.tsx
+"use client";
 
+import { useEffect, useState } from "react";
 import StockDetail from "@/app/analysis_components/StockDetail";
-import { notFound } from "next/navigation";
+import { useParams, notFound } from "next/navigation";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api";
-
-interface StockDetailPageProps {
-  params: {
-    stockId: string;
-  };
-}
+const API_BASE_URL = "https://irisapi.brainfogagency.com/api";
 
 async function getStockDetails(stockId: string) {
   try {
-    const response = await fetch(`${API_BASE_URL}/stock/${stockId}`);
+    const response = await fetch(`${API_BASE_URL}/stock/${stockId}`, {
+      cache: "no-store",
+    });
     if (!response.ok) {
       return null;
     }
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.error(`Failed to fetch details for ${stockId}:`, error);
     return null;
   }
 }
 
-// THE FIX IS THIS 'async' KEYWORD
-export default async function StockDetailPage({
-  params,
-}: StockDetailPageProps) {
-  const stockData = await getStockDetails(params.stockId);
+export default function StockDetailPage() {
+  const params = useParams<{ stockId: string }>();
+  const [stockData, setStockData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (params.stockId) {
+      getStockDetails(params.stockId).then((data) => {
+        setStockData(data);
+        setLoading(false);
+      });
+    }
+  }, [params.stockId]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   if (!stockData) {
     notFound();

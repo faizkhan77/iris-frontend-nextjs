@@ -9,13 +9,14 @@ import ChatHeader from "./components/ChatHeader";
 
 // import ChatFooter from "./components/ChatInputForm";
 import { AnimatedAIChat } from "./components/WelcomeScreen";
-
+fetchScreenerStrategies 
 import { useAppStore } from "./lib/store";
 import { v4 as uuidv4 } from "uuid";
 import {
   streamChatResponse,
   fetchSessionMessages,
   ChatMessage,
+  fetchScreenerStrategies,
 } from "./lib/api";
 import ChatInputForm from "./components/ChatInputForm";
 // import Sidebar from "./components/Sidebar";
@@ -145,7 +146,7 @@ export default function MainPage() {
       try {
         const strategiesData = await fetchScreenerStrategies();
         const categories = Object.entries(strategiesData).map(
-          ([title, screens]) => ({ title, screens })
+          ([title, screens]) => ({ title, screens: screens })
         );
         setScreenerCategories(categories);
       } catch (error) {

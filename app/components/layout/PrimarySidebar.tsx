@@ -13,6 +13,7 @@ import { useAppStore, PrimaryTab } from "@/app/lib/store";
 import { cn } from "@/lib/utils"; // Assuming you have a cn utility from shadcn/ui or similar
 import IrisLogo from "../IrisLogo";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 // Reusable button component for the sidebar
 interface SidebarButtonProps {
@@ -46,6 +47,14 @@ export default function PrimarySidebar() {
   const { activePrimaryTab, setActivePrimaryTab, toggleSecondarySidebar } =
     useAppStore();
   const { theme, setTheme } = useTheme();
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   const handleTabClick = (tab: PrimaryTab) => {
     setActivePrimaryTab(tab);
