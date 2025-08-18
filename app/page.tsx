@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import ChatHeader from "./components/ChatHeader";
+import { fetchScreenerStrategies } from "./lib/api";
 
 // import ChatFooter from "./components/ChatInputForm";
 import { AnimatedAIChat } from "./components/WelcomeScreen";
@@ -562,9 +563,9 @@ export default function MainPage() {
           {activePrimaryTab === "iris" && renderIrisContent()}
           {activePrimaryTab === "analysis" && <ScreenerPage />}
           {activePrimaryTab === "screener" && renderScreenerContent()}
-          {activePrimaryTab === "profile" && (
+          {/* {activePrimaryTab === "profile" && (
             <PlaceholderScreen title="User Profile" />
-          )}
+          )} */}
         </main>
       </div>
 

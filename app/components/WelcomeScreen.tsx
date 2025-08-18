@@ -90,6 +90,7 @@ export function AnimatedAIChat({
         {/* Animated Orb, as requested */}
         <div className="mb-6 flex justify-center">
           <AnimatedOrb />
+          {/* <div className="blob-2"></div> */}
         </div>
 
         {/* Title */}
@@ -100,7 +101,7 @@ export function AnimatedAIChat({
         {/* Main Input Box */}
         <div className="mt-8 flex flex-col rounded-2xl border border-element-border bg-sidebar-secondary-bg p-4 shadow-sm">
           {/* Upgrade to PRO banner */}
-          <div className="text-black mb-3 flex cursor-pointer items-center justify-center gap-2 rounded-lg py-2 text-sm transition-colors bg-accent hover:bg-element-bg">
+          <div className="text-black mb-3 flex cursor-pointer items-center justify-center gap-2 rounded-lg py-2 text-sm transition-colors bg-[#0dd3ff] hover:bg-element-bg">
             <Sparkles className="h-4 w-4" />
             <span>Upgrade to PRO</span>
           </div>

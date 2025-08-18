@@ -7,7 +7,6 @@ import { fetchChatHistory } from "@/app/lib/api";
 import { v4 as uuidv4 } from "uuid";
 import { cn } from "@/app/lib/utils";
 
-// This is the same Session interface from your old sidebar
 interface Session {
   id: number;
   thread_id: string;
@@ -15,7 +14,6 @@ interface Session {
   started_at: string;
 }
 
-// --- THIS IS THE RESTORED HELPER FUNCTION FROM YOUR ORIGINAL SIDEBAR ---
 const groupSessionsByDate = (sessions: Session[] = []) => {
   if (!sessions) return {};
 
@@ -36,7 +34,6 @@ const groupSessionsByDate = (sessions: Session[] = []) => {
   const last30Days = new Date(today);
   last30Days.setDate(last30Days.getDate() - 30);
 
-  // Sort sessions from newest to oldest
   const sortedSessions = [...sessions].sort(
     (a, b) =>
       new Date(b.started_at).getTime() - new Date(a.started_at).getTime()
@@ -51,17 +48,13 @@ const groupSessionsByDate = (sessions: Session[] = []) => {
     else groups["Older"].push(session);
   });
 
-  // Remove any groups that are empty
   Object.keys(groups).forEach((key) => {
-    if (groups[key].length === 0) {
-      delete groups[key];
-    }
+    if (groups[key].length === 0) delete groups[key];
   });
 
   return groups;
 };
 
-// The fetcher function for SWR
 const fetcher = ([userId]: [number]) => fetchChatHistory(userId);
 
 export default function SecondarySidebar() {
@@ -82,47 +75,58 @@ export default function SecondarySidebar() {
     }
   };
 
-  // The grouping function now handles sorting internally.
   const groupedSessions = groupSessionsByDate(sessions);
 
-  if (!isSecondarySidebarOpen) {
-    return null;
-  }
+  if (!isSecondarySidebarOpen) return null;
 
   return (
-    <aside className="flex h-full w-72 flex-col border-r border-element-border bg-sidebar-secondary-bg p-3">
-      {/* Header with Search and New Chat */}
+    <aside
+      className="flex h-full w-72 flex-col border-r border-element-border 
+      bg-gradient-to-b from-sidebar-secondary-bg to-sidebar-secondary-bg/95
+      p-3 shadow-lg animate-slide-in"
+    >
+      {/* Header */}
       <div className="flex items-center gap-2 pb-3">
+        {/* Search Box */}
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-tertiary" />
           <input
             type="text"
             placeholder="Search chats"
-            className="w-full rounded-md border border-element-border bg-background py-2 pl-9 pr-4 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-accent"
+            className="w-full rounded-md border border-element-border bg-background py-2 pl-9 pr-4 text-sm
+            text-text-primary placeholder:text-text-tertiary
+            focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
+            transition-all duration-300"
           />
-          {/* <div className="absolute right-3 top-1/2 -translate-y-1/2 rounded bg-element-bg px-1.5 py-0.5 text-xs text-text-secondary">
-            ⇐
-          </div> */}
         </div>
+
+        {/* New Chat Button */}
         <button
           onClick={handleNewChat}
           title="New Chat"
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md border border-element-border bg-background text-text-secondary transition-colors hover:bg-element-bg hover:text-text-primary"
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md border border-element-border 
+          bg-background text-text-secondary transition-all duration-300
+          hover:bg-cyan-500 hover:text-white hover:shadow-md hover:shadow-cyan-500/40 active:scale-95"
         >
           <Plus className="h-4 w-4" />
         </button>
       </div>
 
-      {/* Chat History List */}
-      <div className="flex-grow overflow-y-auto custom-scrollbar -mr-1 pr-1">
+      {/* Chat History */}
+      <div className="flex-grow overflow-y-auto custom-scrollbar pr-1">
         {isLoading && (
           <div className="p-2 text-sm text-text-secondary">
             Loading chats...
           </div>
         )}
         {Object.entries(groupedSessions).map(([groupName, sessionsInGroup]) => (
-          <div key={groupName} className="mb-3">
-            <h4 className="px-2 pb-1 text-xs font-semibold text-text-secondary">
+          <div key={groupName} className="mb-5">
+            {" "}
+            {/* Increased bottom spacing between groups */}
+            <h4
+              className="px-2 pt-2 pb-2 mb-2 text-xs font-semibold text-text-secondary 
+      bg-element-bg/40 rounded-md"
+            >
               {groupName}
             </h4>
             <ul className="space-y-1">
@@ -131,10 +135,10 @@ export default function SecondarySidebar() {
                   <button
                     onClick={() => handleSelectSession(session.thread_id)}
                     className={cn(
-                      "w-full truncate rounded-md p-2 text-left text-sm transition-colors",
+                      "w-full truncate rounded-md p-2 text-left text-sm transition-all duration-300",
                       threadId === session.thread_id
-                        ? "bg-element-bg text-text-primary"
-                        : "text-text-secondary hover:bg-element-bg-hover hover:text-text-primary"
+                        ? "bg-cyan-500 text-white shadow-md shadow-cyan-500/30 scale-[1.02]"
+                        : "text-text-secondary hover:bg-element-bg-hover hover:text-text-primary hover:shadow-sm hover:shadow-cyan-500/10"
                     )}
                   >
                     {session.summary || "New Chat"}

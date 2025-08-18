@@ -25,11 +25,9 @@ async function getStockDetails(stockId: string) {
   }
 }
 
-// THE FIX IS THIS 'async' KEYWORD
-export default async function StockDetailPage({
-  params,
-}: StockDetailPageProps) {
-  const stockData = await getStockDetails(params.stockId);
+export default async function StockDetailPage(props: StockDetailPageProps) {
+  const { stockId } = await props.params; // ✅ params is awaited
+  const stockData = await getStockDetails(stockId);
 
   if (!stockData) {
     notFound();

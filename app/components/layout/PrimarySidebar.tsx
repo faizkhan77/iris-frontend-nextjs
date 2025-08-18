@@ -10,11 +10,11 @@ import {
   BarChartHorizontalBig,
 } from "lucide-react";
 import { useAppStore, PrimaryTab } from "@/app/lib/store";
-import { cn } from "@/lib/utils"; // Assuming you have a cn utility from shadcn/ui or similar
+import { cn } from "@/lib/utils";
 import IrisLogo from "../IrisLogo";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-// Reusable button component for the sidebar
 interface SidebarButtonProps {
   icon: React.ReactNode;
   label: string;
@@ -32,10 +32,10 @@ const SidebarButton = ({
     onClick={onClick}
     title={label}
     className={cn(
-      "flex h-12 w-12 items-center justify-center rounded-lg transition-colors",
+      "relative flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 ease-out",
       isActive
-        ? "bg-element-bg text-text-primary"
-        : "text-text-secondary hover:bg-element-bg hover:text-text-primary"
+        ? "bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/40 scale-105"
+        : "text-text-secondary hover:bg-element-bg hover:scale-105 hover:text-text-primary hover:shadow-md hover:shadow-cyan-500/20"
     )}
   >
     {icon}
@@ -43,18 +43,23 @@ const SidebarButton = ({
 );
 
 export default function PrimarySidebar() {
-  const { activePrimaryTab, setActivePrimaryTab, toggleSecondarySidebar } =
-    useAppStore();
+  const {
+    user,
+    activePrimaryTab,
+    setActivePrimaryTab,
+    toggleSecondarySidebar,
+  } = useAppStore();
   const { theme, setTheme } = useTheme();
+  const router = useRouter();
 
   const handleTabClick = (tab: PrimaryTab) => {
     setActivePrimaryTab(tab);
+    if (tab !== "profile") {
+      router.push("/");
+    }
   };
 
-  // --- NEW LOGIC FOR THE IRIS BUTTON ---
   const handleIrisTabClick = () => {
-    // If we are already on the iris tab, toggle the sidebar.
-    // Otherwise, switch to the iris tab (which will automatically open the sidebar).
     if (activePrimaryTab === "iris") {
       toggleSecondarySidebar();
     } else {
@@ -62,12 +67,26 @@ export default function PrimarySidebar() {
     }
   };
 
+  const handleProfileClick = () => {
+    if (user && user.user_id) {
+      setActivePrimaryTab("profile");
+      router.push(`/profile/${user.user_id}`);
+    } else {
+      console.error("User not found, cannot navigate to profile.");
+      router.push("/login");
+    }
+  };
+
   return (
-    <nav className="fixed left-0 top-0 z-50 flex h-full w-20 flex-col items-center justify-between border-r border-element-border bg-sidebar-primary-bg p-4">
-      {/* Top section: Logo and main navigation */}
-      <div className="flex flex-col items-center space-y-4">
+    <nav
+      className="fixed left-0 top-0 z-50 flex h-full w-20 flex-col items-center justify-between 
+      border-r border-element-border bg-gradient-to-b from-sidebar-primary-bg to-sidebar-primary-bg/90 p-4
+      shadow-lg animate-slide-in"
+    >
+      {/* Top Section */}
+      <div className="flex flex-col items-center space-y-5">
         <div className="flex h-12 w-12 items-center justify-center rounded-lg">
-          {theme && ( // Only render the image if the theme has been loaded on the client
+          {theme && (
             <Image
               src={
                 theme === "dark"
@@ -77,13 +96,13 @@ export default function PrimarySidebar() {
               alt="IRIS Logo"
               width={88}
               height={88}
+              className="transition-transform duration-500 hover:rotate-6"
             />
           )}
         </div>
 
         <div className="h-px w-8 bg-element-border"></div>
 
-        {/* --- THIS BUTTON NOW USES THE NEW HANDLER --- */}
         <SidebarButton
           label="IRIS Chat"
           icon={<IrisLogo className="text-xl" />}
@@ -97,6 +116,7 @@ export default function PrimarySidebar() {
           isActive={activePrimaryTab === "screener"}
           onClick={() => handleTabClick("screener")}
         />
+
         <SidebarButton
           label="Analysis"
           icon={<LayoutGrid className="h-6 w-6" />}
@@ -105,14 +125,15 @@ export default function PrimarySidebar() {
         />
       </div>
 
-      {/* Bottom section: Theme and Profile */}
+      {/* Bottom Section */}
       <div className="flex flex-col items-center space-y-4">
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           title={
             theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"
           }
-          className="flex h-12 w-12 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-element-bg hover:text-text-primary"
+          className="flex h-12 w-12 items-center justify-center rounded-lg text-text-secondary 
+          transition-all duration-300 hover:bg-element-bg hover:text-text-primary hover:rotate-12"
         >
           {theme === "light" ? (
             <Moon className="h-6 w-6" />
@@ -120,14 +141,15 @@ export default function PrimarySidebar() {
             <Sun className="h-6 w-6" />
           )}
         </button>
+
         <button
-          onClick={() => handleTabClick("profile")}
+          onClick={handleProfileClick}
           title="Profile"
           className={cn(
-            "flex h-12 w-12 items-center justify-center rounded-full bg-element-bg transition-colors",
+            "flex h-12 w-12 items-center justify-center rounded-full bg-element-bg transition-all duration-300",
             activePrimaryTab === "profile"
-              ? "ring-2 ring-accent"
-              : "hover:ring-2 hover:ring-accent"
+              ? "ring-2 ring-cyan-500 shadow-lg shadow-cyan-500/30 scale-105"
+              : "hover:ring-2 hover:ring-cyan-500/50 hover:shadow-md hover:shadow-cyan-500/20 hover:scale-105"
           )}
         >
           <User className="h-6 w-6 text-text-secondary" />

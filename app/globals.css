@@ -409,6 +409,69 @@ body {
   }
 }
 
+/* Add animation keyframe in globals.css */
+@keyframes slide-in {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.4s ease-out;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.35s ease-out;
+}
+
+/* Optional scrollbar styling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.4);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.6);
+}
+
+
+.blob-2 {
+  width: 100px;
+  aspect-ratio: 1;
+  border: 10px solid #0000;
+  background: 
+    radial-gradient(farthest-side,#0dd3ff 98%,#0000 ) 0    0/30px 30px,
+    radial-gradient(farthest-side,#0dd3ff 98%,#0000 ) 100% 0/30px 30px,
+    radial-gradient(farthest-side,#0dd3ff 98%,#0000 ) 100% 100%/30px 30px,
+    radial-gradient(farthest-side,#0dd3ff 98%,#0000 ) 0 100%/30px 30px,
+    linear-gradient(#0dd3ff 0 0) center/40px 40px,
+    #111213;
+  background-repeat:no-repeat;
+  filter: blur(4px) contrast(10);
+  animation: b2 0.8s infinite;
+}
+@keyframes b2 {
+  100%  {background-position:100% 0,100% 100%,0 100%,0 0,center}
+}
+
 .loader-letter {
   display: inline-block;
   opacity: 0.4;
