@@ -53,6 +53,14 @@ export default function PrimarySidebar() {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   const handleTabClick = (tab: PrimaryTab) => {
     setActivePrimaryTab(tab);
     if (tab !== "profile") {

@@ -10,7 +10,7 @@ import { fetchScreenerStrategies } from "./lib/api";
 
 // import ChatFooter from "./components/ChatInputForm";
 import { AnimatedAIChat } from "./components/WelcomeScreen";
-
+fetchScreenerStrategies;
 import { useAppStore } from "./lib/store";
 import { v4 as uuidv4 } from "uuid";
 import {
