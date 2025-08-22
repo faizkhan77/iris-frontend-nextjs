@@ -1,9 +1,10 @@
 // lib/api.ts
-import { ScreenCategory, Stock } from "./types"; 
+import { ScreenCategory } from "./types"; 
 import { UiComponent } from "../components/ChatMessages";
 
 
 const API_BASE_URL = "http://localhost:8000";
+// const API_BASE_URL = "https://irisapi.brainfogagency.com";
 
 
 export const fetchScreenerStrategies = async (): Promise<Record<string, Screen[]>> => {

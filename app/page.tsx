@@ -146,7 +146,7 @@ export default function MainPage() {
       try {
         const strategiesData = await fetchScreenerStrategies();
         const categories = Object.entries(strategiesData).map(
-          ([title, screens]) => ({ title, screens })
+          ([title, screens]) => ({ title, screens: screens })
         );
         setScreenerCategories(categories);
       } catch (error) {

@@ -13,6 +13,7 @@ import { useAppStore, PrimaryTab } from "@/app/lib/store";
 import { cn } from "@/lib/utils";
 import IrisLogo from "../IrisLogo";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface SidebarButtonProps {

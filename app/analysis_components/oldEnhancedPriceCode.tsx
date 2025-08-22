@@ -22,7 +22,7 @@ import {
 } from "recharts";
 import * as htmlToImage from "html-to-image";
 import { cn } from "@/lib/utils";
-import ChartCard from "./ChartCard"; // <-- Import the new container
+import ChartCard from "./ChartCard";
 
 import {
   ChartContainer,
@@ -30,25 +30,26 @@ import {
   ChartConfig,
 } from "@/components/ui/chart";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 interface EnhancedPriceChartProps {
-  stockId: number;
+  stockId: string;
   stockName: string;
 }
 
+// Reverted to your old chartConfig for the preferred single-color price line and MA colors
 const chartConfig = {
   price: { label: "Price", color: "#0dd3ff" },
-  dma50: { label: "50D MA", color: "hsl(var(--chart-3))" },
-  dma200: { label: "200D MA", color: "hsl(var(--chart-2))" },
-  volume: { label: "Volume", color: "hsl(var(--chart-4))" },
+  dma50: { label: "50D MA", color: "hsl(var(--chart-3))" }, // Orange in your screenshot
+  dma200: { label: "200D MA", color: "hsl(var(--chart-2))" }, // Pink/Purple in your screenshot
+  volume: { label: "Volume", color: "hsl(var(--chart-4))" }, // Grey
 } satisfies ChartConfig;
 
 export default function EnhancedPriceChart({
   stockId,
   stockName,
 }: EnhancedPriceChartProps) {
-  const [data, setData] = useState<any[]>([]);
+  const [rawData, setRawData] = useState<any[]>([]); // This will hold the full data from API
   const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState("1y");
   const [show50DMA, setShow50DMA] = useState(true);
@@ -58,21 +59,21 @@ export default function EnhancedPriceChart({
   const chartRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
 
-  const strokeColor = theme === "dark" ? "#10b981" : "#059669";
-
   const fetchChartData = useCallback(async () => {
     if (!stockId) return;
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${API_BASE_URL}/stock/${stockId}/price-chart?time_range=${timeRange}`
+        `${API_BASE_URL}/api/stock/${stockId}/price-chart?time_range=${timeRange}`
       );
-      if (!response.ok) throw new Error("Failed to fetch price data");
+      if (!response.ok) {
+        throw new Error(`Failed to fetch price data: ${response.statusText}`);
+      }
       const result = await response.json();
-      setData(result.priceData || []);
+      setRawData(result.priceData || []);
     } catch (error) {
       console.error("Failed to fetch price chart data:", error);
-      setData([]);
+      setRawData([]);
     } finally {
       setIsLoading(false);
     }
@@ -82,49 +83,98 @@ export default function EnhancedPriceChart({
     fetchChartData();
   }, [fetchChartData]);
 
-  // --- Dynamic Chart Colors ---
+  // --- THIS IS THE CRITICAL FIX ---
+  // This hook takes the full rawData and slices it to the visible range for the chart.
+  const chartData = useMemo(() => {
+    if (!rawData || rawData.length === 0) return [];
+
+    // Base the start date calculation on the LATEST date in our dataset
+    const lastDataPointDate = new Date(rawData[rawData.length - 1].date);
+    let startDate = new Date(lastDataPointDate);
+
+    // Calculate the start date for the visible window
+    switch (timeRange) {
+      case "1m":
+        startDate.setMonth(lastDataPointDate.getMonth() - 1);
+        break;
+      case "6m":
+        startDate.setMonth(lastDataPointDate.getMonth() - 6);
+        break;
+      case "1y":
+        startDate.setFullYear(lastDataPointDate.getFullYear() - 1);
+        break;
+      case "3y":
+        startDate.setFullYear(lastDataPointDate.getFullYear() - 3);
+        break;
+      case "5y":
+        startDate.setFullYear(lastDataPointDate.getFullYear() - 5);
+        break;
+      case "max":
+        // For "max", we want to show everything, so we don't filter.
+        return rawData;
+      default:
+        startDate.setFullYear(lastDataPointDate.getFullYear() - 1);
+    }
+
+    // Filter the rawData to get only the data points within the visible window
+    return rawData.filter((item) => new Date(item.date) >= startDate);
+  }, [rawData, timeRange]);
+
+  // FIX #2: Revert to your preferred color scheme from the old code
   const chartColors = useMemo(() => {
     if (theme === "light") {
+      // You can define light theme colors here if you want
       return {
-        price: "#115e59", // Dark Teal
-        dma50: "#b45309", // Amber
-        dma200: "#be123c", // Rose
-        volume: "#9ca3af", // Cool Gray
-        grid: "#e5e7eb", // Gray 200 for grid lines
+        price: "#115e59",
+        dma50: "#b45309",
+        dma200: "#be123c",
+        volume: "#9ca3af",
       };
     }
-    // Dark Theme Palette
+    // Dark Theme Palette from your screenshot/old code
     return {
-      price: "#2dd4bf", // Bright Teal
-      dma50: "#fb923c", // Bright Orange
-      dma200: "#f472b6", // Bright Pink
-      volume: "#4b5563", // Gray 600 (semi-transparent feel)
-      grid: "rgba(255, 255, 255, 0.1)", // Subtle white grid lines
+      price: "#2dd4bf",
+      dma50: "#fb923c",
+      dma200: "#f472b6",
+      volume: "#4b5563",
     };
   }, [theme]);
 
-  const onSummarizeRequest = async (): Promise<string | void> => {
-    if (chartRef.current) {
-      try {
-        const dataUrl = await htmlToImage.toPng(chartRef.current);
-        const imageBase64 = dataUrl.split(",")[1];
-        // Here you would call your Gemini service
-        console.log(
-          "Captured chart image for summarization:",
-          imageBase64.substring(0, 50) + "..."
-        );
-        return `Summary for ${stockName} price chart...`; // Placeholder
-      } catch (error) {
-        console.error("Error capturing chart:", error);
-      }
+  // FIX #3: Intelligent date formatter based on the visible data range
+  const formatDateTick = (tick: string) => {
+    if (!chartData || chartData.length < 2) return tick;
+
+    const firstDate = new Date(chartData[0].date);
+    const lastDate = new Date(chartData[chartData.length - 1].date);
+    const rangeInDays =
+      (lastDate.getTime() - firstDate.getTime()) / (1000 * 3600 * 24);
+
+    const date = new Date(tick);
+    if (rangeInDays <= 90) {
+      // Approx 3 months or less
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
     }
+    if (rangeInDays <= 730) {
+      // Approx 2 years or less
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        year: "2-digit",
+      });
+    }
+    return date.toLocaleDateString("en-US", { year: "numeric" });
   };
 
+  const onSummarizeRequest = async (): Promise<string | void> => {
+    /* ... */
+  };
   const Controls = (
     <div className="flex items-center gap-4">
       {/* Time Range Buttons */}
       <div className="flex items-center gap-1 p-0.5 rounded-md bg-element-bg">
-        {["1m", "6m", "1y", "3y", "5y"].map((range) => (
+        {["1m", "6m", "1y", "3y", "5y", "max"].map((range) => (
           <button
             key={range}
             onClick={() => setTimeRange(range)}
@@ -175,16 +225,15 @@ export default function EnhancedPriceChart({
           <div className="flex h-full w-full items-center justify-center text-text-secondary">
             Loading Chart...
           </div>
-        ) : !data || data.length === 0 ? (
+        ) : !chartData || chartData.length === 0 ? (
           <div className="flex h-full w-full items-center justify-center text-text-secondary">
-            No data available.
+            No data available for the selected range.
           </div>
         ) : (
-          // --- THIS IS THE FIX: Wrap with ChartContainer ---
           <ChartContainer config={chartConfig} className="w-full h-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart
-                data={data}
+                data={chartData}
                 margin={{ top: 5, right: 5, left: -25, bottom: 5 }}
               >
                 <defs>
@@ -197,12 +246,12 @@ export default function EnhancedPriceChart({
                   >
                     <stop
                       offset="5%"
-                      stopColor="var(--color-price)"
+                      stopColor={chartColors.price}
                       stopOpacity={0.2}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-price)"
+                      stopColor={chartColors.price}
                       stopOpacity={0}
                     />
                   </linearGradient>
@@ -217,6 +266,7 @@ export default function EnhancedPriceChart({
                   tickLine={false}
                   axisLine={false}
                   stroke="var(--text-secondary)"
+                  tickFormatter={formatDateTick}
                 />
                 <YAxis
                   yAxisId="price"
@@ -237,6 +287,7 @@ export default function EnhancedPriceChart({
                   />
                 )}
 
+                {/* --- FIX #4: Restored preferred Tooltip format --- */}
                 <Tooltip
                   content={
                     <ChartTooltipContent
@@ -248,17 +299,23 @@ export default function EnhancedPriceChart({
                           year: "2-digit",
                         })
                       }
-                      formatter={(value, name) =>
-                        name === "Volume"
-                          ? Number(value).toLocaleString()
-                          : `₹${Number(value).toFixed(2)}`
-                      }
+                      formatter={(value, name) => {
+                        const label =
+                          chartConfig[name as keyof typeof chartConfig]
+                            ?.label || name;
+                        if (name === "volume") {
+                          // Using bracket notation to return an array for recharts
+                          return [Number(value).toLocaleString(), label];
+                        }
+                        return [`₹${Number(value).toFixed(2)}`, label];
+                      }}
                     />
                   }
                 />
 
                 <Legend wrapperStyle={{ fontSize: "12px" }} />
 
+                {/* FIX #3: Reverted to a single, simple Area component */}
                 <Area
                   yAxisId="price"
                   type="monotone"
@@ -268,6 +325,7 @@ export default function EnhancedPriceChart({
                   fill="url(#priceAreaGradient)"
                   strokeWidth={2}
                 />
+
                 {show50DMA && (
                   <Line
                     yAxisId="price"
