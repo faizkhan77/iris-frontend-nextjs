@@ -37,6 +37,12 @@
   --accent-foreground: #ffffff; /* Same for both themes */
   --radius: 0.75rem;
 
+  --chart-1: 220 90% 50%; /* Blue */
+  --chart-2: 160 80% 40%; /* Green */
+  --chart-3: 0 80% 50%;   /* Red */
+  --chart-4: 35 90% 55%;  /* Orange */
+  --chart-5: 260 85% 60%; /* Purple */
+
   /* --- 
     LIGHT THEME MAPPING (DEFAULT)
     These variables are used by your components. We map them to our Light Theme palette.
@@ -124,6 +130,12 @@
   --text-secondary: var(--dark-text-secondary);
   --text-tertiary: var(--dark-text-tertiary);
   --text-on-accent: var(--accent-foreground);
+
+  --chart-1: 210 80% 70%; /* Lighter Blue */
+  --chart-2: 140 70% 60%; /* Lighter Green */
+  --chart-3: 0 80% 70%;   /* Lighter Red */
+  --chart-4: 40 90% 65%;  /* Lighter Orange */
+  --chart-5: 270 80% 75%; /* Lighter Purple */
 }
 
 

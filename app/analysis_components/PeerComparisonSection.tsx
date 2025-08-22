@@ -19,18 +19,17 @@ import {
   ChartTooltipContent,
   ChartConfig,
 } from "@/components/ui/chart";
+import { cn } from "@/lib/utils";
 
-// Define the data shapes for type safety
 interface Peer {
   id: number;
   name: string;
-  cmp: number;
-  pe: number;
+  cmp: number | string;
+  pe: number | string;
   marketCapFormatted?: string;
-  marketCap?: number;
-  dividendYield: number;
-  roce: number;
-  // Add other properties from your API
+  dividendYield: number | string;
+  roce: number | string;
+  qtrProfitVar: number | string; // New field for profit variance
   [key: string]: any;
 }
 
@@ -107,10 +106,16 @@ export default function PeerComparisonSection({
 
   const tableHeaders = [
     { label: "Name", key: "name" },
-    { label: "CMP (Rs)", key: "cmp", numeric: true },
+    { label: "CMP (₹)", key: "cmp", numeric: true },
     { label: "P/E", key: "pe", numeric: true },
     { label: "Market Cap (Cr)", key: "marketCapFormatted", numeric: true },
     { label: "Div Yield (%)", key: "dividendYield", numeric: true },
+    {
+      label: "Qtr Profit Var (%)",
+      key: "qtrProfitVar",
+      numeric: true,
+      isColored: true,
+    }, // New variance column
     { label: "ROCE (%)", key: "roce", numeric: true },
   ];
 
@@ -227,20 +232,42 @@ export default function PeerComparisonSection({
           <tbody className="bg-content-bg divide-y divide-element-border">
             {peerComparisonData.map((peer, index) => (
               <tr key={peer.id || index} className="hover:bg-element-bg/50">
-                {tableHeaders.map((header) => (
-                  <td
-                    key={header.key}
-                    className={`px-4 py-3 whitespace-nowrap ${
-                      header.numeric ? "text-right" : "text-left"
-                    } ${
-                      header.key === "name"
-                        ? "font-semibold text-text-primary"
-                        : "text-text-secondary"
-                    }`}
-                  >
-                    {peer[header.key] ?? "N/A"}
-                  </td>
-                ))}
+                {tableHeaders.map((header) => {
+                  const value = peer[header.key] ?? "N/A";
+
+                  // --- THIS IS THE NEW CONDITIONAL COLORING LOGIC ---
+                  let textColorClass = "text-text-secondary";
+                  if (header.key === "name") {
+                    textColorClass = "font-semibold text-text-primary";
+                  }
+                  if (header.isColored && typeof value === "number") {
+                    textColorClass =
+                      value > 0
+                        ? "text-success"
+                        : value < 0
+                        ? "text-destructive"
+                        : "text-text-secondary";
+                  }
+
+                  return (
+                    <td
+                      key={header.key}
+                      className={cn(
+                        "px-4 py-3 whitespace-nowrap",
+                        header.numeric ? "text-right" : "text-left",
+                        textColorClass
+                      )}
+                    >
+                      {/* Format numbers to 2 decimal places if they are numbers */}
+                      {typeof value === "number"
+                        ? value.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
+                        : value}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>

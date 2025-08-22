@@ -38,9 +38,9 @@ interface KeyMetricsGridProps {
     currentPrice?: number;
     bookValueFormatted?: string;
     yearHighLow?: string;
-    dividendYieldFormatted?: string;
-    roceFormatted?: string;
-    roeFormatted?: string;
+    dividendYield?: number;
+    roce?: number;
+    roe?: number;
     rsiValue?: number;
     faceValue?: number;
   };
@@ -57,9 +57,9 @@ export default function KeyMetricsGrid({ stockData }: KeyMetricsGridProps) {
     { label: "Current Price", value: stockData.currentPrice, unit: "₹" },
     { label: "Book Value", value: stockData.bookValueFormatted },
     { label: "52W High/Low", value: stockData.yearHighLow },
-    { label: "Div Yield", value: stockData.dividendYieldFormatted, unit: "%" },
-    { label: "ROCE", value: stockData.roceFormatted, unit: "%" },
-    { label: "ROE", value: stockData.roeFormatted, unit: "%" },
+    { label: "Div Yield", value: stockData.dividendYield, unit: "%" },
+    { label: "ROCE", value: stockData.roce, unit: "%" },
+    { label: "ROE", value: stockData.roe, unit: "%" },
     { label: "RSI (14)", value: stockData.rsiValue },
     { label: "Face Value", value: stockData.faceValue, unit: "₹" },
   ];
