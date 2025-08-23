@@ -30,6 +30,11 @@ import {
   type TechnicalSummaryData,
 } from "./genui/TechnicalSummaryCard";
 
+import {
+  SentimentAnalysisCard,
+  type SentimentAnalysisData,
+} from "./genui/SentimentAnalysisCard";
+
 // The UI Component and Message types remain unchanged
 export type UiComponent =
   | { type: "stock_price_chart"; title: string; data: StockPriceDataPoint[] }
@@ -55,6 +60,11 @@ export type UiComponent =
       type: "technical_summary_card";
       title: string;
       data: TechnicalSummaryData;
+    }
+  | {
+      type: "sentiment_analysis_card";
+      title: string;
+      data: SentimentAnalysisData;
     };
 
 export interface Message {
@@ -148,6 +158,14 @@ const renderUiComponent = (
     case "technical_summary_card":
       return (
         <TechnicalSummaryCard
+          key={index}
+          title={component.title}
+          data={component.data}
+        />
+      );
+    case "sentiment_analysis_card":
+      return (
+        <SentimentAnalysisCard
           key={index}
           title={component.title}
           data={component.data}

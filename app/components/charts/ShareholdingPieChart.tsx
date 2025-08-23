@@ -26,6 +26,7 @@ export interface ShareholdingDataItem {
 interface ShareholdingPieChartProps {
   data: ShareholdingDataItem[];
   title: string;
+  description?: string;
   animationDuration?: number;
 }
 
@@ -62,6 +63,7 @@ const generateChartConfig = (data: ShareholdingDataItem[]): ChartConfig => {
 export function ShareholdingPieChart({
   data,
   title,
+  description,
   animationDuration = 800,
 }: ShareholdingPieChartProps) {
   // Generate the config dynamically from the passed-in data
@@ -83,7 +85,8 @@ export function ShareholdingPieChart({
       <CardHeader className="items-center pb-0">
         <CardTitle className="text-gray-200">{title}</CardTitle>
         <CardDescription className="text-gray-400">
-          Latest available shareholding breakdown
+          {description || "Latest available data breakdown"}{" "}
+          {/* Fallback text */}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
