@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import TypingAnimation from "./TypingAnimation";
+import LoadingJourney from "./LoadingJourney";
 import { User, BotMessageSquare } from "lucide-react";
 import ClarificationTabs from "./ClarificationTabs";
 import { cn } from "@/lib/utils";
@@ -94,6 +95,7 @@ export interface Message {
   isThinkingPlaceholder?: boolean;
   uiComponents?: UiComponent[];
   messageId?: number;
+  route?: string;
 }
 
 interface ChatMessagesProps {
@@ -276,7 +278,11 @@ export default function ChatMessages({
                     })}
                   >
                     {msg.isThinkingPlaceholder ? (
-                      <TypingAnimation />
+                      msg.route ? (
+                        <LoadingJourney route={msg.route || "unknown"} />
+                      ) : (
+                        <TypingAnimation />
+                      )
                     ) : (
                       <>
                         <div className="prose prose-sm md:prose-base max-w-none prose-p:my-2 prose-headings:my-3">

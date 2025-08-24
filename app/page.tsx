@@ -65,6 +65,29 @@ const sidebarVariants = {
   },
 };
 
+function guessRouteFromInput(input: string): string {
+  const lowerInput = input.toLowerCase();
+  if (lowerInput.includes("should i buy") || lowerInput.includes("compare"))
+    return "cross_agent_reasoning";
+  if (
+    lowerInput.includes("technicals") ||
+    lowerInput.includes("rsi") ||
+    lowerInput.includes("macd")
+  )
+    return "technicals";
+  if (
+    lowerInput.includes("fundamentals") ||
+    lowerInput.includes("p/e") ||
+    lowerInput.includes("market cap")
+  )
+    return "fundamentals";
+  if (lowerInput.includes("sentiment") || lowerInput.includes("news"))
+    return "sentiment";
+  if (lowerInput.includes("what is") || lowerInput.includes("explain"))
+    return "knowledge_base";
+  return "unknown"; // Default
+}
+
 export default function MainPage() {
   const router = useRouter();
   const {
@@ -280,6 +303,7 @@ export default function MainPage() {
       timestamp: new Date(),
     };
     const assistantMessageId = uuidv4();
+    const guessedRoute = guessRouteFromInput(input);
     setMessages((prev) => [
       ...prev,
       userMessage,
@@ -290,11 +314,13 @@ export default function MainPage() {
         timestamp: new Date(),
         isThinkingPlaceholder: true,
         uiComponents: [],
+        route: guessedRoute,
       },
     ]);
     setIsLoading(true);
 
     let accumulatedText = "";
+    let finalRoute = guessedRoute;
     try {
       await streamChatResponse(
         { user_identifier: user.email, user_input: input, thread_id: threadId },
@@ -333,16 +359,31 @@ export default function MainPage() {
           },
 
           // --- MODIFICATION: Handle the new message_complete event ---
-          onMessageComplete: (data: { messageId: number }) => {
+          onMessageComplete: (data: { messageId: number; route: string }) => {
             setMessages((prev) =>
               prev.map((msg) =>
                 msg.id === assistantMessageId
-                  ? { ...msg, messageId: data.messageId }
+                  ? { ...msg, messageId: data.messageId, route: data.route }
                   : msg
               )
             );
+            finalRoute = data.route;
           },
           onClose: () => {
+            // When the stream is fully closed, update the message
+            // with the final text AND the true route.
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantMessageId
+                  ? {
+                      ...msg,
+                      content: accumulatedText,
+                      isThinkingPlaceholder: false,
+                      route: finalRoute,
+                    }
+                  : msg
+              )
+            );
             setIsLoading(false);
           },
         }
