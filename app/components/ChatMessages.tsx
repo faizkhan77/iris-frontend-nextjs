@@ -39,6 +39,11 @@ import {
   type FundamentalAnalysisData,
 } from "./genui/FundamentalAnalysisCard";
 
+import {
+  CrossAgentAnalysisCard,
+  type CrossAgentAnalysisData,
+} from "./genui/CrossAgentAnalysisCard";
+
 // The UI Component and Message types remain unchanged
 export type UiComponent =
   | { type: "stock_price_chart"; title: string; data: StockPriceDataPoint[] }
@@ -74,6 +79,11 @@ export type UiComponent =
       type: "fundamental_analysis_card";
       title: string;
       data: FundamentalAnalysisData;
+    }
+  | {
+      type: "cross_agent_analysis_card";
+      title: string;
+      data: CrossAgentAnalysisData;
     };
 
 export interface Message {
@@ -188,6 +198,14 @@ const renderUiComponent = (
           data={component.data}
         />
       );
+    case "cross_agent_analysis_card":
+      return (
+        <CrossAgentAnalysisCard
+          key={index}
+          title={component.title}
+          data={component.data}
+        />
+      );
     default:
       const _exhaustiveCheck: never = component;
       return null;
@@ -209,7 +227,8 @@ export default function ChatMessages({
             msg.uiComponents &&
             msg.uiComponents.length === 1 &&
             (msg.uiComponents[0].type === "technical_summary_card" ||
-              msg.uiComponents[0].type === "fundamental_analysis_card");
+              msg.uiComponents[0].type === "fundamental_analysis_card" ||
+              msg.uiComponents[0].type === "cross_agent_analysis_card");
 
           return (
             <motion.div
