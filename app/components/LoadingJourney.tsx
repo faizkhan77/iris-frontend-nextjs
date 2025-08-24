@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, BrainCircuit, FileText, Newspaper, Zap } from "lucide-react";
-import { cn } from "@/lib/utils";
 import TypingAnimation from "./TypingAnimation";
 
 // --- Configuration for each journey ---
@@ -51,7 +50,6 @@ const journeys = {
     ],
     icon: Bot,
   },
-  // Default/fallback journey
   unknown: {
     steps: [
       { text: "Analyzing your query...", duration: 2000 },
@@ -61,7 +59,6 @@ const journeys = {
     icon: Bot,
   },
 };
-// Add knowledge_base, save_ltm etc. as copies of 'general' or 'unknown' if you want them to have a loader
 journeys.knowledge_base = journeys.general;
 journeys.save_ltm = {
   steps: [{ text: "Saving to memory...", duration: 2000 }],
@@ -79,39 +76,53 @@ export default function LoadingJourney({ route }: LoadingJourneyProps) {
   const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
-    // This effect runs the timer for the current step
     const timer = setTimeout(() => {
-      setCurrentStep((prevStep) => (prevStep + 1) % journey.steps.length);
+      setCurrentStep((prev) => (prev + 1) % journey.steps.length);
     }, journey.steps[currentStep].duration);
 
-    return () => clearTimeout(timer); // Cleanup on component unmount or step change
+    return () => clearTimeout(timer);
   }, [currentStep, journey]);
 
   return (
     <div className="mt-4 space-y-3">
+      {/* Typing dots animation */}
       <TypingAnimation />
-      <div className="flex items-center text-xs text-text-secondary pl-4">
-        <div className="flex h-5 w-5 items-center justify-center mr-2">
+
+      <div className="flex items-center text-xs sm:text-sm text-text-secondary pl-4">
+        {/* Animated icon */}
+        <div className="flex h-6 w-6 items-center justify-center mr-3">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, scale: 0.5, rotate: -15 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              exit={{ opacity: 0, scale: 0.5, rotate: 15 }}
+              transition={{ duration: 0.4 }}
+              className="drop-shadow-lg"
             >
-              <journey.icon size={16} className="text-cyan-400" />
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.8,
+                  ease: "easeInOut",
+                }}
+              >
+                <journey.icon size={18} className="text-cyan-400" />
+              </motion.div>
             </motion.div>
           </AnimatePresence>
         </div>
-        <AnimatePresence mode="out-in">
+
+        {/* Step text */}
+        <AnimatePresence mode="wait">
           <motion.p
             key={currentStep}
-            initial={{ y: 10, opacity: 0 }}
+            initial={{ y: 8, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="font-mono"
+            exit={{ y: -8, opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="font-mono tracking-wide text-text-primary"
           >
             {journey.steps[currentStep].text}
           </motion.p>

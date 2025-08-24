@@ -4,8 +4,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { useAppStore } from "../lib/store";
-import { loginUser } from "../lib/api";
+import { useAppStore } from "../../lib/store";
+import { loginUser } from "../../lib/api";
 import { HeroGeometric } from "@/components/ui/shape-landing-hero";
 
 export default function LoginPage() {
@@ -15,6 +15,8 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const setUser = useAppStore((state) => state.setUser);
   const router = useRouter();
+
+  const login = useAppStore((state) => state.login);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +29,7 @@ export default function LoginPage() {
     try {
       const userData = await loginUser({ email, name: name || undefined });
       setUser(userData);
+      login(userData);
       router.push("/");
       setIsLoading(false); // add here
     } catch (err: unknown) {
@@ -63,7 +66,9 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="Your email address"
-              className="w-full px-4 py-3 bg-black/30 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+              className="w-full px-4 py-3 bg-black/30 rounded-lg border border-white/10 
+             focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all 
+             text-white placeholder-gray-400"
             />
           </div>
           <div>
@@ -73,7 +78,9 @@ export default function LoginPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name (optional)"
-              className="w-full px-4 py-3 bg-black/30 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+              className="w-full px-4 py-3 bg-black/30 rounded-lg border border-white/10 
+             focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all 
+             text-white placeholder-gray-400"
             />
           </div>
           {error && <p className="text-sm text-red-400 text-center">{error}</p>}

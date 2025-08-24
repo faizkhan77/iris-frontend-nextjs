@@ -9,6 +9,8 @@ import { User, BotMessageSquare } from "lucide-react";
 import ClarificationTabs from "./ClarificationTabs";
 import { cn } from "@/lib/utils";
 import { Share2, Download } from "lucide-react";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 
 import VerticalSuggestionTabs from "../analysis_components/VerticalSuggestionTabs";
 
@@ -287,7 +289,10 @@ export default function ChatMessages({
                       <>
                         <div className="prose prose-sm md:prose-base max-w-none prose-p:my-2 prose-headings:my-3">
                           <div className="overflow-x-auto">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm, remarkMath]}
+                              rehypePlugins={[rehypeKatex]}
+                            >
                               {msg.content}
                             </ReactMarkdown>
                           </div>

@@ -22,8 +22,9 @@ interface AppState {
   isSecondarySidebarOpen: boolean;
 
   // Existing Actions
+  login: (user: User) => void;
   setUser: (user: User | null) => void;
-  setThreadId: (threadId: string | null) => void;
+  setThreadId: (id: string | null) => void;
   
   // New Actions
   setActivePrimaryTab: (tab: PrimaryTab) => void;
@@ -37,8 +38,12 @@ export const useAppStore = create<AppState>()(
       threadId: null,
       activePrimaryTab: "iris", 
       isSecondarySidebarOpen: true, 
-
-      // --- Actions ---
+      login: (userData: User) =>
+        set({
+          user: userData,
+          threadId: null, // <-- THE KEY FIX: Reset the threadId to null on login
+        }),
+      
       setUser: (user) => set({ user }),
       setThreadId: (threadId) => set({ threadId }),
       
@@ -50,6 +55,7 @@ export const useAppStore = create<AppState>()(
         activePrimaryTab: tab,
         isSecondarySidebarOpen: tab === 'iris' // This is the key logic change
       }),
+      
 
       /**
        * Toggles the secondary sidebar's visibility.

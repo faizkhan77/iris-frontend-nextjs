@@ -6,6 +6,7 @@ import { useAppStore } from "@/app/lib/store";
 import { fetchChatHistory } from "@/app/lib/api";
 import { v4 as uuidv4 } from "uuid";
 import { cn } from "@/app/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Session {
   id: number;
@@ -82,8 +83,7 @@ export default function SecondarySidebar() {
   return (
     <aside
       className="flex h-full w-72 flex-col border-r border-element-border 
-      bg-gradient-to-b from-sidebar-secondary-bg to-sidebar-secondary-bg/95
-      p-3 shadow-lg animate-slide-in"
+      bg-sidebar-secondary-bg p-3 shadow-lg animate-slide-in"
     >
       {/* Header */}
       <div className="flex items-center gap-2 pb-3">
@@ -96,7 +96,7 @@ export default function SecondarySidebar() {
             className="w-full rounded-md border border-element-border bg-background py-2 pl-9 pr-4 text-sm
             text-text-primary placeholder:text-text-tertiary
             focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
-            transition-all duration-300"
+            transition-all duration-300 hover:shadow-sm hover:shadow-cyan-500/20"
           />
         </div>
 
@@ -119,32 +119,41 @@ export default function SecondarySidebar() {
             Loading chats...
           </div>
         )}
+
         {Object.entries(groupedSessions).map(([groupName, sessionsInGroup]) => (
-          <div key={groupName} className="mb-5">
-            {" "}
-            {/* Increased bottom spacing between groups */}
+          <div key={groupName} className="mb-6">
+            {/* Group Header */}
             <h4
-              className="px-2 pt-2 pb-2 mb-2 text-xs font-semibold text-text-secondary 
-      bg-element-bg/40 rounded-md"
+              className="px-2 py-1.5 mb-3 text-xs font-semibold tracking-wide 
+              text-text-secondary uppercase border-b border-element-border/60"
             >
               {groupName}
             </h4>
+
             <ul className="space-y-1">
-              {sessionsInGroup.map((session) => (
-                <li key={session.id}>
-                  <button
-                    onClick={() => handleSelectSession(session.thread_id)}
-                    className={cn(
-                      "w-full truncate rounded-md p-2 text-left text-sm transition-all duration-300",
-                      threadId === session.thread_id
-                        ? "bg-cyan-500 text-white shadow-md shadow-cyan-500/30 scale-[1.02]"
-                        : "text-text-secondary hover:bg-element-bg-hover hover:text-text-primary hover:shadow-sm hover:shadow-cyan-500/10"
-                    )}
+              <AnimatePresence>
+                {sessionsInGroup.map((session) => (
+                  <motion.li
+                    key={session.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    {session.summary || "New Chat"}
-                  </button>
-                </li>
-              ))}
+                    <button
+                      onClick={() => handleSelectSession(session.thread_id)}
+                      className={cn(
+                        "w-full truncate rounded-md p-2 text-left text-sm transition-all duration-300",
+                        threadId === session.thread_id
+                          ? "bg-cyan-500 text-white shadow-md shadow-cyan-500/30 scale-[1.02]"
+                          : "text-text-secondary hover:bg-element-bg-hover hover:text-text-primary hover:shadow-sm hover:shadow-cyan-500/10"
+                      )}
+                    >
+                      {session.summary || "New Chat"}
+                    </button>
+                  </motion.li>
+                ))}
+              </AnimatePresence>
             </ul>
           </div>
         ))}

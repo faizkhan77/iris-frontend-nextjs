@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Send, Lightbulb } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Popover,
   PopoverContent,
@@ -21,13 +21,30 @@ interface ChatInputFormProps {
   isProcessing: boolean;
 }
 
+const rotatingPlaceholders = [
+  "Ask IRIS: Tesla fundamentals 📊",
+  "Where is NIFTY headed? 📈",
+  "Explain RSI like I’m 5 🤔",
+  "Stock valuation of Apple 🍏",
+  "Is this a bull or bear trend? 🐂🐻",
+];
+
 export default function ChatInputForm({
   onSendMessage,
   isProcessing,
 }: ChatInputFormProps) {
   const [inputText, setInputText] = useState("");
-  // --- FIX: State to control the popover's visibility ---
   const [isQuestionHubOpen, setIsQuestionHubOpen] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+
+  // Cycle through placeholders like a ticker
+  useEffect(() => {
+    if (isProcessing || inputText) return;
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % rotatingPlaceholders.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isProcessing, inputText]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,25 +56,26 @@ export default function ChatInputForm({
   const handleSuggestionClick = (question: string) => {
     if (isProcessing) return;
     onSendMessage(question);
-    // --- FIX: Explicitly close the popover after sending the message ---
     setIsQuestionHubOpen(false);
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full max-w-3xl mx-auto px-2 sm:px-4">
       <form
         onSubmit={handleFormSubmit}
-        className="relative flex items-center rounded-2xl border border-element-border bg-background shadow-sm focus-within:ring-1 focus-within:ring-accent dark:bg-sidebar-secondary-bg"
+        className={`relative flex items-center rounded-2xl border 
+        border-element-border bg-background shadow-md 
+        transition-all duration-300 focus-within:ring-2 focus-within:ring-accent 
+        dark:bg-sidebar-secondary-bg`}
       >
-        {/* --- MODIFIED: Question Hub Popover is now a controlled component --- */}
+        {/* Question Hub */}
         <Popover open={isQuestionHubOpen} onOpenChange={setIsQuestionHubOpen}>
           <PopoverTrigger asChild>
             <button
               type="button"
               title="Suggested Questions"
-              className="p-3.5 text-text-secondary hover:text-accent transition-colors"
+              className="p-3 text-text-secondary hover:text-accent transition-colors"
             >
-              {/* --- ENHANCEMENT: Animated, yellow lightbulb --- */}
               <motion.div
                 animate={{ rotate: [0, -10, 10, -10, 0] }}
                 transition={{
@@ -66,15 +84,17 @@ export default function ChatInputForm({
                   ease: "easeInOut",
                 }}
               >
-                <Lightbulb size={18} className="text-yellow-400" />
+                <Lightbulb
+                  size={20}
+                  className="text-yellow-400 drop-shadow-md"
+                />
               </motion.div>
             </button>
           </PopoverTrigger>
           <PopoverContent
-            className="w-[300px] sm:w-[400px] md:w-[500px] mb-2 p-2 rounded-xl border-element-border bg-background shadow-lg dark:bg-sidebar-secondary-bg"
+            className="w-[300px] sm:w-[400px] md:w-[500px] mb-2 p-3 rounded-xl border-element-border bg-background shadow-lg dark:bg-sidebar-secondary-bg"
             side="top"
             align="start"
-            // --- FIX: Add an offset to prevent overlapping the last message ---
             sideOffset={8}
           >
             <div className="p-2">
@@ -118,20 +138,49 @@ export default function ChatInputForm({
           </PopoverContent>
         </Popover>
 
-        <input
-          type="text"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          placeholder={isProcessing ? "IRIS is thinking..." : "Talk to IRIS..."}
-          className="flex-grow py-4 px-2 bg-transparent outline-none text-text-primary placeholder:text-text-tertiary text-sm"
-          disabled={isProcessing}
-        />
+        {/* Input with animated placeholder */}
+        <div className="relative flex-grow px-2">
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            disabled={isProcessing}
+            className="w-full py-4 bg-transparent outline-none text-text-primary text-sm placeholder-transparent"
+          />
+          <AnimatePresence>
+            {!inputText && !isProcessing && (
+              <motion.span
+                key={placeholderIndex}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 0.7, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                transition={{ duration: 0.4 }}
+                className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-text-tertiary pointer-events-none"
+              >
+                {rotatingPlaceholders[placeholderIndex]}
+              </motion.span>
+            )}
+            {isProcessing && (
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.7 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-text-tertiary pointer-events-none"
+              >
+                IRIS is analyzing the markets... ⚡
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Send button */}
         <motion.button
           type="submit"
           title="Send message"
           disabled={!inputText.trim() || isProcessing}
-          className="m-1.5 flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-opacity duration-200 enabled:hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
-          whileTap={{ scale: 0.95 }}
+          className="m-1.5 flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground shadow-sm transition-all duration-200 enabled:hover:bg-accent-hover enabled:hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50"
+          whileTap={{ scale: 0.9 }}
         >
           <Send size={16} />
         </motion.button>
