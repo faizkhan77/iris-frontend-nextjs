@@ -34,6 +34,10 @@ import {
   SentimentAnalysisCard,
   type SentimentAnalysisData,
 } from "./genui/SentimentAnalysisCard";
+import {
+  FundamentalAnalysisCard,
+  type FundamentalAnalysisData,
+} from "./genui/FundamentalAnalysisCard";
 
 // The UI Component and Message types remain unchanged
 export type UiComponent =
@@ -65,6 +69,11 @@ export type UiComponent =
       type: "sentiment_analysis_card";
       title: string;
       data: SentimentAnalysisData;
+    }
+  | {
+      type: "fundamental_analysis_card";
+      title: string;
+      data: FundamentalAnalysisData;
     };
 
 export interface Message {
@@ -171,6 +180,14 @@ const renderUiComponent = (
           data={component.data}
         />
       );
+    case "fundamental_analysis_card":
+      return (
+        <FundamentalAnalysisCard
+          key={index}
+          title={component.title}
+          data={component.data}
+        />
+      );
     default:
       const _exhaustiveCheck: never = component;
       return null;
@@ -191,7 +208,8 @@ export default function ChatMessages({
           const isGenUiOnlyMessage =
             msg.uiComponents &&
             msg.uiComponents.length === 1 &&
-            msg.uiComponents[0].type === "technical_summary_card";
+            (msg.uiComponents[0].type === "technical_summary_card" ||
+              msg.uiComponents[0].type === "fundamental_analysis_card");
 
           return (
             <motion.div
