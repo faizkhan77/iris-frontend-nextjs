@@ -3,14 +3,15 @@
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 import TypingAnimation from "./TypingAnimation";
 import LoadingJourney from "./LoadingJourney";
 import { User, BotMessageSquare } from "lucide-react";
 import ClarificationTabs from "./ClarificationTabs";
 import { cn } from "@/lib/utils";
 import { Share2, Download } from "lucide-react";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
 
 import VerticalSuggestionTabs from "../analysis_components/VerticalSuggestionTabs";
 
@@ -233,7 +234,7 @@ export default function ChatMessages({
             (msg.uiComponents[0].type === "technical_summary_card" ||
               msg.uiComponents[0].type === "fundamental_analysis_card" ||
               msg.uiComponents[0].type === "cross_agent_analysis_card");
-
+          const processedContent = msg.content.replace(/\\\\/g, "\\");
           return (
             <motion.div
               key={msg.id}
@@ -293,7 +294,7 @@ export default function ChatMessages({
                               remarkPlugins={[remarkGfm, remarkMath]}
                               rehypePlugins={[rehypeKatex]}
                             >
-                              {msg.content}
+                              {processedContent}
                             </ReactMarkdown>
                           </div>
                         </div>

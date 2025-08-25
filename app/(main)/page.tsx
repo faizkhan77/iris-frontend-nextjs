@@ -1,6 +1,7 @@
 // app/page.tsx
 "use client";
 
+import "katex/dist/katex.min.css";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
