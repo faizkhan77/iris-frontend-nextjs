@@ -19,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={cn("font-sans")}>
+    <div>
+
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -35,7 +35,7 @@ export default function RootLayout({
 
           <Toaster theme="dark" position="bottom-right" />
         </ThemeProvider>
-      </body>
-    </html>
+    </div>
+    
   );
 }

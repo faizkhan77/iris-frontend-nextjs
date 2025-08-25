@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEffect, useState } from "react";
 
 // STEP 1: Define the shape of OUR data
 export interface ChartDataPoint {
@@ -68,6 +69,14 @@ export function StockPriceChart({
 }: StockPriceChartProps) {
   const [timeRange, setTimeRange] = React.useState("1y");
   const { theme } = useTheme();
+
+  const [mounted, setMounted] = useState(false);
+  
+    useEffect(() => {
+      setMounted(true);
+    }, []);
+  
+    if (!mounted) return null;
 
   // This variable is now used for the stroke color of the price line
   const strokeColor = theme === "dark" ? "#10b981" : "#059669";

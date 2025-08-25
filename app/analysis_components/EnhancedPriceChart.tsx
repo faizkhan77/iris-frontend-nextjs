@@ -36,6 +36,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 interface EnhancedPriceChartProps {
   stockId: string;
   stockName: string;
+  API_BASE_URL: string;
 }
 
 // Reverted to your old chartConfig for the preferred single-color price line and MA colors
@@ -319,7 +320,7 @@ export default function EnhancedPriceChart({
 
                     const volumeChange =
                       prevVolume && volume
-                        ? (((volume - prevVolume) / prevVolume) * 100).toFixed(
+                        ? (((Number(volume) - prevVolume) / prevVolume) * 100).toFixed(
                             1
                           )
                         : null;
@@ -356,9 +357,9 @@ export default function EnhancedPriceChart({
                           <div className="text-gray-700">
                             Vol:{" "}
                             {Number(volume) >= 1_000_000
-                              ? `${(volume / 1_000_000).toFixed(1)}M`
+                              ? `${(Number(volume) / 1_000_000).toFixed(1)}M`
                               : Number(volume) >= 1_000
-                              ? `${(volume / 1_000).toFixed(0)}k`
+                              ? `${(Number(volume) / 1_000).toFixed(0)}k`
                               : volume.toLocaleString()}{" "}
                             {volumeChange !== null && (
                               <span className="text-xs text-gray-500">
