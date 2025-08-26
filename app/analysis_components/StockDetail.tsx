@@ -17,7 +17,10 @@ import CashFlowSection from "./CashFlowSection";
 import FinancialRatiosSection from "./FinancialRatiosSection";
 import ShareholdingPatternSection from "./ShareholdingPatternSection";
 
-const API_BASE_URL =  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+const API_BASE_URL = `${
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
+}/api`;
+
 // const API_BASE_URL = "https://irisapi.brainfogagency.com/api";
 
 interface StockDetailProps {
