@@ -2,44 +2,113 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, BrainCircuit, FileText, Newspaper, Zap } from "lucide-react";
+import {
+  Bot,
+  BrainCircuit,
+  FileText,
+  Newspaper,
+  Zap,
+  BookOpen,
+  PieChart,
+} from "lucide-react";
 import TypingAnimation from "./TypingAnimation";
 
 // --- Configuration for each journey ---
 const journeys = {
   fundamentals: {
     steps: [
-      { text: "Loading Fundamental Agent...", duration: 2000 },
-      { text: "Querying financial statements...", duration: 2500 },
-      { text: "Analyzing key ratios...", duration: 2000 },
-      { text: "Composing analysis...", duration: 1500 },
+      {
+        text: "Activating Fundamental Agent — spreadsheets, assemble...",
+        duration: 2000,
+      },
+      {
+        text: "Pulling balance sheets, income, and cash flow...",
+        duration: 2500,
+      },
+      {
+        text: "Crunching ratios: P/E, ROE, and more acronyms...",
+        duration: 2000,
+      },
+      {
+        text: "Turning raw data into beautiful GenUI graphs...",
+        duration: 2000,
+      },
+      { text: "Summarizing numbers into actual meaning...", duration: 1500 },
     ],
     icon: FileText,
   },
+
   technicals: {
     steps: [
-      { text: "Loading Technical Agent...", duration: 1500 },
-      { text: "Fetching historical price data...", duration: 2000 },
-      { text: "Calculating 12+ indicators...", duration: 3000 },
-      { text: "Synthesizing signals...", duration: 1500 },
+      {
+        text: "Booting up the Technical Agent — charts incoming...",
+        duration: 1500,
+      },
+      {
+        text: "Pulling historical prices — time travel, market style...",
+        duration: 2000,
+      },
+      { text: "Running indicators: RSI, MACD, and friends...", duration: 3000 },
+      {
+        text: "Decoding candlesticks and spotting patterns...",
+        duration: 3000,
+      },
+      {
+        text: "Blending signals into a strategy you wish you saw yesterday...",
+        duration: 1500,
+      },
     ],
     icon: Zap,
   },
+
   sentiment: {
     steps: [
-      { text: "Loading Sentiment Agent...", duration: 1500 },
-      { text: "Searching for recent news...", duration: 2500 },
-      { text: "Analyzing article sentiment...", duration: 2500 },
-      { text: "Aggregating market mood...", duration: 1500 },
+      {
+        text: "Booting up the Sentiment Agent — mood scanner online...",
+        duration: 1500,
+      },
+      {
+        text: "Digging through the latest market headlines...",
+        duration: 2500,
+      },
+      {
+        text: "Skimming news like a trader before market open...",
+        duration: 2500,
+      },
+      {
+        text: "Measuring vibes: bullish, bearish, or just confused...",
+        duration: 2500,
+      },
+      {
+        text: "Cross-checking with technical signals for sanity...",
+        duration: 2000,
+      },
+      {
+        text: "Summing up the market’s mood in plain English...",
+        duration: 1500,
+      },
     ],
     icon: Newspaper,
   },
+
   cross_agent_reasoning: {
     steps: [
-      { text: "Deploying multiple agents...", duration: 2000 },
-      { text: "Agents are collaborating...", duration: 3500 },
-      { text: "Synthesizing diverse insights...", duration: 2500 },
-      { text: "Formulating final verdict...", duration: 2000 },
+      { text: "Calling in the market experts...", duration: 2000 },
+      {
+        text: "Fundamental Agent checking earnings and red flags...",
+        duration: 2000,
+      },
+      {
+        text: "Technical Agent connecting dots and drawing trends...",
+        duration: 2000,
+      },
+      {
+        text: "Sentiment Agent reading the market’s mood swings...",
+        duration: 2000,
+      },
+      { text: "Agents arguing over valuation vs. vibes...", duration: 3500 },
+      { text: "Blending brains for a balanced perspective...", duration: 2500 },
+      { text: "Crunching the chaos into one clear call...", duration: 2000 },
     ],
     icon: BrainCircuit,
   },
@@ -52,14 +121,42 @@ const journeys = {
   },
   unknown: {
     steps: [
-      { text: "Analyzing your query...", duration: 2000 },
-      { text: "Routing to the best expert...", duration: 2500 },
-      { text: "Compiling response...", duration: 2000 },
+      { text: "Parsing your query — hmm, tricky one...", duration: 2000 },
+      {
+        text: "Consulting the right market mind for the job...",
+        duration: 2500,
+      },
+      { text: "Piecing it all together — insights loading...", duration: 2000 },
     ],
     icon: Bot,
   },
+  knowledge_base: {
+    steps: [
+      { text: "Opening the market playbook...", duration: 2000 },
+      { text: "Searching financial knowledge vault...", duration: 2500 },
+      {
+        text: "Translating complex jargon into plain English...",
+        duration: 2500,
+      },
+      {
+        text: "Summarizing like a finance nerd with a heart...",
+        duration: 2000,
+      },
+    ],
+    icon: BookOpen,
+  },
+  shareholding: {
+    steps: [
+      { text: "Accessing shareholder registry...", duration: 2000 },
+      { text: "Tracking promoter, FII, and DII movements...", duration: 2500 },
+      { text: "Analyzing ownership patterns and shifts...", duration: 2500 },
+      { text: "Building stake breakdown visuals...", duration: 2000 },
+      { text: "Compiling who owns what — and how much...", duration: 1500 },
+    ],
+    icon: PieChart,
+  },
 };
-journeys.knowledge_base = journeys.general;
+
 journeys.save_ltm = {
   steps: [{ text: "Saving to memory...", duration: 2000 }],
   icon: Bot,

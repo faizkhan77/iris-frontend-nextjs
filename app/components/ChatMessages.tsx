@@ -48,6 +48,11 @@ import {
   type CrossAgentAnalysisData,
 } from "./genui/CrossAgentAnalysisCard";
 
+import {
+  ShareholdingDetailsCard,
+  type ShareholdingDetailsData,
+} from "./genui/ShareholdingDetailsCard";
+
 // The UI Component and Message types remain unchanged
 export type UiComponent =
   | { type: "stock_price_chart"; title: string; data: StockPriceDataPoint[] }
@@ -88,6 +93,11 @@ export type UiComponent =
       type: "cross_agent_analysis_card";
       title: string;
       data: CrossAgentAnalysisData;
+    }
+  | {
+      type: "shareholding_details_card";
+      title: string;
+      data: ShareholdingDetailsData;
     };
 
 export interface Message {
@@ -206,6 +216,14 @@ const renderUiComponent = (
     case "cross_agent_analysis_card":
       return (
         <CrossAgentAnalysisCard
+          key={index}
+          title={component.title}
+          data={component.data}
+        />
+      );
+    case "shareholding_details_card":
+      return (
+        <ShareholdingDetailsCard
           key={index}
           title={component.title}
           data={component.data}

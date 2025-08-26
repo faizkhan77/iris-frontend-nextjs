@@ -22,9 +22,9 @@ interface ChatInputFormProps {
 }
 
 const rotatingPlaceholders = [
-  "Ask IRIS: Tesla fundamentals 📊",
-  "Where is NIFTY headed? 📈",
-  "Explain RSI like I’m 5 🤔",
+  "Ask IRIS: Reliance Industries fundamentals 📊",
+  "What is the Technical performance of Tata Motors like? 📈",
+  "Explain RSI and its calculations 🤔",
   "Stock valuation of Apple 🍏",
   "Is this a bull or bear trend? 🐂🐻",
 ];

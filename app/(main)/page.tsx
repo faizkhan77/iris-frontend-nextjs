@@ -126,6 +126,16 @@ const ROUTE_KEYWORDS: Record<string, string[]> = {
     "pros",
     "cons",
   ],
+  shareholding: [
+    "shareholding",
+    "patterns",
+    "shareholders",
+    "promoters",
+    "foreign",
+    "investers",
+    "FII",
+    "DII",
+  ],
 };
 
 function guessRouteFromInput(input: string): string {
