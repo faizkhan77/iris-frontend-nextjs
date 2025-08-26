@@ -6,7 +6,7 @@ import GeminiSummarizeButton from "./GeminiSummarizeButton"; // <-- Use the real
 interface ChartCardProps {
   title: string;
   subtitle?: string;
-  chartRef?: React.RefObject<HTMLDivElement>;
+  chartRef?:  React.RefObject<HTMLDivElement | null>;
   controls?: React.ReactNode;
   children: React.ReactNode;
   onSummarizeRequest?: () => Promise<string | void>;
