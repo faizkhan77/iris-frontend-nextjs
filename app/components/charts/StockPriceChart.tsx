@@ -71,17 +71,14 @@ export function StockPriceChart({
   const { theme } = useTheme();
 
   const [mounted, setMounted] = useState(false);
-  
-    useEffect(() => {
-      setMounted(true);
-    }, []);
-  
-    if (!mounted) return null;
 
-  // This variable is now used for the stroke color of the price line
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // always call hooks, no early return
   const strokeColor = theme === "dark" ? "#10b981" : "#059669";
 
-  // Your data mapping logic remains untouched
   const chartData = React.useMemo(() => {
     return data.map((item) => ({
       date: item.date,
@@ -107,6 +104,11 @@ export function StockPriceChart({
       return !isNaN(date.getTime()) && date >= startDate;
     });
   }, [chartData, timeRange]);
+
+  // ✅ only conditionally render JSX here
+  if (!mounted) {
+    return <div className="h-[250px]" />; // placeholder skeleton if needed
+  }
 
   return (
     // THEME-AWARE STYLING: Replaced hardcoded colors with theme variables

@@ -52,6 +52,14 @@ import {
   ShareholdingDetailsCard,
   type ShareholdingDetailsData,
 } from "./genui/ShareholdingDetailsCard";
+import {
+  BalanceSheetAnalysisCard,
+  type BalanceSheetAnalysisData,
+} from "./genui/BalanceSheetAnalysisCard";
+import {
+  CashFlowAnalysisCard,
+  type CashFlowAnalysisData,
+} from "./genui/CashFlowAnalysisCard";
 
 // The UI Component and Message types remain unchanged
 export type UiComponent =
@@ -98,6 +106,16 @@ export type UiComponent =
       type: "shareholding_details_card";
       title: string;
       data: ShareholdingDetailsData;
+    }
+  | {
+      type: "balancesheet_analysis_card";
+      title: string;
+      data: BalanceSheetAnalysisData;
+    }
+  | {
+      type: "cashflow_analysis_card";
+      title: string;
+      data: CashFlowAnalysisData;
     };
 
 export interface Message {
@@ -224,6 +242,22 @@ const renderUiComponent = (
     case "shareholding_details_card":
       return (
         <ShareholdingDetailsCard
+          key={index}
+          title={component.title}
+          data={component.data}
+        />
+      );
+    case "balancesheet_analysis_card":
+      return (
+        <BalanceSheetAnalysisCard
+          key={index}
+          title={component.title}
+          data={component.data}
+        />
+      );
+    case "cashflow_analysis_card":
+      return (
+        <CashFlowAnalysisCard
           key={index}
           title={component.title}
           data={component.data}
