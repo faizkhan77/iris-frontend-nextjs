@@ -10,6 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import ReactMarkdown from "react-markdown";
 
 // --- Sub-Components (kept in the same file for simplicity) ---
 
@@ -57,7 +58,7 @@ const IndicatorGauge = ({
     <div className="rounded-lg border border-element-border bg-element-bg p-3">
       <div className="flex justify-between items-center mb-1">
         <span className="text-xs font-medium text-text-secondary">
-          {indicator}
+          {indicator.toUpperCase()}
         </span>
         {/* --- NEW: Display current zone label --- */}
         <span className="text-xs font-bold text-text-primary bg-background px-1.5 py-0.5 rounded">
@@ -264,7 +265,7 @@ export function TechnicalSummaryCard({
                           sentimentColorMap[item.sentiment]
                         )}
                       />
-                      {item.indicator}
+                      {item.indicator.toUpperCase()}
                       <InfoTooltip text={item.tooltip} />
                     </div>
                     <span className="font-semibold text-text-primary">
@@ -313,7 +314,9 @@ export function TechnicalSummaryCard({
         <h3 className="text-base font-semibold text-text-primary mt-4 mb-1">
           Detailed Recommendation
         </h3>
-        <p className="text-text-secondary">{data.recommendation}</p>
+        <p className="text-text-secondary">
+          <ReactMarkdown>{data.recommendation}</ReactMarkdown>
+        </p>
       </div>
     </div>
   );
