@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { useStockData } from "./hooks/useStockData"; // <-- IMPORT THE HOOK
+import { useStockData } from "../../hooks/useStockData"; // <-- IMPORT THE HOOK
 
 import StockPageHeader from "./StockPageHeader";
 import StickySubNav from "./StickySubNav";

@@ -4,10 +4,10 @@ import {
   RECENTLY_USED_SCREENS,
   MOST_USED_SCREENS,
   ALL_SCREENS,
-} from "@/app/lib/constants";
+} from "@/lib/temp/constants";
 import ToggleSwitch from "./ToggleSwitch";
 import { MenuAlt2Icon } from "./Icons";
-import { Screen } from "@/app/lib/types";
+import { Screen } from "@/lib/temp/types";
 
 interface SidebarProps {
   // --- MODIFICATION: The selectedSectors prop now holds the `displayName` of the mapping ---

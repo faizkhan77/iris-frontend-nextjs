@@ -2,11 +2,11 @@
 "use client"; // This component now uses hooks, so it must be a client component.
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Screen, Stock } from "../../lib/types"; // Adjust path
+import { Screen, Stock } from "../../lib/temp/types"; // Adjust path
 import { ArrowLeftIcon, SpinnerIcon } from "./Icons"; // Adjust path
 import ScreenCombiner from "./ScreenCombiner"; // Adjust path
-import { fetchScreenerResults, fetchPriceChanges } from "../../lib/api";
-import { SECTOR_MAPPINGS } from "@/app/lib/constants";
+import { fetchScreenerResults, fetchPriceChanges } from "../../lib/temp/api";
+import { SECTOR_MAPPINGS } from "@/lib/temp/constants";
 import ExportBtn from "./exportbtn";
 import { toast } from "sonner";
 

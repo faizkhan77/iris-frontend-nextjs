@@ -12,7 +12,7 @@ import {
 import {
   ALL_INDICATOR_NAMES,
   INDICATOR_DISPLAY_NAMES,
-} from "../lib/analysis_constants";
+} from "../../lib/temp/analysis_constants";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,

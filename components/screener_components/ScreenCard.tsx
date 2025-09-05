@@ -1,5 +1,5 @@
 import React from "react";
-import { Screen } from "@/app/lib/types";
+import { Screen } from "@/lib/temp/types";
 import { CheckCircleIcon } from "./Icons";
 
 interface ScreenCardProps {

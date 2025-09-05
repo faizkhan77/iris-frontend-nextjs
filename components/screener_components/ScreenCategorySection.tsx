@@ -1,5 +1,5 @@
 import React from "react";
-import { Screen, ScreenCategory } from "@/app/lib/types";
+import { Screen, ScreenCategory } from "@/lib/temp/types";
 import ScreenCard from "./ScreenCard";
 
 interface ScreenCategorySectionProps {

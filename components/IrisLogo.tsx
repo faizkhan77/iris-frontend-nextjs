@@ -1,4 +1,4 @@
-import { cn } from "../lib/utils";
+import { cn } from "../lib/temp/utils";
 
 export default function IrisLogo({ className }: { className?: string }) {
   return (

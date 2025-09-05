@@ -4,11 +4,11 @@
 import React, { useState } from "react";
 import ProfileSidebar, {
   ProfileTab,
-} from "@/app/components/profile_components/ProfileSidebar";
-import ProfileDetails from "@/app/components/profile_components/ProfileDetails";
-import AccountSettings from "@/app/components/profile_components/AccountSettings";
-import NotificationSettings from "@/app/components/profile_components/NotificationSettings";
-import IrisPreferences from "@/app/components/profile_components/IrisPreferences";
+} from "@/components/profile_components/ProfileSidebar";
+import ProfileDetails from "@/components/profile_components/ProfileDetails";
+import AccountSettings from "@/components/profile_components/AccountSettings";
+import NotificationSettings from "@/components/profile_components/NotificationSettings";
+import IrisPreferences from "@/components/profile_components/IrisPreferences";
 
 // The Page component for a specific user's profile
 export default function UserProfilePage({

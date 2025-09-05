@@ -1,7 +1,7 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { ThemeProvider } from "../components/providers/ThemeProvider";
-import PrimarySidebar from "../components/layout/PrimarySidebar";
+import { ThemeProvider } from "../../components/providers/ThemeProvider";
+import PrimarySidebar from "../../components/layout/PrimarySidebar";
 import { cn } from "@/lib/utils";
 import "../globals.css";
 import { Toaster } from "sonner";

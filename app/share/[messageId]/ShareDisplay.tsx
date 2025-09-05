@@ -1,7 +1,7 @@
 // app/share/[messageId]/ShareDisplay.tsx
 "use client";
 
-import ChatMessages, { Message } from "@/app/components/ChatMessages";
+import ChatMessages, { Message } from "@/components/ChatMessages";
 import { useSearchParams } from "next/navigation";
 
 export default function ShareDisplay({ message }: { message: Message }) {

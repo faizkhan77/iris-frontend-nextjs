@@ -1,7 +1,7 @@
 import React from "react";
-import { SCREEN_CATEGORIES } from "@/app/lib/constants";
+import { SCREEN_CATEGORIES } from "@/lib/temp/constants";
 import ScreenCategorySection from "./ScreenCategorySection";
-import { Screen, ScreenCategory } from "@/app/lib/types";
+import { Screen, ScreenCategory } from "@/lib/temp/types";
 
 interface MainContentProps {
   timeframe: string;

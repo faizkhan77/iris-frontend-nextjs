@@ -2,10 +2,10 @@
 
 import useSWR from "swr";
 import { Plus, Search } from "lucide-react";
-import { useAppStore } from "@/app/lib/store";
-import { fetchChatHistory } from "@/app/lib/api";
+import { useAppStore } from "@/lib/temp/store";
+import { fetchChatHistory } from "@/lib/temp/api";
 import { v4 as uuidv4 } from "uuid";
-import { cn } from "@/app/lib/utils";
+import { cn } from "@/lib/temp/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Session {

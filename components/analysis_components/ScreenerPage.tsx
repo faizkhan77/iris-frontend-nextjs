@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation"; // <-- IMPORT THE ROUTER
 import StockTable from "./StockTable";
-import { ALL_INDICATOR_NAMES } from "../lib/analysis_constants";
+import { ALL_INDICATOR_NAMES } from "../../lib/temp/analysis_constants";
 import { Search } from "lucide-react";
 import { motion } from "framer-motion";
 

@@ -14,7 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { suggestedQuestions } from "../lib/suggested_questions";
+import { suggestedQuestions } from "../lib/temp/suggested_questions";
 
 interface ChatInputFormProps {
   onSendMessage: (message: string) => void;

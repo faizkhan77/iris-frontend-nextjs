@@ -9,7 +9,7 @@ import {
   User,
   BarChartHorizontalBig,
 } from "lucide-react";
-import { useAppStore, PrimaryTab } from "@/app/lib/store";
+import { useAppStore, PrimaryTab } from "@/lib/temp/store";
 import { cn } from "@/lib/utils";
 import IrisLogo from "../IrisLogo";
 import Image from "next/image";

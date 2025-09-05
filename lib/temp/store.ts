@@ -30,6 +30,7 @@ interface AppState {
   setActivePrimaryTab: (tab: PrimaryTab) => void;
   toggleSecondarySidebar: () => void;
 }
+
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({

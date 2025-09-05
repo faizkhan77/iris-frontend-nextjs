@@ -3,9 +3,9 @@
 // app/share/[messageId]/page.tsx
 import { Suspense } from "react";
 import ChatMessages, {
-  Message,
+  Message, 
   UiComponent,
-} from "@/app/components/ChatMessages";
+} from "@/components/ChatMessages";
 import { v4 as uuidv4 } from "uuid";
 import ShareDisplay from "./ShareDisplay";
 

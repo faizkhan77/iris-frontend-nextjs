@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Screen } from "@/app/lib/types";
-import { ALL_SCREENS } from "@/app/lib/constants";
+import { Screen } from "@/lib/temp/types";
+import { ALL_SCREENS } from "@/lib/temp/constants";
 import { PlusIcon, SearchIcon } from "./Icons";
 
 interface ScreenCombinerProps {

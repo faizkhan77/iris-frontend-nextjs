@@ -6,40 +6,41 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import ChatHeader from "../components/ChatHeader";
-import { fetchScreenerStrategies } from "../lib/api";
+import ChatHeader from "../../components/ChatHeader";
+import { fetchScreenerStrategies } from "../../lib/temp/api";
 
 // import ChatFooter from "./components/ChatInputForm";
-import { AnimatedAIChat } from "../components/WelcomeScreen";
+import { AnimatedAIChat } from "../../components/WelcomeScreen";
 fetchScreenerStrategies;
-import { useAppStore } from "../lib/store";
+import { useAppStore } from "../../lib/temp/store";
 import { v4 as uuidv4 } from "uuid";
 import {
   streamChatResponse,
   fetchSessionMessages,
   ChatMessage,
-} from "../lib/api";
-import ChatInputForm from "../components/ChatInputForm";
+} from "../../lib/temp/api";
+import ChatInputForm from "../../components/ChatInputForm";
 // import Sidebar from "./components/Sidebar";
 import { motion, AnimatePresence } from "framer-motion";
-import ChatMessages, { Message, UiComponent } from "../components/ChatMessages";
+import ChatMessages, { Message, UiComponent } from "../../components/ChatMessages";
 
-import SecondarySidebar from "../components/layout/SecondarySidebar";
+import SecondarySidebar from "../../components/layout/SecondarySidebar";
 
-import ScreenerPage from "../analysis_components/ScreenerPage";
+import ScreenerPage from "../../components/analysis_components/ScreenerPage";
 
-import ShareModal from "../components/ShareModal";
-import { PdfDocumentLayout } from "../components/PdfDocumentLayout"; // <-- Import PDF layout
-import { generatePdf } from "../lib/pdfGenerator"; // <-- Import PDF generator function
+import ShareModal from "../../components/ShareModal";
+import { PdfDocumentLayout } from "../../components/PdfDocumentLayout"; // <-- Import PDF layout
+import { generatePdf } from "../../lib/temp/pdfGenerator"; // <-- Import PDF generator function
 
 // --- NEW: Screener Components ---
-import { Screen, ScreenCategory, Stock } from "../lib/types"; // Create a types.ts file in /lib
-import ScreenerHeader from "../components/screener_components/Header";
-import ScreenerSidebar from "../components/screener_components/Sidebar";
-import ScreenerDashboard from "../components/screener_components/ScreenerDashboard";
-import ScreenerCategoryPage from "../components/screener_components/ScreenerCategoryPage";
-import ScreenerResultsPage from "../components/screener_components/ScreenerResultsPage";
-import CombineModeBar from "../components/screener_components/CombineModeBar";
+import { Screen, ScreenCategory, Stock } from "../../lib/temp/types"; // Create a types.ts file in /lib
+import ScreenerHeader from "../../components/screener_components/Header";
+import ScreenerSidebar from "../../components/screener_components/Sidebar";
+import ScreenerDashboard from "../../components/screener_components/ScreenerDashboard";
+import ScreenerCategoryPage from "../../components/screener_components/ScreenerCategoryPage";
+import ScreenerResultsPage from "../../components/screener_components/ScreenerResultsPage";
+import CombineModeBar from "../../components/screener_components/CombineModeBar";
+import { getServerSession } from "@/actions/auth";
 
 // --- Placeholder component for other tabs ---
 const PlaceholderScreen = ({ title }: { title: string }) => (
@@ -143,6 +144,8 @@ function guessRouteFromInput(input: string): string {
   let bestRoute = "unknown";
   let bestScore = 0;
 
+  
+
   for (const [route, keywords] of Object.entries(ROUTE_KEYWORDS)) {
     const score = keywords.filter((kw) => lowerInput.includes(kw)).length;
     if (score > bestScore) {
@@ -164,11 +167,18 @@ export default function MainPage() {
     isSecondarySidebarOpen,
   } = useAppStore();
 
+  const fetchuser = async ()=>{
+    const data = await getServerSession()
+    console.log(data);
+    
+  }
+
   // Auto-open screener sidebar when switching to Screener tab
   useEffect(() => {
     if (activePrimaryTab === "screener" && !isSecondarySidebarOpen) {
       useAppStore.setState({ isSecondarySidebarOpen: true });
     }
+    fetchuser()
   }, [activePrimaryTab, isSecondarySidebarOpen]);
 
   // IRIS Chat State
@@ -278,8 +288,7 @@ export default function MainPage() {
 
   // All your existing useEffect hooks for auth, history, and scrolling remain unchanged
   useEffect(() => {
-    if (!user) router.replace("/login");
-    else if (!threadId) setThreadId(`thread_web_${uuidv4()}`);
+    if (!threadId) setThreadId(`thread_web_${uuidv4()}`);
   }, [user, threadId, router, setThreadId]);
 
   useEffect(() => {

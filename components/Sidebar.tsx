@@ -4,8 +4,8 @@
 import useSWR from "swr";
 // NEW: Imported Plus and Search icons
 import { Plus, Search, LogOut } from "lucide-react";
-import { useAppStore } from "../lib/store";
-import { fetchChatHistory } from "../lib/api";
+import { useAppStore } from "../lib/temp/store";
+import { fetchChatHistory } from "../lib/temp/api";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
 import Link from "next/link";

@@ -13,7 +13,7 @@ import ClarificationTabs from "./ClarificationTabs";
 import { cn } from "@/lib/utils";
 import { Share2, Download } from "lucide-react";
 
-import VerticalSuggestionTabs from "../analysis_components/VerticalSuggestionTabs";
+import VerticalSuggestionTabs from "./analysis_components/VerticalSuggestionTabs";
 
 // Import ALL chart components and their data types (assuming these exist)
 import {
