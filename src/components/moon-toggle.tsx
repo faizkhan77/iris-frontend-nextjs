@@ -12,7 +12,7 @@ export function ModeToggle() {
     <>
       <button
         onClick={handleClick}
-        className="p-[0.6rem] relative  w-fit border rounded-full"
+        className="p-[0.6rem] relative  w-fit border rounded-xl"
       >
         <Sun
           size={15}
