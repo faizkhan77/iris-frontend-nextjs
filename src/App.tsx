@@ -5,44 +5,25 @@ import Chatlayout from "./layouts/Chatlayout";
 import { ThemeProvider } from "./components/providers/ThemeProvider";
 import LoginPage from "./pages/LoginPage";
 import ChatSessionPage from "./components/chat/ChatSessionPage";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import { Toaster } from 'sonner';
 
 const router = createBrowserRouter([
   {
     path: "/",
     Component: Chatlayout,
-    children : [
+    children: [
       {
-        path :"/:id",
-        Component : ChatSessionPage
+        path: "/:id",
+        Component: ChatSessionPage,
       },
       {
-        path :"/new",
-        index : true,
-        element : <div>Hello</div>
+        path: "/new",
+        index: true,
+        element: <div>Hello</div>,
       },
-      {
-        path :"/screener",
-        element : <div>Screener</div>,
-        children : [
-          {
-            path : "/indicators",
-            element : <div>Indicators</div>
-          },
-          {
-            path : "/",
-            element : <div>Single Screenner</div>
-          },
-        ]
-      },
-      {
-        path :"/company",
-        children : [
-          {
-            path : "/:symbol"
-          }
-        ]
-      },
-    ]
+    ],
   },
   {
     path: "/login",
@@ -56,9 +37,12 @@ const router = createBrowserRouter([
 
 const App = () => {
   return (
-    <ThemeProvider>
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider>
+        <RouterProvider router={router} />
+        <Toaster position="top-right"theme="system" />
+      </ThemeProvider>
+    </Provider>
   );
 };
 
