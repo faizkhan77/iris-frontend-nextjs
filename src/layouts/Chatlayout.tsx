@@ -6,7 +6,7 @@ const Chatlayout = () => {
   return (
     <main className="flex bg-sidebar h-screen w-full">
       <ChatSidebar />
-      <div className="bg-background p-2 w-full h-fullc">
+      <div className="bg-background overflow-y-scroll p-2 w-full h-fullc">
         <Outlet />
       </div>
     </main>

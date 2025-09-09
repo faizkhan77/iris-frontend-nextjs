@@ -15,7 +15,7 @@ type History = {
 const chatHistory: History[] = [
   { chatId: "98u1bs9uha", title: "Project Updates" },
   { chatId: "b73kd92ksl", title: "Team Meeting Notes" },
-  { chatId: "a82jd91kdm", title: "Personal Chat" },
+  { chatId: "a82jd91kdm", title: "Personal Chats with whats is" },
   { chatId: "c91jd28lsl", title: "Client Discussion" },
   { chatId: "d01kd83kdp", title: "Ideas & Brainstorming" },
 ];
@@ -72,7 +72,7 @@ const ChatIconBar = () => {
         </Tooltip>
 
         <Tooltip>
-          <Link to={"/screener"}>
+          <Link to={"/technicals"}>
             <TooltipTrigger>
               <div
                 className="p-3 flex items-center justify-center h-10 w-10 border rounded-xl cursor-pointer relative z-10"
@@ -115,11 +115,11 @@ const ChatIconBar = () => {
             </div>
             <h2 className="font-medium text-base">Recent Chats</h2>
             <hr className="my-2" />
-            <div className="flex flex-col gap-2 overflow-y-auto">
+            <div className="flex flex-col overflow-y-auto">
               {chatHistory.map(({ chatId, title }) => (
                 <Tooltip key={chatId}>
                   <TooltipTrigger>
-                    <div className="p-2 text-left rounded-lg hover:bg-accent/60 cursor-pointer text-sm truncate">
+                    <div className="p-2 truncate text-left rounded-lg hover:bg-accent/60 cursor-pointer text-[13px] truncate">
                       {title}
                     </div>
                   </TooltipTrigger>

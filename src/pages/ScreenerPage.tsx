@@ -1,24 +1,21 @@
-import ScreenerHeader from "@/components/screener/ScreenerHeader";
+import  ScreenerHeader  from "@/components/screener/ScreenerHeader";
+import ScreenerSidebar from "@/components/screener/ScreenerSidebar";
+import Timeframe from "@/components/screener/ScreenerTimeFrame";
+
+// import ProfitGainers from "@/components/screener/ProfitGainers";
+import ScreneerCategories from "@/components/screener/ScreenerCategories";
 
 const ScreenerPage = () => {
   return (
-    <main className="">
+    <main className="min-h-screen bg-background text-foreground">
       <ScreenerHeader />
-      <section className="flex">
-        <aside className="w-80 border-r">side</aside>
-        <aside className="w-full m-4">
-          <section className="px-4 py-3 rounded-xl border">
-            <h3>Timeframe</h3>
-          </section>
-          <section>
-            <h3>Profit Gainers </h3>
-            <div>
-              <div>
-                <h3></h3>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minima, est hic odio reiciendis numquam suscipit</p>
-              </div>
-            </div>
-          </section>
+
+      <section className="flex space-x-4 p-4">
+        <ScreenerSidebar />
+        <aside className="w-full p-4 space-y-6">
+          <Timeframe />
+          <ScreneerCategories />
+          {/* <ProfitGainers /> */}
         </aside>
       </section>
     </main>
