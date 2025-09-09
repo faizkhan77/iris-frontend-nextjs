@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 5, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/Faiz%20Khan/Documents/IRIS%20AGENT%20MAIN/my-app/app/login/layout.tsx"],"sourcesContent":["export default function LoginLayout({\r\n  children,\r\n}: {\r\n  children: React.ReactNode;\r\n}) {\r\n  return <>{children}</>; // no sidebar here\r\n}\r\n"],"names":[],"mappings":";;;;;AAAe,SAAS,YAAY,EAClC,QAAQ,EAGT;IACC,qBAAO;kBAAG;uBAAc,kBAAkB;AAC5C","debugId":null}}]
+}

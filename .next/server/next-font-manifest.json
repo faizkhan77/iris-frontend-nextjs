@@ -1,0 +1,9 @@
+{
+  "app": {
+    "[project]/app/(auth)/login/page": [],
+    "[project]/app/(main)/page": []
+  },
+  "appUsingSizeAdjust": false,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}
