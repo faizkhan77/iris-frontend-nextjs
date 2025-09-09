@@ -173,6 +173,10 @@ export default function MainPage() {
 
   // IRIS Chat State
   const [messages, setMessages] = useState<Message[]>([]);
+
+  // It will hold the streaming text content for the LATEST assistant message.
+  const [streamingContent, setStreamingContent] = useState<string>("");
+
   const [isInitialState, setIsInitialState] = useState(true);
   const [shareModalData, setShareModalData] = useState<Message | null>(null);
   const [messageToDownload, setMessageToDownload] = useState<Message | null>(
@@ -362,6 +366,9 @@ export default function MainPage() {
     if (!threadId || !user) return;
     if (isInitialState) setIsInitialState(false);
 
+    // Reset the streaming content state at the start of a new message
+    setStreamingContent("");
+
     const userMessage: Message = {
       id: uuidv4(),
       role: "user",
@@ -385,7 +392,7 @@ export default function MainPage() {
     ]);
     setIsLoading(true);
 
-    let accumulatedText = "";
+    let finalAccumulatedText = "";
     let finalRoute = guessedRoute;
     try {
       await streamChatResponse(
@@ -401,20 +408,22 @@ export default function MainPage() {
             );
           },
           onTextChunk: (chunk: string) => {
-            accumulatedText += chunk;
+            // --- THIS IS THE CORE FIX ---
+            // 1. Update the dedicated streaming state. This is a very fast operation.
+            setStreamingContent((prev) => prev + chunk);
+            // 2. Keep track of the full text for the final update.
+            finalAccumulatedText += chunk;
+            // 3. Update the placeholder flag ONCE.
             setMessages((prev) =>
               prev.map((msg) =>
-                msg.id === assistantMessageId
-                  ? {
-                      ...msg,
-                      content: accumulatedText,
-                      isThinkingPlaceholder: false,
-                    }
+                msg.id === assistantMessageId && msg.isThinkingPlaceholder
+                  ? { ...msg, isThinkingPlaceholder: false }
                   : msg
               )
             );
           },
           onError: (error: string) => {
+            // On error, update the final message content directly.
             setMessages((prev) =>
               prev.map((m) =>
                 m.id === assistantMessageId
@@ -426,6 +435,7 @@ export default function MainPage() {
 
           // --- MODIFICATION: Handle the new message_complete event ---
           onMessageComplete: (data: { messageId: number; route: string }) => {
+            // This remains the same.
             setMessages((prev) =>
               prev.map((msg) =>
                 msg.id === assistantMessageId
@@ -436,14 +446,14 @@ export default function MainPage() {
             finalRoute = data.route;
           },
           onClose: () => {
-            // When the stream is fully closed, update the message
-            // with the final text AND the true route.
+            // When the stream is fully closed, perform the FINAL update.
             setMessages((prev) =>
               prev.map((msg) =>
                 msg.id === assistantMessageId
                   ? {
                       ...msg,
-                      content: accumulatedText,
+                      // Set the final, complete content string.
+                      content: finalAccumulatedText,
                       isThinkingPlaceholder: false,
                       route: finalRoute,
                     }
@@ -451,6 +461,8 @@ export default function MainPage() {
               )
             );
             setIsLoading(false);
+            // Reset the streaming content for the next message.
+            setStreamingContent("");
           },
         }
       );

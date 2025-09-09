@@ -12,6 +12,7 @@ import { User, BotMessageSquare } from "lucide-react";
 import ClarificationTabs from "./ClarificationTabs";
 import { cn } from "@/lib/utils";
 import { Share2, Download } from "lucide-react";
+import Image from "next/image";
 
 import VerticalSuggestionTabs from "../analysis_components/VerticalSuggestionTabs";
 
@@ -131,6 +132,10 @@ export interface Message {
 
 interface ChatMessagesProps {
   messages: Message[];
+  streamingContent?: {
+    content: string;
+    messageId: string;
+  };
   onClarificationOptionClick: (query: string) => void;
   onShareClick: (message: Message) => void;
   onDownloadClick: (message: Message) => void;
@@ -151,8 +156,9 @@ const UserIcon = () => (
 );
 
 const IrisIcon = () => (
-  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-element-bg text-text-secondary">
-    <BotMessageSquare size={18} />
+  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-element-bg text-text-secondary">
+    {/* <BotMessageSquare size={18} /> */}
+    <Image src="/iris-logo2.png" alt="My Logo" width={70} height={70} />
   </div>
 );
 
@@ -271,6 +277,7 @@ const renderUiComponent = (
 
 export default function ChatMessages({
   messages,
+  streamingContent,
   onClarificationOptionClick,
   onShareClick,
   onDownloadClick,
@@ -280,13 +287,26 @@ export default function ChatMessages({
     <main className="w-full max-w-4xl px-4 md:px-6 py-6 space-y-8 flex-grow self-center">
       <AnimatePresence initial={false}>
         {messages.map((msg) => {
+          // --- THIS IS THE LOGIC TO DETERMINE WHAT TO RENDER ---
+          const isCurrentlyStreaming =
+            streamingContent?.messageId === msg.id && msg.role === "assistant";
+
+          // Use the streaming content if this message is the one being streamed
+          const contentToRender = isCurrentlyStreaming
+            ? streamingContent.content
+            : msg.content;
+
+          const isThinking =
+            msg.isThinkingPlaceholder &&
+            !contentToRender &&
+            !msg.uiComponents?.length;
           const isGenUiOnlyMessage =
             msg.uiComponents &&
             msg.uiComponents.length === 1 &&
             (msg.uiComponents[0].type === "technical_summary_card" ||
               msg.uiComponents[0].type === "fundamental_analysis_card" ||
               msg.uiComponents[0].type === "cross_agent_analysis_card");
-          const processedContent = msg.content.replace(/\\\\/g, "\\");
+          const processedContent = contentToRender.replace(/\\\\/g, "\\");
           return (
             <motion.div
               key={msg.id}
@@ -321,36 +341,33 @@ export default function ChatMessages({
                 {/* --- MODIFIED RENDER LOGIC FOR TEXT --- */}
                 {/* Only render the text block if it's a thinking placeholder OR
                     if it's a standard message (not our special GenUI card) */}
-                {(msg.isThinkingPlaceholder ||
-                  (!isGenUiOnlyMessage && msg.content)) && (
+                {(isThinking || (!isGenUiOnlyMessage && contentToRender)) && (
                   <div
                     className={cn({
-                      // Add margin-top only if there are other UI components (like clarification tabs)
                       "mt-4":
                         msg.uiComponents &&
                         msg.uiComponents.length > 0 &&
                         !isGenUiOnlyMessage,
                     })}
                   >
-                    {msg.isThinkingPlaceholder ? (
+                    {isThinking ? (
                       msg.route ? (
                         <LoadingJourney route={msg.route || "unknown"} />
                       ) : (
                         <TypingAnimation />
                       )
                     ) : (
-                      <>
-                        <div className="prose prose-sm md:prose-base max-w-none prose-p:my-2 prose-headings:my-3">
-                          <div className="overflow-x-auto">
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm, remarkMath]}
-                              rehypePlugins={[rehypeKatex]}
-                            >
-                              {processedContent}
-                            </ReactMarkdown>
-                          </div>
+                      <div className="prose prose-sm md:prose-base max-w-none prose-p:my-2 prose-headings:my-3">
+                        <div className="overflow-x-auto">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm, remarkMath]}
+                            rehypePlugins={[rehypeKatex]}
+                          >
+                            {/* USE THE PROCESSED CONTENT VARIABLE HERE */}
+                            {processedContent}
+                          </ReactMarkdown>
                         </div>
-                      </>
+                      </div>
                     )}
                   </div>
                 )}

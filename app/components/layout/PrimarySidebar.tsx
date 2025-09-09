@@ -35,7 +35,7 @@ const SidebarButton = ({
     className={cn(
       "relative flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 ease-out",
       isActive
-        ? "bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/40 scale-105"
+        ? " text-white shadow-lg shadow-cyan-500/40 scale-80"
         : "text-text-secondary hover:bg-element-bg hover:scale-105 hover:text-text-primary hover:shadow-md hover:shadow-cyan-500/20"
     )}
   >
@@ -114,7 +114,9 @@ export default function PrimarySidebar() {
 
         <SidebarButton
           label="IRIS Chat"
-          icon={<IrisLogo className="text-xl" />}
+          icon={
+            <Image src="/iris-logo1.png" alt="My Logo" width={88} height={88} />
+          }
           isActive={activePrimaryTab === "iris"}
           onClick={handleIrisTabClick}
         />
