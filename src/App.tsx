@@ -8,10 +8,12 @@ import ChatSessionPage from "./components/chat/ChatSessionPage";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import { Toaster } from "sonner";
-import ScreenerPage from "./pages/ScreenerPage";
+import StockDetailsPage from "./pages/StockDetailsPage";
 import ChatNewSessionPage from "./pages/ChatNewSessionPage";
 import TechnicalsPage from "./pages/TechnicalsPage";
 import RegisterPage from "./pages/RegisterPage";
+import ScreenerPage from "./pages/ScreenerPage";
+
 
 const router = createBrowserRouter([
   {
@@ -32,13 +34,22 @@ const router = createBrowserRouter([
         Component: ChatNewSessionPage,
       },
       {
-        path: "/screener",
-        Component: ScreenerPage
+        path: "/screener/:id",
+        Component: StockDetailsPage
       },
+      // {
+      //   path: "/company/stock/:key",
+      //   Component: ScreenerPage
+      // },
       {
         path: "/technicals",
         Component: TechnicalsPage
       },
+       {
+        path: "/screener",
+        Component: ScreenerPage
+      },
+    
     ],
   },
   {

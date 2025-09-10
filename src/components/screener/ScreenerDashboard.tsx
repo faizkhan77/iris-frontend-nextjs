@@ -59,7 +59,7 @@ const searchTerm = (globalSearch || "").toLowerCase();
         .filter((category): category is ScreenCategory => category !== null);
 
   return (
-    <main className="col-span-9 space-y-8 scrollbar-cyan">
+    <main className="col-span-9 space-y-8 scrollbar-cyan scroll-auto">
       {/* Filters Container */}
       <div
         className="flex items-center justify-between flex-wrap gap-4 
