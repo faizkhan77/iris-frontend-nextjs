@@ -30,7 +30,7 @@ import {
 } from "../components/ui/chart";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://192.168.0.200:8000";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://192.168.0.235:8000";
 // const API_BASE_URL = "https://irisapi.brainfogagency.com/api";
 
 interface EnhancedPriceChartProps {
@@ -66,7 +66,7 @@ export default function EnhancedPriceChart({
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${API_BASE_URL}/company/api/stock/${stockId}/price-chart?time_range=${timeRange}`
+        `${API_BASE_URL}/api/company/stock/${stockId}/price-chart?time_range=${timeRange}`
       );
       if (!response.ok) {
         throw new Error(`Failed to fetch price data: ${response.statusText}`);

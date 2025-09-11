@@ -14,8 +14,7 @@ export const stockApi = api.injectEndpoints({
         method: "GET",
         params: { time_range: timeRange },
       }),
-      // You can add providesTags here if you want to cache the data
-      // providesTags: ["StockChart"],
+
     }),
   }),
 });

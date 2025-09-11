@@ -12,7 +12,8 @@ import StockDetailsPage from "./pages/StockDetailsPage";
 import ChatNewSessionPage from "./pages/ChatNewSessionPage";
 import TechnicalsPage from "./pages/TechnicalsPage";
 import RegisterPage from "./pages/RegisterPage";
-import ScreenerPage from "./pages/ScreenerPage";
+import ScreenerPage from "./pages/Screenerpage";
+import ScreenerDetailspage from "./pages/ScreenerDetailspage";
 
 
 const router = createBrowserRouter([
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
         Component: ChatNewSessionPage,
       },
       {
-        path: "/screener/:id",
+        path: "/technical/:id",
         Component: StockDetailsPage
       },
       // {
@@ -49,7 +50,10 @@ const router = createBrowserRouter([
         path: "/screener",
         Component: ScreenerPage
       },
-    
+       {
+        path: "/screener/:id",
+        element: <ScreenerDetailspage />
+      }
     ],
   },
   {

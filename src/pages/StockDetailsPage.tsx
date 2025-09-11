@@ -14,10 +14,11 @@ import BalanceSheetSection from "../analysis_components/BalanceSheetSection";
 import CashFlowSection from "../analysis_components/CashFlowSection";
 import FinancialRatiosSection from "../analysis_components/FinancialRatiosSection";
 import ShareholdingPatternSection from "../analysis_components/ShareholdingPatternSection";
+import StockDetailsSkeleton from "@/components/StockDetailsSkeleton";
 
 const API_BASE_URL = `${
-  import.meta.env.VITE_API_URL || "http://192.168.0.200:8000"
-}/company/api`;
+  import.meta.env.VITE_API_URL || "http://192.168.0.235:8000"
+}/api/company`;
 
 // The component no longer needs to accept initialStockData as a prop.
 const StockDetail: React.FC = () => {
@@ -85,9 +86,7 @@ const StockDetail: React.FC = () => {
   // --- RENDER STATES ---
   if (isLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-element-border border-t-accent"></div>
-      </div>
+      <StockDetailsSkeleton/>
     );
   }
 

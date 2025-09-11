@@ -19,7 +19,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 // Import your Pagination component
-import { Pagination } from "@/components/Pagination"; 
+import { Pagination } from "@/components/Pagination";
+import TechnicalPageSkeleton from "@/components/TechnicalPageSkeleton";
 
 interface Stock {
   id: number;
@@ -35,6 +36,7 @@ interface StockTableProps {
   onStockSelect: (stock: Stock) => void;
   selectedIndicators: { [key: string]: boolean };
   onIndicatorToggle: (indicatorName: string) => void;
+  loading: boolean;
 }
 
 const getSignalInfo = (signal: string | null) => {
@@ -85,6 +87,7 @@ export default function StockTable({
   onStockSelect,
   selectedIndicators,
   onIndicatorToggle,
+  loading,
 }: StockTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -148,18 +151,18 @@ export default function StockTable({
           </div>
         </div>
 
-        {!stocks || stocks.length === 0 ? (
+        {loading ? (
+          <TechnicalPageSkeleton />
+        ) : !stocks || stocks.length === 0 ? (
           <div className="text-center py-10 px-4 text-lg rounded-lg bg-content-bg border border-element-border shadow text-text-secondary">
             <Info className="h-12 w-12 mx-auto mb-4 opacity-50" />
             No stocks match your criteria. Try adjusting the selected
             indicators.
           </div>
         ) : (
-       
           <>
-          
             <Pagination
-              className="mt-6" 
+              className="mt-6"
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}
@@ -183,7 +186,6 @@ export default function StockTable({
                   </tr>
                 </thead>
                 <tbody className="bg-content-bg divide-y divide-element-border">
-                  {/* CHANGE: Map over `currentStocks` instead of `stocks` */}
                   {currentStocks.map((stock) => {
                     const overallSignalInfo = getSignalInfo(stock.overallSignal);
                     return (
@@ -193,7 +195,6 @@ export default function StockTable({
                         className="group hover:bg-element-bg/50 cursor-pointer transition-colors"
                       >
                         {columns.map((col) => {
-                          // ... (rest of the mapping logic is correct)
                           if (col.key === "name")
                             return (
                               <td
@@ -285,8 +286,6 @@ export default function StockTable({
                 </tbody>
               </table>
             </div>
-            
-           
           </>
         )}
       </div>

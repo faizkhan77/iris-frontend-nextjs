@@ -4,10 +4,12 @@ import StockTable from "../analysis_components/StockTable";
 import { ALL_INDICATOR_NAMES } from "../lib/analysis_constants";
 import { Search } from "lucide-react";
 import { motion } from "framer-motion";
+import NotFoundPage from "@/components/PageNotfound";
+
 
 const API_BASE_URL = `${
   import.meta.env.VITE_API_URL
-}/company/api`;
+}/api/company`;
 
 
 
@@ -21,7 +23,7 @@ interface Stock {
 }
 
 export default function ScreenerPage() {
-  const navigate = useNavigate(); // <-- INITIALIZE THE ROUTER
+  const navigate = useNavigate();
   const [stocksSummary, setStocksSummary] = useState<Stock[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -78,10 +80,9 @@ export default function ScreenerPage() {
     );
   }, [stocksSummary, searchQuery]);
 
-  // --- THIS IS THE CRITICAL NAVIGATION LOGIC ---
   const handleStockSelect = (stock: Stock) => {
-    // Navigate to the dynamic route for the selected stock
-    navigate(`/screener/${stock.id}`);
+
+    navigate(`/technical/${stock.id}`);
   };
 
   const handleIndicatorToggle = (indicatorName: string) => {
@@ -92,24 +93,13 @@ export default function ScreenerPage() {
   };
 
   // The rest of the component remains the same...
-  if (error) {
-    return (
-      <div className="flex h-full items-center justify-center p-4 text-center text-red-500">
-        <div>
-          <h2 className="text-xl font-semibold">Failed to load data</h2>
-          <p>{error}</p>
-        </div>
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //  <NotFoundPage message={error} />
+  //   );
+  // }
 
-  if (isLoading && stocksSummary.length === 0) {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-element-border border-t-accent"></div>
-      </div>
-    );
-  }
+ 
 
   return (
     <div className="h-full overflow-y-auto custom-scrollbar bg-content-bg text-text-primary">
@@ -142,6 +132,7 @@ export default function ScreenerPage() {
           onStockSelect={handleStockSelect}
           selectedIndicators={selectedIndicators}
           onIndicatorToggle={handleIndicatorToggle}
+          loading={isLoading}
         />
       </motion.div>
     </div>
