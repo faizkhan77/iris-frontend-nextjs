@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onRunScreen,
 }) => {
   const filteredSectors = SECTOR_MAPPINGS.filter((mapping) =>
-    mapping?.displayName?.toLowerCase().includes(sectorSearch?.toLowerCase())
+    mapping?.displayName?.toLowerCase()?.includes(sectorSearch?.toLowerCase())
   );
 
   
@@ -81,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
           <nav className="flex flex-col space-y-1">
             {filteredSectors.map((sectorMapping) => {
-              const isSelected = selectedSectors.includes(
+              const isSelected = selectedSectors?.includes(
                 sectorMapping.displayName
               );
               return (

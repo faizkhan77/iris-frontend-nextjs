@@ -83,9 +83,7 @@ const StockDetail: React.FC = () => {
   // --- RENDER STATES ---
   if (isLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-element-border border-t-accent"></div>
-      </div>
+      <StockDetailsSkeleton/>
     );
   }
 
