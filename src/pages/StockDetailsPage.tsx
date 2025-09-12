@@ -14,6 +14,7 @@ import BalanceSheetSection from "../analysis_components/BalanceSheetSection";
 import CashFlowSection from "../analysis_components/CashFlowSection";
 import FinancialRatiosSection from "../analysis_components/FinancialRatiosSection";
 import ShareholdingPatternSection from "../analysis_components/ShareholdingPatternSection";
+import StockDetailsSkeleton from "@/components/StockDetailsSkeleton";
 
 const API_BASE_URL = import.meta.env.VITE_BASE_URL
 

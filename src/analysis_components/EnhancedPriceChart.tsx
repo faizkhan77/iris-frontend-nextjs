@@ -308,7 +308,7 @@ export default function EnhancedPriceChart({
                     )?.value;
                     const prevVolume = payload[0]?.payload?.prevVolume || null;
 
-                    const dateStr = new Date(label).toLocaleDateString(
+                    const dateStr = new Date(label!).toLocaleDateString(
                       "en-US",
                       {
                         month: "short",

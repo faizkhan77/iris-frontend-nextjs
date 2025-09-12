@@ -18,8 +18,7 @@ interface Stock {
   signals: { name: string; decision: string }[];
 }
 
-export default function ScreenerPage() {
-  const navigate = useNavigate();
+
 export default function TechnicalsPage() {
   const navigate = useNavigate(); // <-- INITIALIZE THE ROUTER
   const [stocksSummary, setStocksSummary] = useState<Stock[]>([]);
