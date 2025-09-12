@@ -19,6 +19,8 @@ const CompanyPage = () => {
   const [filtered, setFiltered] = useState(companies);
 
   const handleSearch = (value: string) => {
+    console.log(value);
+    
     setQuery(value);
     setFiltered(
       companies.filter(
