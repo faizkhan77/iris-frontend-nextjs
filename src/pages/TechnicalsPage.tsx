@@ -1,15 +1,11 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import StockTable from "../analysis_components/StockTable";
 import { ALL_INDICATOR_NAMES } from "../lib/analysis_constants";
 import { Search } from "lucide-react";
 import { motion } from "framer-motion";
 
-const API_BASE_URL = `${
-  import.meta.env.VITE_API_URL
-}/company/api`;
-
-
+const API_BASE_URL = `${import.meta.env.VITE_BASE_URL}`;
 
 interface Stock {
   id: number;
@@ -20,7 +16,7 @@ interface Stock {
   signals: { name: string; decision: string }[];
 }
 
-export default function ScreenerPage() {
+export default function TechnicalsPage() {
   const navigate = useNavigate(); // <-- INITIALIZE THE ROUTER
   const [stocksSummary, setStocksSummary] = useState<Stock[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,9 +46,12 @@ export default function ScreenerPage() {
           selectedIndicators: activeIndicators.join(","),
         });
         const response = await fetch(
+          `${API_BASE_URL}/company/stocks?${params.toString()}`
+        );
+        console.log(
+          "Fetch URL:",
           `${API_BASE_URL}/stocks?${params.toString()}`
         );
-        console.log("Fetch URL:", `${API_BASE_URL}/stocks?${params.toString()}`);
         if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();

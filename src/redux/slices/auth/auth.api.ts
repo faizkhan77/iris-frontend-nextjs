@@ -3,7 +3,7 @@ import type { LoginRequest, LoginResponse } from "./types";
 
 
 export const authapi = api.injectEndpoints({
-  overrideExisting: true,
+  overrideExisting : true,
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (data) => ({

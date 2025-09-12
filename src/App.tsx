@@ -13,52 +13,76 @@ import ChatNewSessionPage from "./pages/ChatNewSessionPage";
 import TechnicalsPage from "./pages/TechnicalsPage";
 import RegisterPage from "./pages/RegisterPage";
 import ScreenerPage from "./pages/ScreenerPage";
-
+import CompanyPage from "./pages/CompanyPage";
+import ProtectedRoutes from "./components/providers/ProtectedRoutes";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: Chatlayout,
+    element: <Chatlayout />, // public layout
     children: [
-      {
-        path: "/c/:id",
-        Component: ChatSessionPage,
-      },
-      {
-        path: "/new",
-        Component: ChatNewSessionPage,
-      },
       {
         path: "/",
         index: true,
-        Component: ChatNewSessionPage,
+        element: (
+          <ProtectedRoutes>
+            <ChatNewSessionPage />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/company",
+        element: <CompanyPage />, // public page
+      },
+      {
+        path: "/c/:id",
+        element: (
+          <ProtectedRoutes>
+            <ChatSessionPage />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/new",
+        element: (
+          <ProtectedRoutes>
+            <ChatNewSessionPage />
+          </ProtectedRoutes>
+        ),
       },
       {
         path: "/screener/:id",
-        Component: StockDetailsPage
+        element: (
+          <ProtectedRoutes>
+            <StockDetailsPage />
+          </ProtectedRoutes>
+        ),
       },
-      // {
-      //   path: "/company/stock/:key",
-      //   Component: ScreenerPage
-      // },
       {
         path: "/technicals",
-        Component: TechnicalsPage
+        element: (
+          <ProtectedRoutes>
+            <TechnicalsPage />
+          </ProtectedRoutes>
+        ),
       },
-       {
+      {
         path: "/screener",
-        Component: ScreenerPage
+        element: (
+          <ProtectedRoutes>
+            <ScreenerPage />
+          </ProtectedRoutes>
+        ),
       },
-    
     ],
   },
   {
     path: "/login",
-    Component: LoginPage,
+    element: <LoginPage />,
   },
   {
     path: "/register",
-    Component: RegisterPage,
+    element: <RegisterPage />,
   },
 ]);
 

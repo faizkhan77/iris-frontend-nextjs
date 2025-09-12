@@ -72,6 +72,20 @@ const ChatIconBar = () => {
         </Tooltip>
 
         <Tooltip>
+          <Link to={"/company"}>
+            <TooltipTrigger>
+              <div
+                className="p-3 flex items-center justify-center h-10 w-10 border rounded-xl cursor-pointer relative z-10"
+                onClick={() => {}}
+              >
+                <DynamicIcon size={20} name="search" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="right">Search Company</TooltipContent>
+          </Link>
+        </Tooltip>
+
+        <Tooltip>
           <Link to={"/screener"}>
             <TooltipTrigger>
               <div

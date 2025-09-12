@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { authapi } from "./auth.api";
 import type { LoginResponse } from "./types";
+import type { RootState } from "@/redux/store";
 
 // Define Auth state type
 interface AuthState {
@@ -53,8 +54,12 @@ const authSlice = createSlice({
         id: action.payload.id,
         email: action.payload.email,
       };
-      localStorage.setItem("access_token",state.token!)
       state.token = action.payload.token;
+      localStorage.setItem("access_token",action.payload.token)
+    },
+    setToken : (state,action : PayloadAction<{token : string}>)=>{
+      state.token = action.payload.token
+      localStorage.setItem("access_token",action.payload.token)
     },
     logout: (state) => {
       state.isAuthenticated = false;
@@ -70,7 +75,9 @@ const authSlice = createSlice({
 });
 
 // Export actions
-export const { register, login, logout } = authSlice.actions;
+export const { register, login, logout,setToken } = authSlice.actions;
 
 // Export reducer
 export default authSlice.reducer;
+export const selectCurrentUser = (state: RootState) => state.auth.user
+
