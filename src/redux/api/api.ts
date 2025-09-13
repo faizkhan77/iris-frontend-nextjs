@@ -5,8 +5,10 @@ import {
   type FetchArgs,
   type FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
-import type { RootState } from "@/redux/store";
-import { logout, setToken } from "../slices/auth/auth.slice";
+// import { useAppDispatch, type RootState } from "@/redux/store";
+// import { logout, setToken } from "../slices/auth/auth.slice";
+
+// const dispatch = useAppDispatch();
 
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BASE_URL, // ✅ from env

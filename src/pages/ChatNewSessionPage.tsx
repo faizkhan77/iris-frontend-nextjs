@@ -144,7 +144,7 @@ const ChatNewSessionPage = () => {
           <AnimatedOrb />
         </div>
 
-        <h1 className="text-center text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+        <h1 className="text-center text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
           Just talk to <span className="text-[#0dd3ff]">IRIS</span>
         </h1>
 
