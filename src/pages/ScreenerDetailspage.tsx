@@ -4,7 +4,7 @@ import React from 'react'
 const ScreenerDetailspage = () => {
   return (
     <div>
-        <ScreenerResultsPage/>
+        <ScreenerResultsPage initialScreens={}/>
     </div>
   )
 }

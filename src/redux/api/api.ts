@@ -10,6 +10,7 @@ import { logout, setToken } from "../slices/auth/auth.slice";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BASE_URL, // ✅ from env
+  credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
     const token = state.auth.token;
@@ -31,6 +32,8 @@ export const baseQueryWithReauth: BaseQueryFn<
   const authState = (api.getState() as RootState).auth;
 
   if (result.error && result.error.status === 403) {
+    console.log("Yes Got Error");
+
     // No token or refresh token — logout
     if (!authState.token) {
       api.dispatch(logout());
@@ -53,7 +56,7 @@ export const baseQueryWithReauth: BaseQueryFn<
       // Update token in store
       api.dispatch(
         setToken({
-          token : newAccessToken,
+          token: newAccessToken,
         })
       );
 
@@ -70,6 +73,6 @@ export const baseQueryWithReauth: BaseQueryFn<
 
 export const api = createApi({
   reducerPath: "api",
-  baseQuery : baseQueryWithReauth,
+  baseQuery: baseQueryWithReauth,
   endpoints: () => ({}), // extend in other files
 });

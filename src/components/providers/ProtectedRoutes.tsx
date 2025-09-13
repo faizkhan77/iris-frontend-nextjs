@@ -6,17 +6,21 @@ interface ProtectedRoutesProps {
 }
 
 const ProtectedRoutes = ({ children }: ProtectedRoutesProps) => {
-  const auth = useAuth();
-  const location = useLocation();
-  const token = localStorage.getItem("access_token");
+  const { token, loading, persist } = useAuth();
 
-  console.log(auth);
+  if (loading && persist) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <span className="animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></span>
+      </div>
+    );
+  }
 
-  return token ? (
-    <>{children}</> // render the wrapped component(s)
-  ) : (
-    <Navigate to="/login" state={{ from: location }} replace />
-  );
+  if (!token) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
 };
 
 export default ProtectedRoutes;

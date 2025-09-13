@@ -1,8 +1,8 @@
 import React from "react";
-import  { SCREEN_CATEGORIES } from "../../lib/constants";
+import { SCREEN_CATEGORIES } from "../../lib/constants";
 import ScreenCategorySection from "./ScreenCategorySection";
-import type { ScreenCategory , Screen } from "@/types";
-import { useNavigate } from 'react-router-dom';
+import type { ScreenCategory, Screen } from "@/types";
+import { useNavigate } from "react-router-dom";
 
 interface MainContentProps {
   timeframe: string;
@@ -33,13 +33,12 @@ const MainContent: React.FC<MainContentProps> = ({
   onSelectForCombination,
   userScreenCategory,
 }) => {
-const searchTerm = (globalSearch || "").toLowerCase();
- const navigate = useNavigate();
+  const searchTerm = (globalSearch || "").toLowerCase();
+  const navigate = useNavigate();
 
-
-   const handleRunScreen = (screen: Screen) => {
-  navigate(`/screener/${encodeURIComponent(screen.title)}`);
-  }
+  const handleRunScreen = (screen: Screen) => {
+    navigate(`/stratagy/${encodeURIComponent(screen.title)}`);
+  };
   const allCategories = userScreenCategory
     ? [userScreenCategory, ...SCREEN_CATEGORIES]
     : SCREEN_CATEGORIES;

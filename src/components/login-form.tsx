@@ -9,6 +9,7 @@ import { useLoginMutation } from "@/redux/slices/auth/auth.api";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/redux/store";
 import { login } from "@/redux/slices/auth/auth.slice";
+import { useNavigate } from "react-router";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email"),
@@ -31,6 +32,7 @@ export function LoginForm({
 
   const [loginMutation, { isLoading }] = useLoginMutation();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
@@ -45,10 +47,14 @@ export function LoginForm({
         token: response.access_token,
       };
 
+      console.log("loging : ",response);
+      
+
       dispatch(login(payload));
       console.log("succes");
 
       toast.success("Login Sucessfully!",{richColors:true});
+      navigate("/")
     } catch (error: any) {
       console.error("Login Error:", error);
       if (error?.data?.detail) {

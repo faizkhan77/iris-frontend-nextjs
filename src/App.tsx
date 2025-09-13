@@ -13,13 +13,15 @@ import ChatNewSessionPage from "./pages/ChatNewSessionPage";
 import TechnicalsPage from "./pages/TechnicalsPage";
 import RegisterPage from "./pages/RegisterPage";
 import ScreenerPage from "./pages/ScreenerPage";
+import ScreenerDetailsPage from "./pages/ScreenerDetailspage";
 import CompanyPage from "./pages/CompanyPage";
 import ProtectedRoutes from "./components/providers/ProtectedRoutes";
+import PersistLogin from "./components/providers/PersistLogin";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Chatlayout />, // public layout
+    element: (<PersistLogin><Chatlayout /></PersistLogin>), // public layout
     children: [
       {
         path: "/",
@@ -51,7 +53,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/screener/:id",
+        path: "/company/:id",
         element: (
           <ProtectedRoutes>
             <StockDetailsPage />
@@ -73,6 +75,12 @@ const router = createBrowserRouter([
             <ScreenerPage />
           </ProtectedRoutes>
         ),
+        children : [
+          {
+            path: "stratagy/:name",
+            element : <ScreenerDetailsPage />
+          }
+        ]
       },
     ],
   },

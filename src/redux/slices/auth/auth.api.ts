@@ -1,9 +1,12 @@
 import { api } from "@/redux/api/api";
-import type { LoginRequest, LoginResponse } from "./types";
-
+import type {
+  LoginRequest,
+  LoginResponse,
+  RefreshTokenResponse,
+} from "./types";
 
 export const authapi = api.injectEndpoints({
-  overrideExisting : true,
+  overrideExisting: true,
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (data) => ({
@@ -12,14 +15,15 @@ export const authapi = api.injectEndpoints({
         body: data,
       }),
     }),
-    refresh: builder.query({
-      query: (data) => ({
+    refresh: builder.mutation<RefreshTokenResponse, void>({
+      query: () => ({
         url: "/auth/refresh",
-        method: "GET",
-        body: data,
+        method: "POST",
+        credentials: "include", 
       }),
     }),
-    login: builder.mutation<LoginResponse,LoginRequest>({
+
+    login: builder.mutation<LoginResponse, LoginRequest>({
       query: (data) => ({
         url: "/auth/login",
         method: "POST",
@@ -36,9 +40,9 @@ export const authapi = api.injectEndpoints({
   }),
 });
 
-export const { 
-    useGetUserQuery,
-    useLoginMutation,
-    useRegisterMutation,
-    useRefreshQuery
+export const {
+  useGetUserQuery,
+  useLoginMutation,
+  useRegisterMutation,
+  useRefreshMutation,
 } = authapi;

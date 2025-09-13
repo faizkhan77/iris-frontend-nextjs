@@ -4,7 +4,7 @@ import StockTable from "../analysis_components/StockTable";
 import { ALL_INDICATOR_NAMES } from "../lib/analysis_constants";
 import { Search } from "lucide-react";
 import { motion } from "framer-motion";
-import NotFoundPage from "@/components/PageNotfound";
+
 
 
 const API_BASE_URL = `${import.meta.env.VITE_BASE_URL}`;
@@ -49,12 +49,9 @@ export default function TechnicalsPage() {
           selectedIndicators: activeIndicators.join(","),
         });
         const response = await fetch(
-          `${API_BASE_URL}/company/stocks?${params.toString()}`
+          `${API_BASE_URL}/company/stock?${params.toString()}`
         );
-        console.log(
-          "Fetch URL:",
-          `${API_BASE_URL}/stocks?${params.toString()}`
-        );
+       
         if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
@@ -82,7 +79,7 @@ export default function TechnicalsPage() {
 
   const handleStockSelect = (stock: Stock) => {
 
-    navigate(`/technical/${stock.id}`);
+    navigate(`/company/${stock.id}`);
   };
 
   const handleIndicatorToggle = (indicatorName: string) => {
