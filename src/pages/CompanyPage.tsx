@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@/components/ui/command";
 
 // Sample company stock data
 const companies = [
@@ -13,14 +18,13 @@ const companies = [
   { symbol: "ITC.NS", name: "ITC Limited" },
 ];
 
-
 const CompanyPage = () => {
   const [query, setQuery] = useState("");
   const [filtered, setFiltered] = useState(companies);
 
   const handleSearch = (value: string) => {
     console.log(value);
-    
+
     setQuery(value);
     setFiltered(
       companies.filter(
@@ -32,45 +36,40 @@ const CompanyPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="w-full py-4 ">
-        <div className="container mx-auto px-4">
-          <h1 className="text-xl font-semibold">Company Finder</h1>
-        </div>
-      </header>
+    <div className="relative h-full border w-full rounded-lg flex flex-col overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_20%,transparent_40%,oklch(0.6772_0.22_216.4337_/_0.3)_70%,oklch(0.6772_0.1206_216.4337)_100%)]" />
 
       {/* Search Box Centered */}
-      <main className="flex flex-1 items-center justify-center">
-        <Card className="w-full max-w-md p-4 shadow-lg">
-          <CardContent className="p-0">
-            <Input
-              placeholder="Search company or symbol..."
-              value={query}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="mb-2"
-            />
+      <main className="relative flex flex-col flex-1 items-center justify-center">
+        <h3>Find Best Opportunies</h3>
+        <div className="relative w-full max-w-2xl">
+          <Input
+            placeholder="Search company or symbol..."
+            value={query}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full !text-lg placeholder:text-lg p-8 rounded-full"
+          />
 
-            {query && (
-              <Command className="border rounded-md">
-                <CommandEmpty>No company found.</CommandEmpty>
-                <CommandGroup heading="Suggestions">
-                  {filtered.map((c) => (
-                    <CommandItem
-                      key={c.symbol}
-                      onSelect={() => setQuery(c.symbol)}
-                    >
-                      <span className="font-medium">{c.symbol}</span>
-                      <span className="ml-2 text-sm text-muted-foreground">
-                        {c.name}
-                      </span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </Command>
-            )}
-          </CardContent>
-        </Card>
+          {query && (
+            <Command className="absolute left-0 top-full mt-2 w-full border shadow-md rounded-md bg-background z-50">
+              <CommandEmpty>No company found.</CommandEmpty>
+              <CommandGroup heading="Suggestions">
+                {filtered.map((c) => (
+                  <CommandItem
+                    key={c.symbol}
+                    onSelect={() => setQuery(c.symbol)}
+                  >
+                    <span className="font-medium">{c.symbol}</span>
+                    <span className="ml-2 text-sm text-muted-foreground">
+                      {c.name}
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </Command>
+          )}
+        </div>
       </main>
     </div>
   );

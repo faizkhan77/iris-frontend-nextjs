@@ -4,6 +4,7 @@ import ScreenerSidebar from "@/components/screener/ScreenerSidebar";
 import ScreenerDashboard from "@/components/screener/ScreenerDashboard";
 import type { Screen, ScreenCategory } from "@/types";
 import { SCREEN_CATEGORIES } from "@/lib/constants";
+import { Outlet } from "react-router";
 
 const ScreenerPage = () => {
   // Sidebar state
@@ -13,8 +14,11 @@ const ScreenerPage = () => {
   // MainContent state
   const [timeframe, setTimeframe] = useState("1M");
   const [selectedCap, setSelectedCap] = useState("All");
-  const [selectedForCombination, setSelectedForCombination] = useState<Screen[]>([]);
-  const [userScreenCategory, setUserScreenCategory] = useState<ScreenCategory | null>(null);
+  const [selectedForCombination, setSelectedForCombination] = useState<
+    Screen[]
+  >([]);
+  const [userScreenCategory, setUserScreenCategory] =
+    useState<ScreenCategory | null>(null);
   const [isCombining, setIsCombining] = useState(false);
   const [globalSearch, setGlobalSearch] = useState("");
 
@@ -44,31 +48,9 @@ const ScreenerPage = () => {
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
       <ScreenerHeader />
-
       <div className="flex flex-1 overflow-hidden">
-        <ScreenerSidebar
-          selectedSectors={selectedSectors}
-          onSelectSector={(sector) => setSelectedSectors([sector])}
-          sectorSearch={sectorSearch}
-          onSectorSearchChange={setSectorSearch}
-          onRunScreen={handleRunScreen}
-        />
-
         <div className="flex-1 p-6 overflow-y-auto scrollbar-cyan">
-          <ScreenerDashboard
-            timeframe={timeframe}
-            onTimeframeChange={setTimeframe}
-            selectedCap={selectedCap}
-            onSelectCap={setSelectedCap}
-            onRunScreen={handleRunScreen}
-            onResetFilters={handleResetFilters}
-            onSeeAll={handleSeeAll}
-            globalSearch={globalSearch}
-            isCombining={isCombining}
-            selectedForCombination={selectedForCombination}
-            onSelectForCombination={handleSelectForCombination}
-            userScreenCategory={userScreenCategory}
-          />
+          <Outlet />
         </div>
       </div>
     </div>

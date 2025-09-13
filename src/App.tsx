@@ -17,11 +17,16 @@ import ScreenerDetailsPage from "./pages/ScreenerDetailspage";
 import CompanyPage from "./pages/CompanyPage";
 import ProtectedRoutes from "./components/providers/ProtectedRoutes";
 import PersistLogin from "./components/providers/PersistLogin";
+import ScreenerIndexPage from "./components/screener/ScreenerDashboard";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (<PersistLogin><Chatlayout /></PersistLogin>), // public layout
+    element: (
+      <PersistLogin>
+        <Chatlayout />
+      </PersistLogin>
+    ), // public layout
     children: [
       {
         path: "/",
@@ -75,12 +80,16 @@ const router = createBrowserRouter([
             <ScreenerPage />
           </ProtectedRoutes>
         ),
-        children : [
+        children: [
+          {
+            index: true,
+            element: <ScreenerIndexPage />,
+          },
           {
             path: "stratagy/:name",
-            element : <ScreenerDetailsPage />
-          }
-        ]
+            element: <ScreenerDetailsPage />,
+          },
+        ],
       },
     ],
   },

@@ -1,4 +1,4 @@
-import type { ScreenCategory , Screen } from "@/types";
+import type { ScreenCategory, Screen } from "@/types";
 import React from "react";
 import ScreenCard from "./ScreenCard";
 
@@ -39,10 +39,10 @@ const ScreenCategorySection: React.FC<ScreenCategorySectionProps> = ({
               screen={screen}
               onRunScreen={onRunScreen}
               isCombining={isCombining}
-             isSelected={selectedForCombination?.some(
-  (s) => s.title === screen.title
-) || false}
-
+              isSelected={
+                selectedForCombination?.some((s) => s.title === screen.title) ||
+                false
+              }
               onSelect={onSelectForCombination}
             />
           </div>

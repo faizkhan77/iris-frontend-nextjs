@@ -42,7 +42,7 @@ const ChatNewSessionPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isTextarea, setIsTextarea] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Model selector state
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
@@ -64,15 +64,17 @@ const ChatNewSessionPage = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
- const handlePaste = (e: React.ClipboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const pastedText = e.clipboardData.getData('text');
-    
+  const handlePaste = (
+    e: React.ClipboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const pastedText = e.clipboardData.getData("text");
+
     // If pasting multi-line content, switch to textarea
-    if (pastedText.includes('\n') || pastedText.length > 100) {
+    if (pastedText.includes("\n") || pastedText.length > 100) {
       setIsTextarea(true);
     }
   };
-    useEffect(() => {
+  useEffect(() => {
     if (isTextarea && textareaRef.current) {
       textareaRef.current.focus();
     } else if (!isTextarea && inputRef.current) {
@@ -95,7 +97,7 @@ const ChatNewSessionPage = () => {
 
   const handleSendMessage = (messageOrEvent?: string | React.FormEvent) => {
     let messageToSend = "";
-    
+
     if (typeof messageOrEvent === "string") {
       messageToSend = messageOrEvent;
     } else {
@@ -107,11 +109,11 @@ const ChatNewSessionPage = () => {
       console.log("Sending message:", messageToSend);
       // Here you would typically call your actual message handler
       // onSendMessage(messageToSend);
-      
+
       // Simulate processing
       setIsProcessing(true);
       setTimeout(() => setIsProcessing(false), 2000);
-      
+
       if (typeof messageOrEvent !== "string") {
         setValue("");
       }
@@ -132,18 +134,19 @@ const ChatNewSessionPage = () => {
   };
 
   return (
-    <div className="bg-background h-full flex flex-col items-center justify-center rounded-xl border p-4">
-      <div className="w-full max-w-2xl">
-      
+    <div className="bg-background h-full relative flex flex-col items-center justify-center rounded-xl border p-4">
+      <div
+        className="absolute rounded-xl z-0 inset-0 bg-[radial-gradient(125%_125%_at_50%_20%,transparent_40%,oklch(0.6772_0.22_216.4337_/_0.3)_70%,oklch(0.6772_0.3_216.4337)_100%)]
+"
+      />
+      <div className="w-full backdrop-blur-lg z-10 max-w-2xl">
         <div className="mb-6 flex justify-center">
           <AnimatedOrb />
         </div>
 
-
         <h1 className="text-center text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           Just talk to <span className="text-[#0dd3ff]">IRIS</span>
         </h1>
-
 
         <div className="mt-8 flex flex-col rounded-2xl bg-card p-4 shadow-sm relative border">
           {/* Floating Placeholder */}
@@ -186,7 +189,7 @@ const ChatNewSessionPage = () => {
               disabled={isProcessing}
             />
           )}
-          
+
           {/* Bottom Bar */}
           <div className=" flex items-center justify-between">
             {/* Model Selector */}
