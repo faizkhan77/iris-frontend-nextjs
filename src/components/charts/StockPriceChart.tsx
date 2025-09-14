@@ -1,4 +1,4 @@
-// components/charts/StockPriceChart.tsx
+
 "use client";
 
 import { useTheme } from "next-themes";
@@ -13,12 +13,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+
   ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
+   type ChartConfig,
 } from "@/components/ui/chart";
 import {
   Select,
@@ -28,6 +30,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
+import { useTheme } from "../providers/ThemeProvider";
+
 
 // STEP 1: Define the shape of OUR data
 export interface ChartDataPoint {
