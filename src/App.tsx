@@ -14,6 +14,7 @@ import TechnicalsPage from "./pages/TechnicalsPage";
 import RegisterPage from "./pages/RegisterPage";
 import ScreenerPage from "./pages/Screenerpage";
 import ScreenerDetailspage from "./pages/ScreenerDetailspage";
+import DummydataCheck from "./pages/DummydataCheck";
 
 
 const router = createBrowserRouter([
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
        {
         path: "/screener",
         Component: ScreenerPage
+      },
+        {
+        path: "/dummycheck",
+        Component: DummydataCheck
       },
        {
         path: "/screener/:id",
