@@ -1,21 +1,9 @@
 import { useAppSelector, type RootState } from "@/redux/store";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Search } from "lucide-react";
 import { useGetConversationsQuery } from "@/redux/slices/chat/chat.api";
-import { Link } from "react-router";
+import {  useNavigate } from "react-router";
 
-type History = {
-  chatId: string;
-  title: string;
-};
 
-// const chatHistory: History[] = [
-//   { chatId: "98u1bs9uha", title: "Project Updates" },
-//   { chatId: "b73kd92ksl", title: "Team Meeting Notes" },
-//   { chatId: "a82jd91kdm", title: "Personal Chats with whats is" },
-//   { chatId: "c91jd28lsl", title: "Client Discussion" },
-//   { chatId: "d01kd83kdp", title: "Ideas & Brainstorming" },
-// ];
 
 const ChatHistory = () => {
   const showHistory = useAppSelector(
@@ -23,6 +11,12 @@ const ChatHistory = () => {
   );
 
   const { data, isLoading } = useGetConversationsQuery();
+
+  const navigate = useNavigate();
+
+  const handleActiveSession = (id: string) => {
+    navigate(`/c/${id}`); // navigate to conversation page
+  };
 
   if (isLoading) {
     return <div></div>;
@@ -50,11 +44,11 @@ const ChatHistory = () => {
             <hr className="my-2" />
             <div className="flex flex-col overflow-y-auto">
               {data?.conversations?.map(({ summary, id }) => (
-                <Link to={`/c/${id}`} key={id}>
+                <div onClick={() => handleActiveSession(id)} key={id}>
                   <div className="p-2 truncate text-left rounded-lg hover:bg-accent/60 cursor-pointer text-[13px]">
                     {summary} :{id}
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>

@@ -9,7 +9,8 @@ export const store = configureStore({
   reducer: {
     [api.reducerPath] : api.reducer,
     auth : authReducer,
-    chat : chatReducer
+    chat : chatReducer,
+   
   },
   middleware: (getDefault) => getDefault().concat(api.middleware),
 })

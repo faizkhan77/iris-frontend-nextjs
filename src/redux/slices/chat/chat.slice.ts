@@ -1,19 +1,24 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { chatapi } from "./chat.api";
-import type { ChatMessage, ChatSession, Conversation } from "./types";
+import type {
+  AiResponse,
+  ChatMessage,
+  Conversation,
+  MessageContent,
+} from "./types";
 
 interface ChatState {
   showHistory: boolean;
-  conversations : Conversation[],
-  activeSession?: ChatSession | null;
+  conversations: Conversation[];
+  activeSession?: string | null;
   messages: ChatMessage[];
 }
 
 const initialState: ChatState = {
   showHistory: false,
-  conversations : [],
-  messages : [],
-  activeSession : null
+  conversations: [],
+  messages: [],
+  activeSession: null,
 };
 
 const chatSlice = createSlice({
@@ -23,27 +28,31 @@ const chatSlice = createSlice({
     setShowHistory: (state, action: PayloadAction<boolean>) => {
       state.showHistory = action.payload;
     },
-    setActiveSession: (state, action: PayloadAction<ChatSession | null>) => {
+    setActiveSession: (state, action: PayloadAction<string | null>) => {
       state.activeSession = action.payload;
-      state.messages = action.payload ? action.payload.messages : [];
     },
     addMessage: (state, action: PayloadAction<ChatMessage>) => {
       state.messages.push(action.payload);
     },
-    clearMessages: (state) => {
-      state.messages = [];
-    },
+    setMessages : (state, action: PayloadAction<ChatMessage[]>)=>{
+      state.messages = action.payload
+    }
   },
   extraReducers: (builder) => {
-    builder.addMatcher(
-      chatapi.endpoints.getConversations.matchFulfilled,
-      (state, action) => {
-        state.conversations = action.payload.conversations
-      }
-    )
+    // builder.addMatcher(
+    //   chatapi.endpoints.getSingleConversation.matchFulfilled,
+    //   (state, action: PayloadAction<string>) => {
+    //     state.token = action.payload.access_token;
+    //   }
+    // );
   },
 });
 
-export const { setShowHistory } = chatSlice.actions;
+export const {
+  setShowHistory,
+  setActiveSession,
+  addMessage,
+  setMessages
+} = chatSlice.actions;
 
 export default chatSlice.reducer;
