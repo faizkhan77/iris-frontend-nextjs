@@ -16,10 +16,10 @@ const ScreenerHeader = () => {
           <input className="w-full text-sm p-2 focus:outline-none h-full" type="text" />
         </div>
       </div>
-      <div className="flex gap-5">
+      {/* <div className="flex gap-5">
         <Button variant={"outline"}>Combine Screener</Button>
         <Button variant={"outline"}> <Plus /> Create New Screener</Button>
-      </div>
+      </div> */}
     </header>
   );
 };

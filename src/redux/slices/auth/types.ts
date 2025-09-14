@@ -7,10 +7,13 @@ export type LoginRequest = {
 export type LoginResponse = {
   success: boolean,
   access_token : string,
-  refresh_token : string,
   token_type : string
   user : {
     id : string,
     email : string
   }
+}
+export type RefreshTokenResponse = {
+  access_token : string,
+  token_type : string
 }

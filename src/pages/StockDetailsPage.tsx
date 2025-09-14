@@ -16,9 +16,7 @@ import FinancialRatiosSection from "../analysis_components/FinancialRatiosSectio
 import ShareholdingPatternSection from "../analysis_components/ShareholdingPatternSection";
 import StockDetailsSkeleton from "@/components/StockDetailsSkeleton";
 
-const API_BASE_URL = `${
-  import.meta.env.VITE_API_URL || "http://192.168.0.235:8000"
-}/api/company`;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL
 
 // The component no longer needs to accept initialStockData as a prop.
 const StockDetail: React.FC = () => {
@@ -41,7 +39,7 @@ const StockDetail: React.FC = () => {
       setError(null);
       try {
         // Use the endpoint you specified.
-        const response = await fetch(`${API_BASE_URL}/stock/${stockId}`);
+        const response = await fetch(`${API_BASE_URL}/company/stock/${stockId}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

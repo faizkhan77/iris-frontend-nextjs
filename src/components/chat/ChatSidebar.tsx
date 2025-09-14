@@ -5,27 +5,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import IrisLogo from "@/assets/Logo";
 import { useState } from "react";
 import { Link, useLocation } from "react-router";
-import { Search } from "lucide-react";
+import ChatHistory from "./ChatHistory";
+import ChatHistoryIcon from "./ChatHistoryIcon";
 
-type History = {
-  chatId: string;
-  title: string;
-};
-
-const chatHistory: History[] = [
-  { chatId: "98u1bs9uha", title: "Project Updates" },
-  { chatId: "b73kd92ksl", title: "Team Meeting Notes" },
-  { chatId: "a82jd91kdm", title: "Personal Chats with whats is" },
-  { chatId: "c91jd28lsl", title: "Client Discussion" },
-  { chatId: "d01kd83kdp", title: "Ideas & Brainstorming" },
-];
 
 const ChatIconBar = () => {
-  const [showHistory, setShowHistory] = useState(false);
-  const location = useLocation();
-  
-  // Check if current page is home or new page
-  const isHomePage = location.pathname === "/" || location.pathname === "/new";
+ 
 
   return (
     <div className="flex border-sidebar">
@@ -49,26 +34,20 @@ const ChatIconBar = () => {
         </Tooltip>
 
         {/* History Toggle - Only show toggle functionality on home/new pages, otherwise navigate to home */}
+        <ChatHistoryIcon />
+
         <Tooltip>
-          {isHomePage ? (
+          <Link to={"/company"}>
             <TooltipTrigger>
               <div
                 className="p-3 flex items-center justify-center h-10 w-10 border rounded-xl cursor-pointer relative z-10"
-                onClick={() => setShowHistory(!showHistory)}
+                onClick={() => {}}
               >
-                <DynamicIcon size={20} name="clock" />
+                <DynamicIcon size={20} name="search" />
               </div>
             </TooltipTrigger>
-          ) : (
-            <Link to={"/"}>
-              <TooltipTrigger>
-                <div className="p-3 flex items-center justify-center h-10 w-10 border rounded-xl cursor-pointer relative z-10">
-                  <DynamicIcon size={20} name="clock" />
-                </div>
-              </TooltipTrigger>
-            </Link>
-          )}
-          <TooltipContent side="right">Recent Chats</TooltipContent>
+            <TooltipContent side="right">Search Company</TooltipContent>
+          </Link>
         </Tooltip>
 
         <Tooltip>
@@ -111,39 +90,7 @@ const ChatIconBar = () => {
         </Avatar>
       </div>
 
-      {/* Sliding Recent History Panel - Only show on home/new pages */}
-      <div
-        className={`flex flex-col border-r h-screen transition-all duration-300 ${
-          showHistory && isHomePage ? "w-60 p-3" : "w-0 p-0 overflow-hidden"
-        }`}
-      >
-        {showHistory && isHomePage && (
-          <div className="">
-            <div className="flex mb-8 border px-2 rounded-lg items-center justify-center">
-              <Search size={18} />
-              <input
-                placeholder="Search Chats"
-                className="w-full text-sm p-2 focus:outline-none h-full"
-                type="text"
-              />
-            </div>
-            <h2 className="font-medium text-base">Recent Chats</h2>
-            <hr className="my-2" />
-            <div className="flex flex-col overflow-y-auto">
-              {chatHistory.map(({ chatId, title }) => (
-                <Tooltip key={chatId}>
-                  <TooltipTrigger>
-                    <div className="p-2 truncate text-left rounded-lg hover:bg-accent/60 cursor-pointer text-[13px] truncate">
-                      {title}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">{title}</TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      <ChatHistory />
     </div>
   );
 };

@@ -12,44 +12,87 @@ import StockDetailsPage from "./pages/StockDetailsPage";
 import ChatNewSessionPage from "./pages/ChatNewSessionPage";
 import TechnicalsPage from "./pages/TechnicalsPage";
 import RegisterPage from "./pages/RegisterPage";
+
 import ScreenerPage from "./pages/Screenerpage";
 import ScreenerDetailspage from "./pages/ScreenerDetailspage";
 import DummydataCheck from "./pages/DummydataCheck";
-
+import CompanyPage from "./pages/CompanySearchPage";
+import ProtectedRoutes from "./components/providers/ProtectedRoutes";
+import PersistLogin from "./components/providers/PersistLogin";
+import ScreenerIndexPage from "./components/screener/ScreenerDashboard";
+>
 
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: Chatlayout,
+    element: (
+      <PersistLogin>
+        <Chatlayout />
+      </PersistLogin>
+    ), // public layout
     children: [
-      {
-        path: "/c/:id",
-        Component: ChatSessionPage,
-      },
-      {
-        path: "/new",
-        Component: ChatNewSessionPage,
-      },
       {
         path: "/",
         index: true,
-        Component: ChatNewSessionPage,
+        element: (
+          <ProtectedRoutes>
+            <ChatNewSessionPage />
+          </ProtectedRoutes>
+        ),
       },
       {
-        path: "/technical/:id",
-        Component: StockDetailsPage
+        path: "/company",
+        element: <CompanyPage />, // public page
       },
-      // {
-      //   path: "/company/stock/:key",
-      //   Component: ScreenerPage
-      // },
+      {
+        path: "/c/:id",
+        element: (
+          <ProtectedRoutes>
+            <ChatSessionPage />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/new",
+        element: (
+          <ProtectedRoutes>
+            <ChatNewSessionPage />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/company/:id",
+        element: (
+          <ProtectedRoutes>
+            <StockDetailsPage />
+          </ProtectedRoutes>
+        ),
+      },
       {
         path: "/technicals",
-        Component: TechnicalsPage
+        element: (
+          <ProtectedRoutes>
+            <TechnicalsPage />
+          </ProtectedRoutes>
+        ),
       },
-       {
+      {
         path: "/screener",
-        Component: ScreenerPage
+        element: (
+          <ProtectedRoutes>
+            <ScreenerPage />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            index: true,
+            element: <ScreenerIndexPage />,
+          },
+          {
+            path: "stratagy/:name",
+            element: <ScreenerDetailsPage />,
+          },
+        ],
       },
         {
         path: "/dummycheck",
@@ -63,11 +106,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    Component: LoginPage,
+    element: <LoginPage />,
   },
   {
     path: "/register",
-    Component: RegisterPage,
+    element: <RegisterPage />,
   },
 ]);
 

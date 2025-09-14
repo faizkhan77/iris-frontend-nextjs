@@ -1,4 +1,7 @@
 
+"use client";
+
+import { useTheme } from "next-themes";
 import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"; // Added YAxis for proper scaling
 
@@ -10,7 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
- 
+
+  ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
@@ -27,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { useTheme } from "../providers/ThemeProvider";
+
 
 // STEP 1: Define the shape of OUR data
 export interface ChartDataPoint {

@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useEffect,
   useCallback,
@@ -30,7 +30,7 @@ import {
 } from "../components/ui/chart";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://192.168.0.235:8000";
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 // const API_BASE_URL = "https://irisapi.brainfogagency.com/api";
 
 interface EnhancedPriceChartProps {
@@ -48,8 +48,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function EnhancedPriceChart({
-  stockId,
-  stockName,
+  stockId
 }: EnhancedPriceChartProps) {
   const [rawData, setRawData] = useState<any[]>([]); // This will hold the full data from API
   const [isLoading, setIsLoading] = useState(true);
@@ -66,7 +65,7 @@ export default function EnhancedPriceChart({
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/company/stock/${stockId}/price-chart?time_range=${timeRange}`
+        `${API_BASE_URL}/company/stock/${stockId}/price-chart?time_range=${timeRange}`
       );
       if (!response.ok) {
         throw new Error(`Failed to fetch price data: ${response.statusText}`);
@@ -309,7 +308,7 @@ export default function EnhancedPriceChart({
                     )?.value;
                     const prevVolume = payload[0]?.payload?.prevVolume || null;
 
-                    const dateStr = new Date(label).toLocaleDateString(
+                    const dateStr = new Date(label!).toLocaleDateString(
                       "en-US",
                       {
                         month: "short",

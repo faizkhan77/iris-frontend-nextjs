@@ -1,195 +1,19 @@
-
-import React, { useState, useEffect, useMemo } from "react";
-
-import type  { Screen, Stock } from "../../types";
+import React from "react";
 import { ArrowLeftIcon, SpinnerIcon } from "./Icons";
-import ScreenCombiner from "./ScreenCombiner"; 
 import ExportBtn from "./exportbtn";
-import { toast } from "sonner";
+import ScreenCombiner from "./ScreenCombiner";
 
-import * as XLSX from "xlsx";
-import { fetchScreenerResults ,fetchPriceChanges } from "@/api";
-import { SECTOR_MAPPINGS } from "@/lib/constants";
-
-
-const formatMarketCap = (value: number) => {
-  if (!value) return "N/A";
-  const valInCrores = value / 10000000; // Value from DB is in absolute terms
-  if (valInCrores >= 100000) {
-    return `${(valInCrores / 100000).toFixed(2)} Lakh Cr`;
-  }
-  if (valInCrores > 0) {
-    return `${valInCrores.toLocaleString("en-IN", {
-      maximumFractionDigits: 0,
-    })} Cr`;
-  }
-  return "N/A";
-};
-
-const INITIAL_VISIBLE_ROWS = 15;
-
-interface ScreenerResultsPageProps {
-  initialScreens: Screen[];
-  onClose: () => void;
-  selectedSectors: string[];
-}
-
-
-export default function ScreenerResultsPage({
-  initialScreens,
-  onClose,
-  selectedSectors = ["All Sectors"],
-}: ScreenerResultsPageProps) {
-  const [currentScreens, setCurrentScreens] =
-    useState<Screen[]>(initialScreens);
-  const [stocks, setStocks] = useState<Stock[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [visibleRows, setVisibleRows] = useState(INITIAL_VISIBLE_ROWS);
-
-  useEffect(() => {
-    setVisibleRows(INITIAL_VISIBLE_ROWS);
-    const runScreener = async () => {
-      if (currentScreens.length === 0) {
-        setStocks([]);
-        return;
-      }
-
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const screenerTitles = currentScreens.map((s) => s.title);
-        // --- STEP 1: Initial fast fetch ---
-        const initialResults = await fetchScreenerResults(screenerTitles);
-
-        // Add a null placeholder for changePercent
-        const stocksWithPlaceholders = initialResults.map((s) => ({
-          ...s,
-          changePercent: null,
-        }));
-        setStocks(stocksWithPlaceholders);
-        setIsLoading(false); // <-- Stop initial loading HERE
-
-        // --- STEP 2: Secondary fetch for price changes ---
-        const fincodes = initialResults.map((s) => s.fincode);
-        const priceChanges = await fetchPriceChanges(fincodes);
-
-        // Update the state with the real changePercent values
-        setStocks((currentStocks) =>
-          currentStocks.map((stock) => ({
-            ...stock,
-            changePercent: priceChanges[stock.fincode] ?? 0.0,
-          }))
-        );
-      } catch (err: any) {
-        console.error("Failed to run screener:", err);
-        setError(err.message || "An error occurred.");
-        setIsLoading(false); // Stop loading on error
-      }
-    };
-
-    runScreener();
-  }, [currentScreens]);
-
-  const filteredStocks = useMemo(() => {
-    // If 'All Sectors' is selected, no filtering is needed.
-    if (selectedSectors.includes("All Sectors")) {
-      return stocks;
-    }
-
-    // 1. Get all the allowed DB values from the selected UI displayNames.
-    const allowedDbSectors = selectedSectors.flatMap((displayName) => {
-      const mapping = SECTOR_MAPPINGS.find(
-        (m) => m.displayName === displayName
-      );
-      return mapping ? mapping.dbValues : [];
-    });
-
-    // 2. Create a Set for efficient lookup.
-    const allowedDbSectorsSet = new Set(allowedDbSectors);
-
-    // 3. Filter the stocks.
-    return stocks.filter((stock) => allowedDbSectorsSet.has(stock.sector));
-  }, [stocks, selectedSectors]);
-
-  const handleShowMore = () => {
-    setVisibleRows(stocks.length); // Show all remaining stocks
-  };
-
-  const handleAddScreen = (screenToAdd: Screen) => {
-    if (!currentScreens.some((s) => s.title === screenToAdd.title)) {
-      setCurrentScreens([...currentScreens, screenToAdd]);
-    }
-  };
-
-  const handleRemoveScreen = (screenTitleToRemove: string) => {
-    if (currentScreens.length > 1) {
-      setCurrentScreens(
-        currentScreens.filter((s) => s.title !== screenTitleToRemove)
-      );
-    }
-  };
-
-  const mainTitle =
-    currentScreens.length === 1 ? currentScreens[0].title : "Combined Screen";
-
+export default function ScreenerResultsPage() {
+  const mainTitle = "Value Stocks (Low P/E)";
   const mainDescription =
-    currentScreens.length === 1
-      ? currentScreens[0].description
-      : `Intersection of ${currentScreens.length} screens, showing stocks that match all criteria.`;
-
-  const handleExport = () => {
-    if (filteredStocks.length === 0) {
-      toast.error("No data available to export.");
-      return;
-    }
-
-    // 1. Format the data for a clean export (rename headers, format values)
-    const dataToExport = filteredStocks.map((stock) => ({
-      Symbol: stock.symbol,
-      "Company Name": stock.companyName,
-      Sector: stock.sector,
-      "Price (₹)": stock.price?.toFixed(2) ?? "N/A",
-      "Change (%)": stock.changePercent?.toFixed(2) ?? "N/A",
-      "Market Cap (Cr)": (stock.marketCap / 10000000).toFixed(2), // Convert to Crores
-      "P/E Ratio": stock.peRatio?.toFixed(2) ?? "N/A",
-    }));
-
-    // 2. Create a worksheet from the formatted data
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-
-    // 3. Create a new workbook
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Screener Results");
-
-    // Optional: Adjust column widths
-    const columnWidths = [
-      { wch: 15 }, // Symbol
-      { wch: 40 }, // Company Name
-      { wch: 25 }, // Sector
-      { wch: 15 }, // Price
-      { wch: 15 }, // Change %
-      { wch: 20 }, // Market Cap
-      { wch: 15 }, // P/E Ratio
-    ];
-    worksheet["!cols"] = columnWidths;
-
-    // 4. Generate a dynamic filename and trigger the download
-    const fileName = `${mainTitle.replace(
-      / /g,
-      "_"
-    )}_Results_${new Date().toLocaleDateString("en-CA")}.xlsx`;
-    XLSX.writeFile(workbook, fileName);
-    toast.success("Export successful!");
-  };
+    "Companies with a low Price-to-Earnings ratio, potentially undervalued.";
 
   return (
     <div className="col-span-9 bg-brand-container border border-brand-border rounded-xl">
-      {/* --- Header Section (Unchanged) --- */}
+      {/* --- Header Section --- */}
       <div className="p-4 border-b border-brand-border space-y-4">
         <div>
-          <button onClick={onClose} /* ... */>
+          <button className="flex items-center gap-2 text-sm text-brand-text-secondary hover:text-brand-text-primary">
             <ArrowLeftIcon className="w-4 h-4" />
             Back to Dashboard
           </button>
@@ -198,40 +22,29 @@ export default function ScreenerResultsPage({
           </h2>
           <p className="text-sm text-brand-text-secondary">{mainDescription}</p>
         </div>
+
         <div>
           <p className="text-xs text-brand-text-tertiary mb-2">
             Active Screens:
           </p>
           <div className="flex flex-wrap items-center gap-2">
-            {currentScreens.map((s) => (
-              <div key={s.title} /* ... */>
-                <span>{s.title}</span>
-                {currentScreens.length > 1 && (
-                  <button onClick={() => handleRemoveScreen(s.title)} /* ... */>
-                    &times;
-                  </button>
-                )}
-              </div>
-            ))}
+            <div className="px-2 py-1 rounded-md bg-brand-muted text-sm text-brand-text-secondary">
+              {mainTitle}
+              <button className="ml-2 text-xs">&times;</button>
+            </div>
           </div>
         </div>
+
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <ScreenCombiner
-            currentScreens={currentScreens}
-            onAddScreen={handleAddScreen}
-          />
-          <ExportBtn onClick={handleExport} />
+          <ScreenCombiner currentScreens={[]} onAddScreen={() => {}} />
+          <ExportBtn onClick={() => {}} />
         </div>
       </div>
 
-      {/* --- Results Count (Unchanged) --- */}
-      <div className="p-2 border-b border-brand-border">{/* ... */}</div>
-
-      {/* --- Main Table / Loading / Error State --- */}
+      {/* --- Results Table --- */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead className="sticky top-0 bg-brand-container border-b border-brand-border">
-            {/* Column headers are now inside a sticky thead */}
             <tr>
               <th className="px-4 py-2 font-semibold text-brand-text-secondary">
                 Symbol
@@ -257,92 +70,45 @@ export default function ScreenerResultsPage({
             </tr>
           </thead>
           <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={7} className="text-center py-16">
-                  <div className="flex justify-center items-center gap-2 text-brand-text-secondary">
-                    <SpinnerIcon className="w-5 h-5 animate-spin" />
-                    <span>Loading results...</span>
-                  </div>
-                </td>
-              </tr>
-            ) : error ? (
-              <tr>
-                <td colSpan={7} className="text-center py-16 text-red-400">
-                  <p>Error: {error}</p>
-                  <p className="text-sm mt-1">
-                    Please try again or select a different screener.
-                  </p>
-                </td>
-              </tr>
-            ) : filteredStocks.length > 0 ? (
-              // --- RENDER ONLY VISIBLE ROWS ---
-              filteredStocks.slice(0, visibleRows).map((stock) => (
-                <tr
-                  key={stock.symbol}
-                  className="border-b border-brand-border last:border-b-0 hover:bg-white/5 transition-colors"
-                >
-                  <td className="px-4 py-3 font-mono font-medium text-brand-text-primary">
-                    {stock.symbol}
-                  </td>
-                  <td className="px-4 py-3 text-brand-text-secondary truncate max-w-xs">
-                    {stock.companyName}
-                  </td>
-                  <td className="px-4 py-3 text-brand-text-secondary">
-                    {stock.sector}
-                  </td>
-                  <td className="px-4 py-3 font-mono text-right text-brand-text-primary">
-                    ₹{stock.price ? stock.price.toFixed(2) : "N/A"}
-                  </td>
-                  <td
-                    className={`px-4 py-3 font-mono text-right ${
-                      stock.changePercent === null
-                        ? "text-brand-text-tertiary"
-                        : stock.changePercent >= 0
-                        ? "text-green-400"
-                        : "text-red-400"
-                    }`}
-                  >
-                    {stock.changePercent === null
-                      ? "..." // Loading placeholder
-                      : `${
-                          stock.changePercent >= 0 ? "+" : ""
-                        }${stock.changePercent.toFixed(2)}%`}
-                  </td>
-                  {/* --- USE THE FORMATTING FUNCTION --- */}
-                  <td className="px-4 py-3 font-mono text-right text-brand-text-secondary">
-                    {formatMarketCap(stock.marketCap)}
-                  </td>
-                  <td className="px-4 py-3 font-mono text-right text-brand-text-secondary">
-                    {stock.peRatio ? stock.peRatio.toFixed(2) : "N/A"}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="text-center py-8 text-brand-text-secondary"
-                >
-                  No stocks match the criteria.
-                </td>
-              </tr>
-            )}
+            <tr className="border-b border-brand-border hover:bg-white/5 transition-colors">
+              <td className="px-4 py-3 font-mono font-medium text-brand-text-primary">
+                RELIANCE
+              </td>
+              <td className="px-4 py-3 text-brand-text-secondary truncate max-w-xs">
+                Reliance Industries
+              </td>
+              <td className="px-4 py-3 text-brand-text-secondary">Energy</td>
+              <td className="px-4 py-3 font-mono text-right text-brand-text-primary">
+                ₹2,500.00
+              </td>
+              <td className="px-4 py-3 font-mono text-right text-green-400">
+                +1.25%
+              </td>
+              <td className="px-4 py-3 font-mono text-right text-brand-text-secondary">
+                16,50,000 Cr
+              </td>
+              <td className="px-4 py-3 font-mono text-right text-brand-text-secondary">
+                22.50
+              </td>
+            </tr>
+            <tr>
+              <td
+                colSpan={7}
+                className="text-center py-8 text-brand-text-secondary"
+              >
+                No more stocks to display.
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
 
-      {/* --- "SHOW MORE" BUTTON --- */}
-      {!isLoading && filteredStocks.length > visibleRows && (
-        <div className="p-4 border-t border-brand-border text-center">
-          <button
-            onClick={handleShowMore}
-            className="px-4 py-1.5 text-sm font-medium rounded-lg bg-neutral-800 text-brand-text-primary hover:bg-neutral-700 transition-colors"
-          >
-            Show More ({filteredStocks.length - visibleRows} remaining)
-          </button>
-        </div>
-      )}
+      {/* --- Show More --- */}
+      <div className="p-4 border-t border-brand-border text-center">
+        <button className="px-4 py-1.5 text-sm font-medium rounded-lg bg-neutral-800 text-brand-text-primary hover:bg-neutral-700 transition-colors">
+          Show More
+        </button>
+      </div>
     </div>
   );
 }
