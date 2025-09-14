@@ -1,9 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRefreshMutation } from "@/redux/slices/auth/auth.api";
 import { useAppDispatch } from "@/redux/store";
-import { setLoading } from "@/redux/slices/auth/auth.slice";
-import { Home, BarChart, Settings, User } from "lucide-react";
+import { setLoading, setToken } from "@/redux/slices/auth/auth.slice";
 import DashboardSkeleton from "../global-layout-skeleton";
 
 const PersistLogin = ({ children }: { children: React.ReactNode }) => {
@@ -16,7 +15,8 @@ const PersistLogin = ({ children }: { children: React.ReactNode }) => {
     const verifyRefresh = async () => {
       try {
         dispatch(setLoading(true));
-        await refresh().unwrap(); // this triggers extraReducer to update token
+        const res = await refresh().unwrap();
+        dispatch(setToken({ token: res.access_token }));
       } catch (err) {
         console.error("Refresh failed", err);
       } finally {
@@ -24,9 +24,7 @@ const PersistLogin = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
-    if (!token && persist) {
-      verifyRefresh();
-    }
+    if (!token && persist) verifyRefresh();
   }, [token, persist, refresh, dispatch]);
 
   useEffect(() => {
@@ -34,7 +32,7 @@ const PersistLogin = ({ children }: { children: React.ReactNode }) => {
   }, [token]);
 
   if (isLoading) {
-    return <DashboardSkeleton />
+    return <DashboardSkeleton />;
   }
 
   return <>{children}</>;

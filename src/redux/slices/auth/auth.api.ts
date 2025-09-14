@@ -4,7 +4,7 @@ import type {
   LoginResponse,
   RefreshTokenResponse,
 } from "./types";
- 
+
 export const authapi = api.injectEndpoints({
   overrideExisting: true,
   endpoints: (builder) => ({
@@ -19,10 +19,9 @@ export const authapi = api.injectEndpoints({
       query: () => ({
         url: "/auth/refresh",
         method: "POST",
-        credentials: "include", 
+        credentials: "include",
       }),
     }),
-
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (data) => ({
         url: "/auth/login",

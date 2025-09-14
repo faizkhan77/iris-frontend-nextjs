@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useLoginMutation } from "@/redux/slices/auth/auth.api";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/redux/store";
-import { login } from "@/redux/slices/auth/auth.slice";
+import { login, setToken } from "@/redux/slices/auth/auth.slice";
 import { useNavigate } from "react-router";
 
 const loginSchema = z.object({
@@ -51,6 +51,7 @@ export function LoginForm({
       
 
       dispatch(login(payload));
+      dispatch(setToken({token:payload.token}));
       console.log("succes");
 
       toast.success("Login Sucessfully!",{richColors:true});

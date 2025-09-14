@@ -11,11 +11,12 @@ const ChatHistoryIcon: React.FC = () => {
   const dispatch = useAppDispatch();
   const showHistory = useAppSelector((state : RootState) => state.chat.showHistory)
 
+
   const handleClick = () => {
-    if (location.pathname === "/" || location.pathname === "/new") {
+    if (location.pathname === "/" || location.pathname === "/new" || location.pathname.startsWith("/c/")) {
       dispatch(setShowHistory(!showHistory));
     } else {
-      navigate("/new");
+      navigate("/new"); // ✅ safe
     }
   };
 

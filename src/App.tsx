@@ -14,7 +14,7 @@ import TechnicalsPage from "./pages/TechnicalsPage";
 import RegisterPage from "./pages/RegisterPage";
 import ScreenerPage from "./pages/ScreenerPage";
 import ScreenerDetailsPage from "./pages/ScreenerDetailspage";
-import CompanyPage from "./pages/CompanyPage";
+import CompanyPage from "./pages/CompanySearchPage";
 import ProtectedRoutes from "./components/providers/ProtectedRoutes";
 import PersistLogin from "./components/providers/PersistLogin";
 import ScreenerIndexPage from "./components/screener/ScreenerDashboard";

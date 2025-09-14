@@ -41,7 +41,7 @@ const CompanyPage = () => {
       <div className="absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_20%,transparent_40%,oklch(0.6772_0.22_216.4337_/_0.3)_70%,oklch(0.6772_0.1206_216.4337)_100%)]" />
 
       {/* Search Box Centered */}
-      <main className="relative flex flex-col flex-1 items-center justify-center">
+      <main className="relativec flex flex-col flex-1 items-center justify-center">
         <h3>Find Best Opportunies</h3>
         <div className="relative w-full max-w-2xl">
           <Input

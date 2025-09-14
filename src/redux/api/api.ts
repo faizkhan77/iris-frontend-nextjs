@@ -5,10 +5,8 @@ import {
   type FetchArgs,
   type FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
-// import { useAppDispatch, type RootState } from "@/redux/store";
-// import { logout, setToken } from "../slices/auth/auth.slice";
-
-// const dispatch = useAppDispatch();
+import type { RootState } from "@/redux/store";
+import { logout, setToken } from "../slices/auth/auth.slice";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BASE_URL, // ✅ from env
@@ -45,7 +43,7 @@ export const baseQueryWithReauth: BaseQueryFn<
     // Use refresh token to get a new access token
     const refreshResult = await baseQuery(
       {
-        url: "/refresh-token",
+        url: "/auth/refresh",
         method: "GET",
       },
       api,

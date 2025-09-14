@@ -7,6 +7,7 @@ interface ProtectedRoutesProps {
 
 const ProtectedRoutes = ({ children }: ProtectedRoutesProps) => {
   const { token, loading, persist } = useAuth();
+  const location = useLocation()
 
   if (loading && persist) {
     return (

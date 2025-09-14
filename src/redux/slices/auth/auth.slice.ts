@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { authapi } from "./auth.api";
-import type { LoginResponse, RefreshTokenResponse } from "./types";
 import type { RootState } from "@/redux/store";
+
 
 // Define Auth state type
 interface AuthState {
@@ -21,7 +20,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
   loading: false,
-  token: null,
+  token: localStorage.getItem("access_token") || null,
   persist: true,
 };
 
@@ -71,24 +70,24 @@ const authSlice = createSlice({
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
-      state.token = null; 
+      state.token = null;
     },
   },
   extraReducers: (builder) => {
-    builder.addMatcher(
-      authapi.endpoints.login.matchFulfilled,
-      (state, action: PayloadAction<LoginResponse>) => {
-        state.token = action.payload.access_token;
-      }
-    );
-    builder.addMatcher(
-      authapi.endpoints.refresh.matchFulfilled,
-      (state, action: PayloadAction<RefreshTokenResponse>) => {
-        state.token = action.payload.access_token;
-        state.isAuthenticated = true;
-        state.loading = false;
-      }
-    );
+    // builder.addMatcher(
+    //   authapi.endpoints.login.matchFulfilled,
+    //   (state, action: PayloadAction<LoginResponse>) => {
+    //     state.token = action.payload.access_token;
+    //   }
+    // );
+    // builder.addMatcher(
+    //   authapi.endpoints.refresh.matchFulfilled,
+    //   (state, action: PayloadAction<RefreshTokenResponse>) => {
+    //     state.token = action.payload.access_token;
+    //     state.isAuthenticated = true;
+    //     state.loading = false;
+    //   }
+    // );
   },
 });
 
