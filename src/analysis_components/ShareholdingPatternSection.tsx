@@ -16,7 +16,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import * as htmlToImage from "html-to-image";
+
 import ChartCard from "./ChartCard";
 import {
   ChartContainer,
