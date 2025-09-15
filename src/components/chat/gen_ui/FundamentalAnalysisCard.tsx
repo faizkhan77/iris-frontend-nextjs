@@ -97,11 +97,11 @@ export function FundamentalAnalysisCard({ title, data }: FundamentalAnalysisCard
             >
               <div className="pb-4">
                 <p className="text-xs text-text-secondary mb-5">
-                  {data.chartInterpretation}
+                  {data?.chartInterpretation}
                 </p>
-                {data.priceChartData && data.priceChartData.length > 0 && (
+                {data?.priceChartData && data?.priceChartData.length > 0 && (
                   <StockPriceChart
-                    data={data.priceChartData}
+                    data={data?.priceChartData}
                     title="Price vs Moving Averages"
                   />
                 )}
@@ -126,7 +126,7 @@ export function FundamentalAnalysisCard({ title, data }: FundamentalAnalysisCard
           />
         </button>
         <AnimatePresence>
-          {isDetailsOpen && data.detailsTable && data.detailsTable.length > 0 && (
+          {isDetailsOpen && data?.detailsTable && data?.detailsTable.length > 0 && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
@@ -134,7 +134,7 @@ export function FundamentalAnalysisCard({ title, data }: FundamentalAnalysisCard
               className="overflow-hidden"
             >
               <div className="grid grid-cols-2 gap-x-6 gap-y-3 p-3">
-                {data.detailsTable.map((item, index) => (
+                {data?.detailsTable.map((item, index) => (
                   <div
                     key={index}
                     className="flex justify-between items-center text-xs"
@@ -156,24 +156,24 @@ export function FundamentalAnalysisCard({ title, data }: FundamentalAnalysisCard
 
       {/* Final Verdict & Recommendation */}
       <div className="mt-6">
-        {data.finalVerdict && (
+        {data?.finalVerdict && (
           <>
             <h3 className="text-base font-semibold text-text-primary mb-1">
               Final Verdict
             </h3>
             <p className="text-text-secondary prose prose-sm max-w-none prose-p:my-1">
-              {data.finalVerdict}
+              {data?.finalVerdict}
             </p>
           </>
         )}
 
-        {data.recommendation && (
+        {data?.recommendation && (
           <>
             <h3 className="text-base font-semibold text-text-primary mt-4 mb-1">
               Detailed Recommendation
             </h3>
             <div className="text-text-secondary prose prose-sm max-w-none prose-p:my-1">
-              <ReactMarkdown>{data.recommendation}</ReactMarkdown>
+              <ReactMarkdown>{data?.recommendation}</ReactMarkdown>
             </div>
           </>
         )}
