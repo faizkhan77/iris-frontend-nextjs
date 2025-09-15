@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import type { AiResponse, ChatMessage } from "@/redux/slices/chat/types";
+import type { AiResponse } from "@/redux/slices/chat/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAppSelector, type RootState } from "@/redux/store";
 import Markdown from "react-markdown";
@@ -50,11 +50,16 @@ const ChatMessages: React.FC = () => {
                 </div>
                 {parsedMsg.ui_components.length > 0 && (
                   <div className="mt-2 p-5 rounded-md bg-accent/20 border">
-                    <RenderGenUiComponent
-                      data={parsedMsg.ui_components[0]?.data}
-                      title={parsedMsg.ui_components[0]?.title!}
-                      type={parsedMsg.ui_components[0]?.type}
-                    />
+                    {parsedMsg.ui_components.map((comp,index) => {
+                      return (
+                        <RenderGenUiComponent
+                          key={index}
+                          data={comp?.data}
+                          title={comp?.title!}
+                          type={comp?.type}
+                        />
+                      );
+                    })}
                   </div>
                 )}
               </div>
