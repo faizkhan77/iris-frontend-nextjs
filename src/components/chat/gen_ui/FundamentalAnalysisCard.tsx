@@ -1,5 +1,3 @@
-// yaha chart data point ka interface define karna hai
-
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Info } from "lucide-react";

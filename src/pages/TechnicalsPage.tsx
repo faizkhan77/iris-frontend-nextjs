@@ -4,6 +4,8 @@ import StockTable from "../analysis_components/StockTable";
 import { ALL_INDICATOR_NAMES } from "../lib/analysis_constants";
 import { Search } from "lucide-react";
 import { motion } from "framer-motion";
+import { useGetAllStockSummaryQuery } from "@/redux/slices/Company/company.api";
+
 
 
 
@@ -36,6 +38,14 @@ export default function TechnicalsPage() {
   const [selectedIndicators, setSelectedIndicators] = useState(
     initialSelectedIndicators
   );
+
+
+ const { data, error:errors, isLoading:isloadings, isFetching } = useGetAllStockSummaryQuery({
+    selectedIndicators: ["MACD"],
+  });
+console.log("Data:", data);
+
+  
 
   useEffect(() => {
     const fetchStocksSummary = async () => {
@@ -75,7 +85,9 @@ export default function TechnicalsPage() {
           .includes(searchQuery.toLowerCase()) ||
         (stock.name || "").toLowerCase().includes(searchQuery.toLowerCase())
     );
+    
   }, [stocksSummary, searchQuery]);
+  // console.log("Filtered Stocks:", filteredStocks);
 
   const handleStockSelect = (stock: Stock) => {
 
