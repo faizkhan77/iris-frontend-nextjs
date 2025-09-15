@@ -10,7 +10,7 @@ export const stockApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getPriceChart: builder.query<PriceChartResponse, PriceChartRequest>({
       query: ({ stockId, timeRange }) => ({
-        url: `/company/api/stock/${stockId}/price-chart`,
+        url: `/company/stock/${stockId}/price-chart`,
         method: "GET",
         params: { time_range: timeRange },
       }),

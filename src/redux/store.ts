@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { api } from './api/api'
 import authReducer from "./slices/auth/auth.slice"
 import chatReducer from "./slices/chat/chat.slice"  
+import StockReducer from "./slices/Company/company.slice"
+import PricecharReducer from "./slices/Company/company.slice"
 
 
 export const store = configureStore({
@@ -10,6 +12,8 @@ export const store = configureStore({
     [api.reducerPath] : api.reducer,
     auth : authReducer,
     chat : chatReducer,
+    stockSummary : StockReducer,
+    priceChart : PricecharReducer
    
   },
   middleware: (getDefault) => getDefault().concat(api.middleware),
