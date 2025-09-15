@@ -15,6 +15,7 @@ export const chatapi = api.injectEndpoints({
         url: `/chat/conversation/${id}`,
         method: "GET",
       }),
+      providesTags : (_result, _error, id)=>([{type:"SingleConversation",id}])
     }),
     createConversation: builder.mutation<
       { chat_session_id: string; started_at: string },
@@ -30,34 +31,12 @@ export const chatapi = api.injectEndpoints({
         url : "/chat/send",
         method :  "POST",
         body : arg
-      })
+      }),
+      invalidatesTags : (_result, _error, arg)=>([
+        {type : "Conversations",id : arg.chat_session_id},
+        "Messages"
+      ])
     })
-    // sendChatStream: builder.query({
-    //   query: () => ({
-    //     url: "/chat/stream",
-    //     method: "GET",
-    //   }),
-    //   // Use this to handle SSE streaming
-    //   async onCacheEntryAdded(
-    //     arg,
-    //     { dispatch, cacheDataLoaded, cacheEntryRemoved }
-    //   ) {
-    //     // Wait until mutation is "committed"
-    //     await cacheDataLoaded;
-    //     // Open EventSource for streaming
-        
-    //     const eventSource = new EventSource(
-    //       `/api/chat/stream?message=good morning buddy&chat_session_id=4eb3f93f-3234-418a-ba58-42afacb73199`
-    //     );
-
-    //     eventSource.onmessage = (event: MessageEvent) => {
-    //       console.log("EVENT", event);
-    //     };
-    //     // Cleanup when subscription ends
-    //     await cacheEntryRemoved;
-    //     eventSource.close();
-    //   },
-    // }),
   }),
 });
 

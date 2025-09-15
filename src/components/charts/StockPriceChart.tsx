@@ -117,7 +117,7 @@ export function StockPriceChart({
 
   return (
     // THEME-AWARE STYLING: Replaced hardcoded colors with theme variables
-    <Card className="w-full border-element-border bg-background pt-0">
+    <Card className="w-full border-element-border shadow-none pt-0">
       <CardHeader className="flex items-center gap-2 space-y-0 border-b border-element-border py-5 sm:flex-row">
         <div className="grid flex-1 gap-1">
           <CardTitle className="text-base font-bold text-text-primary">

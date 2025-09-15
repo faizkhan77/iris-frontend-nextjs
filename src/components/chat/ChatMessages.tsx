@@ -1,35 +1,44 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import type { AiResponse, ChatMessage } from "@/redux/slices/chat/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAppSelector, type RootState } from "@/redux/store";
+import Markdown from "react-markdown";
+import RenderGenUiComponent from "./gen_ui/RenderGenUiComponent";
 
 const ChatMessages: React.FC = () => {
   const messages = useAppSelector((state: RootState) => state.chat.messages);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  const sortedMessages = useMemo(() => {
+    return [...messages].sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
+  }, [messages]);
+
   // Auto scroll to bottom whenever messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    console.log(messages);
-  }, [messages]);
-
-  // Safely parse AI message
-  const parseAiMessage = (content: string): AiResponse | null => {
-    try {
-      const parsed = JSON.parse(content);
-      return parsed && typeof parsed.text_response === "string" ? (parsed as AiResponse) : null;
-    } catch {
-      return null;
-    }
-  };
+  }, [sortedMessages]);
 
   return (
-    <div className="flex max-w-4xl w-full min-w-4xl flex-col gap-3 mt-5">
-      {messages?.map((msg) => {
-        if (msg.role === "assistant") {
-          const aiMessage = parseAiMessage(msg.content as string);
-          console.log(aiMessage);
-          
+    <div className="flex max-w-2xl w-full min-w-3xl flex-col-reverse gap-3 mt-5">
+      {sortedMessages?.map((msg) => {
+        if (msg.role === "user") {
+          // User message
+          return (
+            <div key={msg.id} className="flex gap-2 justify-end w-full">
+              <div className="p-2 border text-sm bg-accent/20 flex px-4 items-center gap-2 rounded-lg">
+                {msg.content as string}
+              </div>
+              <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </div>
+          );
+        } else if (msg.role === "assistant") {
+          const parsedMsg = JSON.parse(msg?.content) as AiResponse;
           return (
             <div key={msg.id} className="flex gap-2 justify-start w-full">
               <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
@@ -37,28 +46,21 @@ const ChatMessages: React.FC = () => {
               </Avatar>
               <div>
                 <div className="bg-accent/20 p-2 text-sm border max-w-2xl px-4 flex w-fit items-center gap-2 rounded-lg">
-                  {aiMessage?.text_response}
+                  <Markdown>{parsedMsg.text_response}</Markdown>
                 </div>
-                {aiMessage?.ui_components && (
-                  <div>{aiMessage.ui_components?.type}</div>
+                {parsedMsg.ui_components.length > 0 && (
+                  <div className="mt-2 p-5 rounded-md bg-accent/20 border">
+                    <RenderGenUiComponent
+                      data={parsedMsg.ui_components[0]?.data}
+                      title={parsedMsg.ui_components[0]?.title!}
+                      type={parsedMsg.ui_components[0]?.type}
+                    />
+                  </div>
                 )}
               </div>
             </div>
           );
         }
-
-        // User message
-        return (
-          <div key={msg.id} className="flex gap-2 justify-end w-full">
-            <div className="p-2 border text-sm bg-accent/20 flex px-4 items-center gap-2 rounded-lg">
-              {msg.content as string}
-            </div>
-            <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </div>
-        );
       })}
       <div ref={messagesEndRef} />
     </div>

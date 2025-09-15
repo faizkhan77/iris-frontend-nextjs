@@ -14,8 +14,10 @@ export interface Conversation {
 }
 
 export interface AiResponse {
+  message(message: any): unknown;
   text_response: string;
-  ui_components: any[];
+  data : any
+  ui_components: UiComponent[];
   message_id: string; // UUID comes as string in JSON
   route: string;
 }
@@ -37,16 +39,18 @@ export interface ChatSession {
 
 // ----------------------
 
-export interface UIComponent {
+type UiComponent = {
   type: string;
-  props?: Record<string, any>;
-}
+  title?: string;
+  data?: any;
+};
 
-export type MessageContent =  string | {
+export type MessageContent =
+  | string
+  | {
       text: string;
-      ui?: UIComponent[];
+      ui?: UiComponent[];
     };
-
 
 // Reducer payloads
 export interface UpdateMessagePayload {
@@ -61,5 +65,5 @@ export interface FinalizeMessagePayload {
 
 export interface AttachUiComponentPayload {
   id: string;
-  components: UIComponent[];
+  components: UiComponent[];
 }
