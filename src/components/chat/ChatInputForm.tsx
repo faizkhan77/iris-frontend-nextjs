@@ -35,24 +35,24 @@ const ChatInputForm: React.FC<ChatInputProps> = ({ messages }) => {
     if (!sessionId) {
       const newSession = await createConversation().unwrap();
       sessionId = newSession.chat_session_id;
-      navigate(`/c/${sessionId}`);
+      navigate(`/c/${sessionId}`, { replace: true });
     }
 
-    dispatch(
-      addMessage({
-        id: nanoid(), // generates UUID
-        role: "user",
-        content: prompt,
-        created_at: new Date().toISOString(),
-      })
-    );
+    if (id) {
+      dispatch(
+        addMessage({
+          id: nanoid(), // generates UUID
+          role: "user",
+          content: prompt,
+          created_at: new Date().toISOString(),
+        })
+      );
+    }
 
     const data = await sendMessage({
       message: prompt,
       chat_session_id: sessionId,
     });
-
-    
 
     console.log(data.message);
   };

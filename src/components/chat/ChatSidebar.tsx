@@ -7,9 +7,14 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router";
 import ChatHistory from "./ChatHistory";
 import ChatHistoryIcon from "./ChatHistoryIcon";
+import { LogOut } from "lucide-react";
+import { useAppDispatch } from "@/redux/store";
+import { logout } from "@/redux/slices/auth/auth.slice";
 
 
 const ChatIconBar = () => {
+
+  const dispatch = useAppDispatch()
  
 
   return (
@@ -80,8 +85,12 @@ const ChatIconBar = () => {
 
         <div className="flex-1" />
 
+        <div onClick={()=>dispatch(logout())} className="p-3 flex items-center justify-center h-10 w-10 border rounded-xl cursor-pointer relative z-10">
+         <DynamicIcon size={20} name="log-out" />
+        </div>
+
         {/* Mode Toggle */}
-        <ModeToggle />
+        <ModeToggle  />
 
         {/* Avatar */}
         <Avatar className="h-[2.3rem] w-[2.3rem] mt-3">

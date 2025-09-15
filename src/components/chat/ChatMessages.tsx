@@ -11,11 +11,20 @@ const ChatMessages: React.FC = () => {
   const chatloading = useAppSelector((state: RootState) => state.chat.loading);
 
   const sortedMessages = useMemo(() => {
-    return [...messages].sort(
-      (a, b) =>
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-    );
-  }, [messages]);
+  return [...messages].sort((a, b) => {
+    const timeDiff =
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+
+    if (timeDiff !== 0) return timeDiff;
+
+    // If created_at is the same → order by role (user first, then assistant)
+    if (a.role === "user" && b.role === "assistant") return -1;
+    if (a.role === "assistant" && b.role === "user") return 1;
+
+    // fallback: sort by id (consistent unique key)
+    return a.id.localeCompare(b.id);
+  });
+}, [messages]);
 
   // Auto scroll to bottom whenever messages change
   useEffect(() => {
