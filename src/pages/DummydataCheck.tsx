@@ -3,8 +3,9 @@ import CashFlowAnalysisCard from '@/components/chat/gen_ui/CashFlowAnalysisCard'
 import { CrossAgentAnalysisCard } from '@/components/chat/gen_ui/CrossAgentAnalysisCard'
 import { SentimentAnalysisCard } from '@/components/chat/gen_ui/SentimentAnalysisCard'
 import { ShareholdingDetailsCard } from '@/components/chat/gen_ui/ShareholdingDetailsCard'
-import { dummyTechnicalData, TechnicalSummaryCard } from '@/components/chat/gen_ui/TechnicalSummaryCard'
-import React from 'react'
+import { TechnicalSummaryCard } from '@/components/chat/gen_ui/TechnicalSummaryCard'
+import {dummyTechnicalData} from "@/components/chat/gen_ui/constant"
+
 
 const DummydataCheck = () => {
   return (
@@ -13,7 +14,7 @@ const DummydataCheck = () => {
       <CashFlowAnalysisCard />
       <CrossAgentAnalysisCard />
       <SentimentAnalysisCard/>
-      <ShareholdingDetailsCard />
+      <ShareholdingDetailsCard title={''} />
     <TechnicalSummaryCard title="AAPL Technical Analysis" data={dummyTechnicalData} />
     </div>
   )

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useTheme } from "next-themes";
+// import { useTheme } from "next-themes";
 import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"; // Added YAxis for proper scaling
 
@@ -14,12 +14,13 @@ import {
 } from "@/components/ui/card";
 import {
 
-  ChartConfig,
+  // ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
    
 } from "@/components/ui/chart";
 import {
