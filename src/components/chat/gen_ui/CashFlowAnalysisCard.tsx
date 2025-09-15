@@ -8,57 +8,64 @@ import {
   Tooltip as ChartTooltip,
   Legend,
 } from "recharts";
-import { useTheme } from "../../providers/ThemeProvider"; // Correctly imported
-import { staticCashFlowData } from "./constant";
+import { useTheme } from "../../providers/ThemeProvider";
 
-// --- Type Definitions (assuming these are defined elsewhere) ---
-interface CashFlowChartData {
-  labels: string[];
-  datasets: {
+// --- Type Definitions ---
+export interface CashFlowAnalysisData {
+  summary: string;
+  keyMetrics: {
     label: string;
-    data: number[];
+    value: string;
+    interpretation: string;
   }[];
+  mainFlowsChart: {
+    labels: string[];
+    datasets: { label: string; data: number[] }[];
+  };
+  netCashFlowChart: {
+    labels: string[];
+    datasets: { label: string; data: number[] }[];
+  };
+  keyTakeaways: string[];
 }
 
 // --- Main Component ---
-export default function CashFlowAnalysisCard() {
+export function CashFlowAnalysisCard({
+  title,
+  data,
+}: {
+  title: string;
+  data: CashFlowAnalysisData;
+}) {
   const { theme } = useTheme();
-  const data = staticCashFlowData;
 
-  // A modern and accessible color palette for financial charts
   const themeColors = useMemo(() => {
     const isLight = theme === "light";
-
-    // Base palette for dark mode - vibrant but not overly bright
     let palette = {
-      ops: "#38bdf8",      // Sky Blue - for core operations
-      investing: "#fb923c",  // Orange - for investment activities
-      financing: "#d8b4fe",  // Purple - for financing activities
-      net: "#2dd4bf",        // Teal - for positive net flow
-      text: "#a1a1aa",        // Zinc - for axis text
-      tooltipBg: "#1f2937",   // Slate Gray - for tooltip background
-      tooltipBorder: "#374151",
-      muted: "rgba(75, 85, 99, 0.5)", // Gray with transparency for cursor
+      ops: "#38bdf8",
+      ops_light: "#0284c7",
+      investing: "#fb923c",
+      investing_light: "#f97316",
+      financing: "#d8b4fe",
+      financing_light: "#a855f7",
+      net: "#2dd4bf",
+      net_light: "#0d9488",
+      text: isLight ? "#374151" : "#a1a1aa",
+      tooltipBg: isLight ? "#ffffff" : "#1f2937",
+      tooltipBorder: isLight ? "#e5e7eb" : "#374151",
+      muted: isLight ? "rgba(229, 231, 235, 0.6)" : "rgba(75, 85, 99, 0.5)",
     };
-
-    // Override colors for light mode for better contrast and a softer look
-    if (isLight) {
-      palette = {
-        ops: "#0284c7",      // Stronger Sky Blue
-        investing: "#f97316",  // Stronger Orange
-        financing: "#a855f7",  // Stronger Purple
-        net: "#0d9488",        // Stronger Teal
-        text: "#374151",        // Dark Gray for text
-        tooltipBg: "#ffffff",   // White
-        tooltipBorder: "#e5e7eb",
-        muted: "rgba(229, 231, 235, 0.6)", // Light gray for cursor
-      };
-    }
-
     return palette;
   }, [theme]);
 
-  const formatChartData = (chartData: CashFlowChartData) => {
+  if (!data) {
+    return (
+      <div className="text-text-secondary">Cash flow data not available.</div>
+    );
+  }
+
+  const formatChartData = (chartData) => {
+    if (!chartData?.labels) return [];
     return chartData.labels.map((label, i) => {
       const entry: { [key: string]: string | number } = { name: label };
       chartData.datasets.forEach((dataset) => {
@@ -73,6 +80,8 @@ export default function CashFlowAnalysisCard() {
 
   return (
     <div className="w-full text-sm space-y-6">
+      <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
+
       <div>
         <h3 className="text-base font-semibold text-text-primary mb-1">
           Cash Flow Summary
@@ -103,10 +112,10 @@ export default function CashFlowAnalysisCard() {
 
       <div>
         <h3 className="text-base font-semibold text-text-primary mb-2">
-          Components of Cash Flow (5 Years)
+          Components of Cash Flow
         </h3>
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={mainFlowsData} barGap={-10}>
+          <BarChart data={mainFlowsData}>
             <XAxis
               dataKey="name"
               stroke={themeColors.text}
@@ -119,7 +128,7 @@ export default function CashFlowAnalysisCard() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `${(value / 1000).toFixed(0)}k Cr`}
+              tickFormatter={(value) => `${(value / 10000000).toFixed(0)} Cr`}
             />
             <ChartTooltip
               cursor={{ fill: themeColors.muted }}
@@ -129,20 +138,28 @@ export default function CashFlowAnalysisCard() {
                 borderRadius: "0.5rem",
               }}
             />
-            <Legend />
+            <Legend wrapperStyle={{ fontSize: "12px" }} />
             <Bar
               dataKey="Operations (CFO)"
-              fill={themeColors.ops}
+              fill={theme === "light" ? themeColors.ops_light : themeColors.ops}
               radius={[4, 4, 0, 0]}
             />
             <Bar
               dataKey="Investing (CFI)"
-              fill={themeColors.investing}
+              fill={
+                theme === "light"
+                  ? themeColors.investing_light
+                  : themeColors.investing
+              }
               radius={[4, 4, 0, 0]}
             />
             <Bar
               dataKey="Financing (CFF)"
-              fill={themeColors.financing}
+              fill={
+                theme === "light"
+                  ? themeColors.financing_light
+                  : themeColors.financing
+              }
               radius={[4, 4, 0, 0]}
             />
           </BarChart>
@@ -151,7 +168,7 @@ export default function CashFlowAnalysisCard() {
 
       <div>
         <h3 className="text-base font-semibold text-text-primary mb-2">
-          Net Cash Flow Trend (5 Years)
+          Net Cash Flow Trend
         </h3>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={netCashFlowData}>
@@ -167,7 +184,7 @@ export default function CashFlowAnalysisCard() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `${(value / 1000).toFixed(0)}k Cr`}
+              tickFormatter={(value) => `${(value / 10000000).toFixed(0)} Cr`}
             />
             <ChartTooltip
               cursor={{ fill: themeColors.muted }}
@@ -179,7 +196,7 @@ export default function CashFlowAnalysisCard() {
             />
             <Bar
               dataKey="Net Cash Flow"
-              fill={themeColors.net}
+              fill={theme === "light" ? themeColors.net_light : themeColors.net}
               radius={[4, 4, 0, 0]}
             />
           </BarChart>

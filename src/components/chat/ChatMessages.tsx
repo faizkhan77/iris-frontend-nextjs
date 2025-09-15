@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import type { AiResponse } from "@/redux/slices/chat/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAppSelector, type RootState } from "@/redux/store";
@@ -9,21 +9,20 @@ const ChatMessages: React.FC = () => {
   const messages = useAppSelector((state: RootState) => state.chat.messages);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  const sortedMessages = useMemo(() => {
-    return [...messages].sort(
-      (a, b) =>
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-    );
-  }, [messages]);
-
   // Auto scroll to bottom whenever messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [sortedMessages]);
+  }, [messages]);
+
+  const specialComponentTypes = [
+    "ranking_bar_chart",
+    "clarification_options",
+    "vertical_suggestions",
+  ];
 
   return (
     <div className="flex max-w-2xl w-full min-w-3xl flex-col-reverse gap-3 mt-5">
-      {sortedMessages?.map((msg) => {
+      {messages?.map((msg) => {
         if (msg.role === "user") {
           // User message
           return (
@@ -50,11 +49,18 @@ const ChatMessages: React.FC = () => {
                 </div>
                 {parsedMsg.ui_components.length > 0 && (
                   <div className="mt-2 p-5 rounded-md bg-accent/20 border">
-                    {parsedMsg.ui_components.map((comp,index) => {
+                    {parsedMsg.ui_components.map((comp, index) => {
+                      // For special components, pass the whole object. For others, pass comp.data.
+                      const componentData = specialComponentTypes.includes(
+                        comp.type
+                      )
+                        ? comp
+                        : comp.data;
+
                       return (
                         <RenderGenUiComponent
                           key={index}
-                          data={comp?.data}
+                          data={componentData} // Use the prepared data object
                           title={comp?.title!}
                           type={comp?.type}
                         />
