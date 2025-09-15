@@ -14,8 +14,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-
   server: {
-    allowedHosts : ["https://iris.brainfogagency.com"]
+    allowedHosts : ["iris.brainfogagency.com"]
   }
 })
