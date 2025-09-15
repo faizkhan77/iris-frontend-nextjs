@@ -14,4 +14,16 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+
+  server: {
+    proxy: {
+      // Any request starting with /api will be proxied
+      '/api': {
+        target: 'https://irisapi.brainfogagency.com', // Your FastAPI backend URL
+        changeOrigin: true, // Recommended for virtual hosted sites
+        secure: false,      // Can be false if your backend is HTTP
+        rewrite: (path) => path.replace(/^\/api/, '/api'), // This is often default, but good to be explicit
+      },
+    }
+  }
 })

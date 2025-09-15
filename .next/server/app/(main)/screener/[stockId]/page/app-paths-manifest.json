@@ -1,0 +1,3 @@
+{
+  "/(main)/screener/[stockId]/page": "app/(main)/screener/[stockId]/page.js"
+}
