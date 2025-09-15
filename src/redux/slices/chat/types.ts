@@ -25,7 +25,7 @@ export interface AiResponse {
 export interface ChatMessage {
   id: string; // UUID
   role: "user" | "assistant";
-  content: string | AiResponse;
+  content: string;
   created_at: string; // ISO datetime string
 }
 

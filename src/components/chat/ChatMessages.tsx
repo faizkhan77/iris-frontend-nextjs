@@ -8,13 +8,23 @@ import RenderGenUiComponent from "./gen_ui/RenderGenUiComponent";
 const ChatMessages: React.FC = () => {
   const messages = useAppSelector((state: RootState) => state.chat.messages);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const chatloading = useAppSelector((state: RootState) => state.chat.loading);
 
   const sortedMessages = useMemo(() => {
-    return [...messages].sort(
-      (a, b) =>
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-    );
-  }, [messages]);
+  return [...messages].sort((a, b) => {
+    const timeDiff =
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+
+    if (timeDiff !== 0) return timeDiff;
+
+    // If created_at is the same → order by role (user first, then assistant)
+    if (a.role === "user" && b.role === "assistant") return -1;
+    if (a.role === "assistant" && b.role === "user") return 1;
+
+    // fallback: sort by id (consistent unique key)
+    return a.id.localeCompare(b.id);
+  });
+}, [messages]);
 
   // Auto scroll to bottom whenever messages change
   useEffect(() => {
@@ -22,7 +32,7 @@ const ChatMessages: React.FC = () => {
   }, [sortedMessages]);
 
   return (
-    <div className="flex max-w-2xl w-full min-w-3xl flex-col-reverse gap-3 mt-5">
+    <div className="flex max-w-2xl w-full min-w-3xl flex-col gap-3 mt-5">
       {sortedMessages?.map((msg) => {
         if (msg.role === "user") {
           // User message
@@ -50,7 +60,7 @@ const ChatMessages: React.FC = () => {
                 </div>
                 {parsedMsg.ui_components.length > 0 && (
                   <div className="mt-2 p-5 rounded-md bg-accent/20 border">
-                    {parsedMsg.ui_components.map((comp,index) => {
+                    {parsedMsg.ui_components.map((comp, index) => {
                       return (
                         <RenderGenUiComponent
                           key={index}
@@ -67,6 +77,19 @@ const ChatMessages: React.FC = () => {
           );
         }
       })}
+      {chatloading && (
+        <div className="flex gap-2 justify-start w-full">
+          <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
+            <AvatarFallback>AI</AvatarFallback>
+          </Avatar>
+          <div className="bg-accent/20 p-2 text-sm border rounded-lg text-muted-foreground">
+            <div className="animate-pulse space-y-2">
+              <div className="h-2 w-20 bg-muted rounded"></div>
+              <div className="h-2 w-32 bg-muted rounded"></div>
+            </div>
+          </div>
+        </div>
+      )}
       <div ref={messagesEndRef} />
     </div>
   );
