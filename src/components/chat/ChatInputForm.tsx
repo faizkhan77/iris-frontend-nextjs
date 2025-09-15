@@ -50,7 +50,7 @@ const ChatInputForm: React.FC<ChatInputProps> = ({ messages }) => {
     const data = await sendMessage({
       message: prompt,
       chat_session_id: sessionId,
-    }).unwrap();
+    });
 
     
 
