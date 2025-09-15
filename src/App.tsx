@@ -8,46 +8,109 @@ import ChatSessionPage from "./components/chat/ChatSessionPage";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import { Toaster } from "sonner";
-import ScreenerPage from "./pages/ScreenerPage";
+import StockDetailsPage from "./pages/StockDetailsPage";
 import ChatNewSessionPage from "./pages/ChatNewSessionPage";
 import TechnicalsPage from "./pages/TechnicalsPage";
 import RegisterPage from "./pages/RegisterPage";
 
+import ScreenerPage from "./pages/ScreenerPage";
+import ScreenerDetailspage from "./pages/ScreenerDetailspage";
+import DummydataCheck from "./pages/DummydataCheck";
+import CompanyPage from "./pages/CompanySearchPage";
+import ProtectedRoutes from "./components/providers/ProtectedRoutes";
+import PersistLogin from "./components/providers/PersistLogin";
+import ScreenerIndexPage from "./components/screener/ScreenerDashboard";
+
+
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: Chatlayout,
+    element: (
+      <PersistLogin>
+        <Chatlayout />
+      </PersistLogin>
+    ), // public layout
     children: [
-      {
-        path: "/c/:id",
-        Component: ChatSessionPage,
-      },
-      {
-        path: "/new",
-        Component: ChatNewSessionPage,
-      },
       {
         path: "/",
         index: true,
-        Component: ChatNewSessionPage,
+        element: (
+          <ProtectedRoutes>
+            <ChatNewSessionPage />
+          </ProtectedRoutes>
+        ),
       },
       {
-        path: "/screener",
-        Component: ScreenerPage
+        path: "/company",
+        element: <CompanyPage />, // public page
+      },
+      {
+        path: "/c/:id",
+        element: (
+          <ProtectedRoutes>
+            <ChatSessionPage />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/new",
+        element: (
+          <ProtectedRoutes>
+            <ChatNewSessionPage />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/company/:id",
+        element: (
+          <ProtectedRoutes>
+            <StockDetailsPage />
+          </ProtectedRoutes>
+        ),
       },
       {
         path: "/technicals",
-        Component: TechnicalsPage
+        element: (
+          <ProtectedRoutes>
+            <TechnicalsPage />
+          </ProtectedRoutes>
+        ),
       },
+      {
+        path: "/screener",
+        element: (
+          <ProtectedRoutes>
+            <ScreenerPage />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            index: true,
+            element: <ScreenerIndexPage />,
+          },
+          {
+            path: "stratagy/:name",
+            element: <ScreenerDetailspage />,
+          },
+        ],
+      },
+        {
+        path: "/dummycheck",
+        Component: DummydataCheck
+      },
+       {
+        path: "/screener/:id",
+        element: <ScreenerDetailspage />
+      }
     ],
   },
   {
     path: "/login",
-    Component: LoginPage,
+    element: <LoginPage />,
   },
   {
     path: "/register",
-    Component: RegisterPage,
+    element: <RegisterPage />,
   },
 ]);
 
