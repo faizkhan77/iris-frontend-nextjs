@@ -12,11 +12,11 @@ interface ChatState {
   conversations: Conversation[];
   activeSession?: string | null;
   messages: ChatMessage[];
-  loading : boolean
+  loading: boolean;
 }
 
 const initialState: ChatState = {
-  loading : false,
+  loading: false,
   showHistory: false,
   conversations: [],
   messages: [],
@@ -30,8 +30,8 @@ const chatSlice = createSlice({
     setShowHistory: (state, action: PayloadAction<boolean>) => {
       state.showHistory = action.payload;
     },
-    setLoading : (state, action: PayloadAction<boolean>)=>{
-      state.loading = action.payload
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
     },
     setActiveSession: (state, action: PayloadAction<string | null>) => {
       state.activeSession = action.payload;
@@ -42,24 +42,29 @@ const chatSlice = createSlice({
     addAiMessage: (state, action: PayloadAction<ChatMessage>) => {
       state.messages.push(action.payload);
     },
-    setMessages : (state, action: PayloadAction<ChatMessage[]>)=>{
-      state.messages = action.payload
-    }
+    setMessages: (state, action: PayloadAction<ChatMessage[]>) => {
+      state.messages = action.payload;
+    },
   },
   extraReducers: (builder) => {
-    builder.addMatcher(
-      chatapi.endpoints.sendMessage.matchPending,
-      (state, action) => {
-        state.loading = true
-      }
-    );
+    builder.addMatcher(chatapi.endpoints.sendMessage.matchPending, (state) => {
+      state.loading = true;
+    });
     builder.addMatcher(
       chatapi.endpoints.sendMessage.matchFulfilled,
       (state, action) => {
-        state.loading = false
+        state.loading = false;
+        
+
+        // push AI message immediately
+        state.messages.push({
+          id: action.payload.message.message_id, // backend id if available
+          role: "assistant",
+          content: JSON.stringify(action.payload.message), // keep same format
+          created_at: new Date().toISOString(),
+        });
       }
     );
-    
   },
 });
 
@@ -69,7 +74,7 @@ export const {
   addMessage,
   setMessages,
   addAiMessage,
-  setLoading
+  setLoading,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

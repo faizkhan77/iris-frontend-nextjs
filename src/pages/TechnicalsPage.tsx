@@ -4,7 +4,7 @@ import StockTable from "../analysis_components/StockTable";
 import { ALL_INDICATOR_NAMES } from "../lib/analysis_constants";
 import { Search } from "lucide-react";
 import { motion } from "framer-motion";
-import { useGetAllStockSummaryQuery } from "@/redux/slices/Company/company.api";
+import { useGetAllStockSummaryQuery } from "@/redux/slices/company/company.api";
 
 
 

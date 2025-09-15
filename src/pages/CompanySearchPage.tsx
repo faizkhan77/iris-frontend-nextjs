@@ -79,9 +79,9 @@ const CompanyPage = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-bold mb-2 flex items-center gap-2"
+          className="text-3xl md:text-4xl font-semibold mb-2 flex items-center gap-2"
         >
-          <TrendingUp className="text-green-500" />
+          {/* <TrendingUp className="text-green-500" /> */}
           Discover Stock Opportunities
         </motion.h1>
 
@@ -105,7 +105,7 @@ const CompanyPage = () => {
           💡 Did you know? Long-term investing often beats short-term trading.
         </motion.div>
 
-        <div className="absolute inset-0 pointer-events-none opacity-10 flex items-center justify-center">
+        {/* <div className="absolute inset-0 pointer-events-none opacity-10 flex items-center justify-center">
           <svg
             width="500"
             height="250"
@@ -120,7 +120,7 @@ const CompanyPage = () => {
               fill="none"
             />
           </svg>
-        </div>
+        </div> */}
 
         {/* Search Box */}
         <div className="relative w-full max-w-2xl">

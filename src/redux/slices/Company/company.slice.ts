@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import {companyApi  } from "./company.api";
+import { companyapi } from "./company.api";
 import type { StockSummaryResponse } from "./types";
 
 interface StockSummaryState {
@@ -27,21 +27,21 @@ const stockSummarySlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addMatcher(
-        companyApi.endpoints.getAllStockSummary.matchPending,
+        companyapi.endpoints.getAllStockSummary.matchPending,
         (state) => {
           state.isLoading = true;
           state.error = null;
         }
       )
       .addMatcher(
-        companyApi.endpoints.getAllStockSummary.matchFulfilled,
+        companyapi.endpoints.getAllStockSummary.matchFulfilled,
         (state, action: PayloadAction<StockSummaryResponse>) => {
           state.isLoading = false;
           state.data = action.payload || null;
         }
       )
       .addMatcher(
-        companyApi.endpoints.getAllStockSummary.matchRejected,
+        companyapi.endpoints.getAllStockSummary.matchRejected,
         (state, action) => {
           state.isLoading = false;
           state.error =
