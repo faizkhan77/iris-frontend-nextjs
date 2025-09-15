@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ShareholdingPieChart } from "../charts/ShareholdingPieChart";
+import { ShareholdingPieChart } from "../../charts/ShareholdingPieChart";
 import ReactMarkdown from "react-markdown";
 import { DUMMY_SHAREHOLDING_DATA, type ShareholderHistory, type ShareholdingDetailsData } from "./constant";
 

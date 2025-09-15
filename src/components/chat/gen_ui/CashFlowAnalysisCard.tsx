@@ -8,7 +8,7 @@ import {
   Tooltip as ChartTooltip,
   Legend,
 } from "recharts";
-import { useTheme } from "../providers/ThemeProvider"; // Correctly imported
+import { useTheme } from "../../providers/ThemeProvider"; // Correctly imported
 import { staticCashFlowData } from "./constant";
 
 // --- Type Definitions (assuming these are defined elsewhere) ---

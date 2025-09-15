@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { BarChart2, Zap, Newspaper, TrendingUp, TrendingDown, Eye } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { useTheme } from "../providers/ThemeProvider"; // Theme hook imported
+import { useTheme } from "../../providers/ThemeProvider"; // Theme hook imported
 import { dummyCrossAgentData } from "./constant";
 
 // Import the DUMMY child component and its data type

@@ -1,9 +1,9 @@
-import BalanceSheetAnalysisCard from '@/components/genui/BalanceSheetAnalysisCard'
-import CashFlowAnalysisCard from '@/components/genui/CashFlowAnalysisCard'
-import { CrossAgentAnalysisCard } from '@/components/genui/CrossAgentAnalysisCard'
-import { SentimentAnalysisCard } from '@/components/genui/SentimentAnalysisCard'
-import { ShareholdingDetailsCard } from '@/components/genui/ShareholdingDetailsCard'
-import { dummyTechnicalData, TechnicalSummaryCard } from '@/components/genui/TechnicalSummaryCard'
+import BalanceSheetAnalysisCard from '@/components/chat/gen_ui/BalanceSheetAnalysisCard'
+import CashFlowAnalysisCard from '@/components/chat/gen_ui/CashFlowAnalysisCard'
+import { CrossAgentAnalysisCard } from '@/components/chat/gen_ui/CrossAgentAnalysisCard'
+import { SentimentAnalysisCard } from '@/components/chat/gen_ui/SentimentAnalysisCard'
+import { ShareholdingDetailsCard } from '@/components/chat/gen_ui/ShareholdingDetailsCard'
+import { dummyTechnicalData, TechnicalSummaryCard } from '@/components/chat/gen_ui/TechnicalSummaryCard'
 import React from 'react'
 
 const DummydataCheck = () => {

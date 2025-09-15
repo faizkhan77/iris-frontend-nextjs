@@ -1,4 +1,4 @@
-// yaha chart data point ka interface define karna hai 
+// yaha chart data point ka interface define karna hai
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,17 +11,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import ReactMarkdown from "react-markdown";
-import { useTheme } from "../providers/ThemeProvider"; 
-import { StockPriceChart } from "../charts/StockPriceChart";
-import {FundamentalAnalysisData} from "./constant"
-
-
-
-
-
-
-
-
+import { useTheme } from "../../providers/ThemeProvider";
+import { StockPriceChart } from "../../charts/StockPriceChart";
+import { FundamentalAnalysisData } from "./constant";
 
 const InfoTooltip = ({ text }: { text: string }) => (
   <TooltipProvider delayDuration={150}>
@@ -45,17 +37,20 @@ export function FundamentalAnalysisCard() {
   const [isDetailsOpen, setIsDetailsOpen] = useState(true);
 
   // --- All data is now defined inside the component ---
- 
 
   // Helper to format large numbers for display
   const formatValue = (label: string, value: string | number) => {
     if (typeof value !== "number") return value;
     if (label.toLowerCase().includes("cap")) {
-        if (value >= 1_00_00_000) return `${(value / 1_00_00_000).toFixed(2)} Cr`;
-        if (value >= 1_00_000) return `${(value / 1_00_000).toFixed(2)} L`;
+      if (value >= 1_00_00_000) return `${(value / 1_00_00_000).toFixed(2)} Cr`;
+      if (value >= 1_00_000) return `${(value / 1_00_000).toFixed(2)} L`;
     }
-    if (["holding", "yield", "roce", "roe"].some(term => label.toLowerCase().includes(term))) {
-        return `${value.toFixed(2)}%`;
+    if (
+      ["holding", "yield", "roce", "roe"].some((term) =>
+        label.toLowerCase().includes(term)
+      )
+    ) {
+      return `${value.toFixed(2)}%`;
     }
     return value.toLocaleString("en-IN", { maximumFractionDigits: 2 });
   };
@@ -69,7 +64,12 @@ export function FundamentalAnalysisCard() {
           className="flex w-full justify-between items-center py-3 text-left font-medium text-text-primary"
         >
           Price Chart Analysis
-          <ChevronDown size={18} className={cn("transition-transform", { "rotate-180": isChartOpen })} />
+          <ChevronDown
+            size={18}
+            className={cn("transition-transform", {
+              "rotate-180": isChartOpen,
+            })}
+          />
         </button>
         <AnimatePresence>
           {isChartOpen && (
@@ -83,7 +83,10 @@ export function FundamentalAnalysisCard() {
                 <p className="text-xs text-text-secondary px-2 mb-2">
                   {FundamentalAnalysisData.chartInterpretation}
                 </p>
-                <StockPriceChart data={FundamentalAnalysisData.priceChartData} title="Price vs Moving Averages" />
+                <StockPriceChart
+                  data={FundamentalAnalysisData.priceChartData}
+                  title="Price vs Moving Averages"
+                />
               </div>
             </motion.div>
           )}
@@ -97,7 +100,12 @@ export function FundamentalAnalysisCard() {
           className="flex w-full justify-between items-center py-3 text-left font-medium text-text-primary"
         >
           Fundamental Details
-          <ChevronDown size={18} className={cn("transition-transform", { "rotate-180": isDetailsOpen })} />
+          <ChevronDown
+            size={18}
+            className={cn("transition-transform", {
+              "rotate-180": isDetailsOpen,
+            })}
+          />
         </button>
         <AnimatePresence>
           {isDetailsOpen && (
@@ -109,7 +117,10 @@ export function FundamentalAnalysisCard() {
             >
               <div className="grid grid-cols-2 gap-x-6 gap-y-3 p-3">
                 {FundamentalAnalysisData.detailsTable.map((item, index) => (
-                  <div key={index} className="flex justify-between items-center text-xs">
+                  <div
+                    key={index}
+                    className="flex justify-between items-center text-xs"
+                  >
                     <div className="flex items-center text-text-secondary">
                       {item.label}
                       <InfoTooltip text={item.tooltip} />
@@ -138,7 +149,9 @@ export function FundamentalAnalysisCard() {
           Detailed Recommendation
         </h3>
         <div className="text-text-secondary prose prose-sm max-w-none prose-p:my-1">
-          <ReactMarkdown>{FundamentalAnalysisData.recommendation}</ReactMarkdown>
+          <ReactMarkdown>
+            {FundamentalAnalysisData.recommendation}
+          </ReactMarkdown>
         </div>
       </div>
     </div>

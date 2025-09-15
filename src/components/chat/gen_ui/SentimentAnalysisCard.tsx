@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ShareholdingPieChart } from "../charts/ShareholdingPieChart"; 
+import { ShareholdingPieChart } from "../../charts/ShareholdingPieChart"; 
 
 // --- Sub-Components ---
 

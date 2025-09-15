@@ -13,14 +13,14 @@ import ChatNewSessionPage from "./pages/ChatNewSessionPage";
 import TechnicalsPage from "./pages/TechnicalsPage";
 import RegisterPage from "./pages/RegisterPage";
 
-import ScreenerPage from "./pages/Screenerpage";
+import ScreenerPage from "./pages/ScreenerPage";
 import ScreenerDetailspage from "./pages/ScreenerDetailspage";
 import DummydataCheck from "./pages/DummydataCheck";
 import CompanyPage from "./pages/CompanySearchPage";
 import ProtectedRoutes from "./components/providers/ProtectedRoutes";
 import PersistLogin from "./components/providers/PersistLogin";
 import ScreenerIndexPage from "./components/screener/ScreenerDashboard";
->
+
 
 const router = createBrowserRouter([
   {
@@ -90,7 +90,7 @@ const router = createBrowserRouter([
           },
           {
             path: "stratagy/:name",
-            element: <ScreenerDetailsPage />,
+            element: <ScreenerDetailspage />,
           },
         ],
       },
