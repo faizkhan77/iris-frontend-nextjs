@@ -13,9 +13,16 @@ const ChatSessionPage = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(setActiveSession(id!));
-    dispatch(setMessages(data?.messages!));
-  });
+    if (!id) return;
+
+    dispatch(setActiveSession(id));
+    console.log(id);
+    
+
+    if (data?.messages) {
+      dispatch(setMessages(data.messages));
+    }
+  }, [id, data, dispatch]);
 
   return (
     <div className="bg-background relative h-full flex flex-col items-center rounded-xl border p-2">

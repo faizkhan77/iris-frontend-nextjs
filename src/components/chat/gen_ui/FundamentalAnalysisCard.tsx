@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -11,8 +11,8 @@ import {
 import ReactMarkdown from "react-markdown";
 import { useTheme } from "../../providers/ThemeProvider";
 import { StockPriceChart } from "../../charts/StockPriceChart";
-import { FundamentalAnalysisData } from "./constant";
 
+// Tooltip Component
 const InfoTooltip = ({ text }: { text: string }) => (
   <TooltipProvider delayDuration={150}>
     <Tooltip>
@@ -28,26 +28,41 @@ const InfoTooltip = ({ text }: { text: string }) => (
   </TooltipProvider>
 );
 
-// --- Main DUMMY Component ---
-export function FundamentalAnalysisCard() {
-  const { theme } = useTheme(); // Theme hook is now used
+type DetailItem = {
+  label: string;
+  value: string | number;
+  tooltip?: string;
+};
+
+type FundamentalAnalysisCardProps = {
+  title: string;
+  data: {
+    chartInterpretation?: string;
+    priceChartData?: any[];
+    detailsTable?: DetailItem[];
+    finalVerdict?: string;
+    recommendation?: string;
+  };
+};
+
+export function FundamentalAnalysisCard({ title, data }: FundamentalAnalysisCardProps) {
+  const { theme } = useTheme();
   const [isChartOpen, setIsChartOpen] = useState(true);
   const [isDetailsOpen, setIsDetailsOpen] = useState(true);
 
-  // --- All data is now defined inside the component ---
+  // console.log(data);
+  
 
-  // Helper to format large numbers for display
+  // Helper to format values
   const formatValue = (label: string, value: string | number) => {
     if (typeof value !== "number") return value;
     if (label.toLowerCase().includes("cap")) {
       if (value >= 1_00_00_000) return `${(value / 1_00_00_000).toFixed(2)} Cr`;
       if (value >= 1_00_000) return `${(value / 1_00_000).toFixed(2)} L`;
     }
-    if (
-      ["holding", "yield", "roce", "roe"].some((term) =>
-        label.toLowerCase().includes(term)
-      )
-    ) {
+    if (["holding", "yield", "roce", "roe"].some((term) =>
+      label.toLowerCase().includes(term)
+    )) {
       return `${value.toFixed(2)}%`;
     }
     return value.toLocaleString("en-IN", { maximumFractionDigits: 2 });
@@ -55,6 +70,9 @@ export function FundamentalAnalysisCard() {
 
   return (
     <div className="w-full text-sm">
+      {/* Title */}
+      <h2 className="text-lg font-semibold text-text-primary mb-3">{title}</h2>
+
       {/* Price Chart Section */}
       <div className="border-b border-element-border">
         <button
@@ -78,13 +96,15 @@ export function FundamentalAnalysisCard() {
               className="overflow-hidden"
             >
               <div className="pb-4">
-                <p className="text-xs text-text-secondary px-2 mb-2">
-                  {FundamentalAnalysisData.chartInterpretation}
+                <p className="text-xs text-text-secondary mb-5">
+                  {data.chartInterpretation}
                 </p>
-                <StockPriceChart
-                  data={FundamentalAnalysisData.priceChartData}
-                  title="Price vs Moving Averages"
-                />
+                {data.priceChartData && data.priceChartData.length > 0 && (
+                  <StockPriceChart
+                    data={data.priceChartData}
+                    title="Price vs Moving Averages"
+                  />
+                )}
               </div>
             </motion.div>
           )}
@@ -106,7 +126,7 @@ export function FundamentalAnalysisCard() {
           />
         </button>
         <AnimatePresence>
-          {isDetailsOpen && (
+          {isDetailsOpen && data.detailsTable && data.detailsTable.length > 0 && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
@@ -114,14 +134,14 @@ export function FundamentalAnalysisCard() {
               className="overflow-hidden"
             >
               <div className="grid grid-cols-2 gap-x-6 gap-y-3 p-3">
-                {FundamentalAnalysisData.detailsTable.map((item, index) => (
+                {data.detailsTable.map((item, index) => (
                   <div
                     key={index}
                     className="flex justify-between items-center text-xs"
                   >
                     <div className="flex items-center text-text-secondary">
                       {item.label}
-                      <InfoTooltip text={item.tooltip} />
+                      {item.tooltip && <InfoTooltip text={item.tooltip} />}
                     </div>
                     <span className="font-semibold text-text-primary">
                       {formatValue(item.label, item.value)}
@@ -136,21 +156,27 @@ export function FundamentalAnalysisCard() {
 
       {/* Final Verdict & Recommendation */}
       <div className="mt-6">
-        <h3 className="text-base font-semibold text-text-primary mb-1">
-          Final Verdict
-        </h3>
-        <p className="text-text-secondary prose prose-sm max-w-none prose-p:my-1">
-          {FundamentalAnalysisData.finalVerdict}
-        </p>
+        {data.finalVerdict && (
+          <>
+            <h3 className="text-base font-semibold text-text-primary mb-1">
+              Final Verdict
+            </h3>
+            <p className="text-text-secondary prose prose-sm max-w-none prose-p:my-1">
+              {data.finalVerdict}
+            </p>
+          </>
+        )}
 
-        <h3 className="text-base font-semibold text-text-primary mt-4 mb-1">
-          Detailed Recommendation
-        </h3>
-        <div className="text-text-secondary prose prose-sm max-w-none prose-p:my-1">
-          <ReactMarkdown>
-            {FundamentalAnalysisData.recommendation}
-          </ReactMarkdown>
-        </div>
+        {data.recommendation && (
+          <>
+            <h3 className="text-base font-semibold text-text-primary mt-4 mb-1">
+              Detailed Recommendation
+            </h3>
+            <div className="text-text-secondary prose prose-sm max-w-none prose-p:my-1">
+              <ReactMarkdown>{data.recommendation}</ReactMarkdown>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

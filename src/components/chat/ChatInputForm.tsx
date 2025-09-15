@@ -3,8 +3,12 @@ import { nanoid } from "nanoid";
 import { Button } from "../ui/button";
 import type { AiResponse, ChatRequest } from "@/redux/slices/chat/types";
 import { useNavigate, useParams } from "react-router";
-import { useAppDispatch } from "@/redux/store";
-import { addMessage } from "@/redux/slices/chat/chat.slice";
+import { useAppDispatch, useAppSelector, type RootState } from "@/redux/store";
+import {
+  addAiMessage,
+  addMessage,
+  setLoading,
+} from "@/redux/slices/chat/chat.slice";
 import {
   useCreateConversationMutation,
   useSendMessageMutation,
@@ -17,7 +21,7 @@ interface ChatInputProps {
 const ChatInputForm: React.FC<ChatInputProps> = ({ messages }) => {
   const { id } = useParams<{ id: string | undefined }>(); // TypeScript typing
   const [createConversation] = useCreateConversationMutation();
-  const [sendMessage,{isLoading}] = useSendMessageMutation();
+  const [sendMessage] = useSendMessageMutation();
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
@@ -48,16 +52,9 @@ const ChatInputForm: React.FC<ChatInputProps> = ({ messages }) => {
       chat_session_id: sessionId,
     }).unwrap();
 
-    console.log(data.message);
+    
 
-    dispatch(
-      addMessage({
-        id: nanoid(), // generates UUID
-        role: "assistant",
-        content: data.message as AiResponse,
-        created_at: new Date().toISOString(),
-      })
-    );
+    console.log(data.message);
   };
 
   return (

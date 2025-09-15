@@ -74,5 +74,6 @@ export const baseQueryWithReauth: BaseQueryFn<
 export const api = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
+  tagTypes: ["Conversations", "SingleConversation", "Messages"], // <-- add tags here
   endpoints: () => ({}), // extend in other files
 });

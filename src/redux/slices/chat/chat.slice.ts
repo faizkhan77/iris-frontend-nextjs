@@ -12,9 +12,11 @@ interface ChatState {
   conversations: Conversation[];
   activeSession?: string | null;
   messages: ChatMessage[];
+  loading : boolean
 }
 
 const initialState: ChatState = {
+  loading : false,
   showHistory: false,
   conversations: [],
   messages: [],
@@ -28,10 +30,16 @@ const chatSlice = createSlice({
     setShowHistory: (state, action: PayloadAction<boolean>) => {
       state.showHistory = action.payload;
     },
+    setLoading : (state, action: PayloadAction<boolean>)=>{
+      state.loading = action.payload
+    },
     setActiveSession: (state, action: PayloadAction<string | null>) => {
       state.activeSession = action.payload;
     },
     addMessage: (state, action: PayloadAction<ChatMessage>) => {
+      state.messages.push(action.payload);
+    },
+    addAiMessage: (state, action: PayloadAction<ChatMessage>) => {
       state.messages.push(action.payload);
     },
     setMessages : (state, action: PayloadAction<ChatMessage[]>)=>{
@@ -39,12 +47,19 @@ const chatSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    // builder.addMatcher(
-    //   chatapi.endpoints.getSingleConversation.matchFulfilled,
-    //   (state, action: PayloadAction<string>) => {
-    //     state.token = action.payload.access_token;
-    //   }
-    // );
+    builder.addMatcher(
+      chatapi.endpoints.sendMessage.matchPending,
+      (state, action) => {
+        state.loading = true
+      }
+    );
+    builder.addMatcher(
+      chatapi.endpoints.sendMessage.matchFulfilled,
+      (state, action) => {
+        state.loading = false
+      }
+    );
+    
   },
 });
 
@@ -52,7 +67,9 @@ export const {
   setShowHistory,
   setActiveSession,
   addMessage,
-  setMessages
+  setMessages,
+  addAiMessage,
+  setLoading
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

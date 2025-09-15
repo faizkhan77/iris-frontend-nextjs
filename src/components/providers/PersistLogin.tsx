@@ -28,7 +28,7 @@ const PersistLogin = ({ children }: { children: React.ReactNode }) => {
   }, [token, persist, refresh, dispatch]);
 
   useEffect(() => {
-    console.log("You Have Token :a", token);
+    // console.log("You Have Token :a", token);
   }, [token]);
 
   if (isLoading) {
