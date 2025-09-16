@@ -15,6 +15,6 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts : ["http://localhost:8000"]
+    allowedHosts : ["iris.brainfogagency.com"]
   }
 })
