@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useEffect, useRef, useMemo } from "react";
+=======
+import React, { useEffect, useMemo, useRef } from "react";
+>>>>>>> 65d8bf3522765b70080e77b67618375ecd93dd2e
 import type { AiResponse } from "@/redux/slices/chat/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAppSelector, type RootState } from "@/redux/store";
@@ -55,6 +59,8 @@ const ChatMessages: React.FC = () => {
           );
         } else if (msg.role === "assistant") {
           const parsedMsg = JSON.parse(msg?.content) as AiResponse;
+          console.log(parsedMsg.text_response);
+
           return (
             <div key={msg.id} className="flex gap-2 justify-start w-full">
               <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
@@ -62,7 +68,9 @@ const ChatMessages: React.FC = () => {
               </Avatar>
               <div>
                 <div className="bg-accent/20 p-2 text-sm border max-w-2xl px-4 flex w-fit items-center gap-2 rounded-lg">
-                  <Markdown>{parsedMsg.text_response}</Markdown>
+                  <div className="flex flex-col gap-4">
+                    <Markdown>{parsedMsg.text_response}</Markdown>
+                  </div>
                 </div>
                 {parsedMsg.ui_components.length > 0 && (
                   <div className="mt-2 p-5 rounded-md bg-accent/20 border">
@@ -70,7 +78,7 @@ const ChatMessages: React.FC = () => {
                       return (
                         <RenderGenUiComponent
                           key={index}
-                          data={componentData} // Use the prepared data object
+                          data={comp?.data} // Use the prepared data object
                           title={comp?.title!}
                           type={comp?.type}
                         />

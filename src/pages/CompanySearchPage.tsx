@@ -36,7 +36,7 @@ const CompanyPage = () => {
     setIsLoading(true);
 
     const delayDebounce = setTimeout(() => {
-      fetch(`/api/company/search?q=${encodeURIComponent(query)}`)
+      fetch(`https://irisapi.brainfogagency.com/api/company/search?q=${encodeURIComponent(query)}`)
         .then((res) => {
           if (!res.ok) {
             throw new Error("Network response was not ok");
@@ -73,7 +73,7 @@ const CompanyPage = () => {
       {/* Background gradient */}
       <div className="absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_20%,transparent_40%,oklch(0.6772_0.22_216.4337_/_0.3)_70%,oklch(0.6772_0.1206_216.4337)_100%)]" />
 
-      <main className="relative flex flex-col flex-1 items-center justify-center px-4">
+      <main className="relative flex flex-col flex-1 items-center mt-32 px-4">
         {/* Animated Heading */}
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
@@ -95,15 +95,6 @@ const CompanyPage = () => {
           Search for companies by name or symbol to explore detailed insights,
           financials, and performance trends.
         </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="text-sm text-green-500 font-medium mb-8"
-        >
-          💡 Did you know? Long-term investing often beats short-term trading.
-        </motion.div>
 
         {/* <div className="absolute inset-0 pointer-events-none opacity-10 flex items-center justify-center">
           <svg
