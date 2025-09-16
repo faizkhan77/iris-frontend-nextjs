@@ -1,6 +1,3 @@
-// components/charts/ShareholdingPieChart.tsx
-"use client";
-
 import { Pie, PieChart } from "recharts";
 import {
   Card,
@@ -16,11 +13,11 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import type { PieLabelRenderProps } from "recharts";
-// STEP 1: Define the shape of OUR data from the backend
+
+// Data shape definition
 export interface ShareholdingDataItem {
-  name: string; // e.g., "Promoters", "FIIs"
-  value: number; // e.g., 50.30, 22.10
+  name: string;
+  value: number;
 }
 
 interface ShareholdingPieChartProps {
@@ -30,26 +27,36 @@ interface ShareholdingPieChartProps {
   animationDuration?: number;
 }
 
-// STEP 2: Create a dynamic ChartConfig based on the data
-// This function generates the config, so we don't have to hard-code it.
+interface CustomPieLabelProps extends React.SVGProps<SVGTextElement> {
+  payload?: {
+    name: string;
+    value: number;
+    [key: string]: any;
+  };
+  value?: number;
+  percent?: number;
+  textAnchor?: string;
+  dominantBaseline?: string;
+}
+
+// Dynamically generate chart configuration from data
 const generateChartConfig = (data: ShareholdingDataItem[]): ChartConfig => {
   const colorPalette = [
     "#80bfff", // Light Blue
-    "#eb4034", // Dodger Blue
-    "#a834eb", // Royal Blue
-    "#0047b3", // Deep Blue
-    "#002f66", // Navy Blue
+    "#3498db", // Dodger Blue
+    "#9b59b6", // Amethyst
+    "#34495e", // Wet Asphalt
+    "#1abc9c", // Turquoise
   ];
 
   const config: ChartConfig = {
-    // A generic "value" key for the tooltip label
     value: {
       label: "Percentage",
     },
   };
 
-  // Assign a unique color to each shareholder category
   data.forEach((item, index) => {
+    // Sanitize the name to create a valid key (e.g., "FIIs (Foreign)" -> "fiisforeign")
     const key = item.name.toLowerCase().replace(/[\s()]/g, "");
     config[key] = {
       label: item.name,
@@ -66,11 +73,9 @@ export function ShareholdingPieChart({
   description,
   animationDuration = 800,
 }: ShareholdingPieChartProps) {
-  // Generate the config dynamically from the passed-in data
   const chartConfig = generateChartConfig(data);
 
-  // STEP 3: Map OUR data to the format the template expects
-  // The template expects a 'fill' property for color, so we add it.
+  // Map data to the format expected by Recharts, adding the 'fill' color
   const chartData = data.map((item) => {
     const key = item.name.toLowerCase().replace(/[\s()]/g, "");
     return {
@@ -81,57 +86,73 @@ export function ShareholdingPieChart({
   });
 
   return (
-    <Card className="flex flex-col border-zinc-800 bg-black/20 backdrop-blur-sm">
+    // Updated styling to match the project's theme
+    <Card className="flex flex-col border-element-border bg-element-bg">
       <CardHeader className="items-center pb-0">
-        <CardTitle className="text-gray-200">{title}</CardTitle>
-        <CardDescription className="text-gray-400">
-          {description || "Latest available data breakdown"}{" "}
-          {/* Fallback text */}
-        </CardDescription>
+        <CardTitle className="text-text-primary">{title}</CardTitle>
+        {description && (
+          <CardDescription className="text-text-secondary">
+            {description}
+          </CardDescription>
+        )}
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]" // Increased max height slightly
+          className="mx-auto aspect-square max-h-[300px]"
         >
           <PieChart animationDuration={animationDuration}>
             <ChartTooltip
               cursor={false}
               content={
                 <ChartTooltipContent
-                  hideLabel // The labels are on the pie slices, so hide the tooltip label
-                  className="bg-black/70 text-white border border-gray-700 rounded-md px-2 py-1"
-                  formatter={(value, name) => [`${value}%`, name]} // Add '%' to the value
+                  hideLabel
+                  className="bg-background text-text-primary border border-element-border rounded-md px-2 py-1"
+                  formatter={(value, name) => [`${value}%`, name]}
                 />
               }
             />
-            {/* The Pie component now uses our prepared 'chartData' */}
-            {/* <Pie
+            {/* IMPORTANT: The Pie component was commented out; it is now active */}
+            <Pie
               data={chartData}
               dataKey="value"
               nameKey="name"
               innerRadius={60}
-              strokeWidth={5}
+              strokeWidth={3}
+              stroke="hsl(var(--background))"
               outerRadius={100}
-              label={({ payload, ...props }: PieLabelRenderProps) => {
+              label={({
+                payload,
+                value,
+                percent,
+                x,
+                y,
+                textAnchor,
+                dominantBaseline,
+              }: CustomPieLabelProps) => {
+                if (!payload || typeof payload.value !== "number") return null;
                 return (
                   <text
-                    {...props}
-                    className="fill-white text-[10px]"
-                    textAnchor={props.textAnchor}
+                    x={x}
+                    y={y}
+                    textAnchor={textAnchor}
+                    dominantBaseline={dominantBaseline}
+                    className="fill-text-primary text-[10px] font-medium"
                   >
-                    {`${payload?.value}%`}
+                    {`${payload.value.toFixed(1)}%`}
                   </text>
                 );
               }}
-              labelLine
-            /> */}
+              labelLine={{
+                stroke: "hsl(var(--muted-foreground))",
+                strokeWidth: 0.5,
+              }}
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm pt-4">
-        {/* We can use the legend from the config to show the categories */}
-        <div className="flex w-full items-center justify-center gap-2">
+        <div className="flex w-full flex-wrap items-center justify-center gap-x-4 gap-y-1">
           {Object.keys(chartConfig)
             .filter((key) => key !== "value")
             .map((key) => {
@@ -146,7 +167,9 @@ export function ShareholdingPieChart({
                     className="h-2.5 w-2.5 shrink-0 rounded-sm"
                     style={{ backgroundColor: config.color }}
                   />
-                  <span className="text-xs text-gray-400">{config.label}</span>
+                  <span className="text-xs text-text-secondary">
+                    {config.label}
+                  </span>
                 </div>
               );
             })}

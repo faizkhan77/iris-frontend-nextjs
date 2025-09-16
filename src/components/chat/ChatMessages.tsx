@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import type { AiResponse } from "@/redux/slices/chat/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAppSelector, type RootState } from "@/redux/store";
@@ -11,25 +11,31 @@ const ChatMessages: React.FC = () => {
   const chatloading = useAppSelector((state: RootState) => state.chat.loading);
 
   const sortedMessages = useMemo(() => {
-  return [...messages].sort((a, b) => {
-    const timeDiff =
-      new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    return [...messages].sort((a, b) => {
+      const timeDiff =
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 
-    if (timeDiff !== 0) return timeDiff;
+      if (timeDiff !== 0) return timeDiff;
 
-    // If created_at is the same → order by role (user first, then assistant)
-    if (a.role === "user" && b.role === "assistant") return -1;
-    if (a.role === "assistant" && b.role === "user") return 1;
+      // If created_at is the same → order by role (user first, then assistant)
+      if (a.role === "user" && b.role === "assistant") return -1;
+      if (a.role === "assistant" && b.role === "user") return 1;
 
-    // fallback: sort by id (consistent unique key)
-    return a.id.localeCompare(b.id);
-  });
-}, [messages]);
+      // fallback: sort by id (consistent unique key)
+      return a.id.localeCompare(b.id);
+    });
+  }, [messages]);
 
   // Auto scroll to bottom whenever messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [sortedMessages]);
+  }, [messages]);
+
+  const specialComponentTypes = [
+    "ranking_bar_chart",
+    "clarification_options",
+    "vertical_suggestions",
+  ];
 
   return (
     <div className="flex max-w-2xl w-full min-w-3xl flex-col gap-3 mt-5">
@@ -64,7 +70,7 @@ const ChatMessages: React.FC = () => {
                       return (
                         <RenderGenUiComponent
                           key={index}
-                          data={comp?.data}
+                          data={componentData} // Use the prepared data object
                           title={comp?.title!}
                           type={comp?.type}
                         />

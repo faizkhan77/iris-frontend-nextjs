@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   Bar,
   BarChart,
@@ -10,18 +11,39 @@ import {
   Legend,
 } from "recharts";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { sampleDataofBalanceSheetAnalysisCard } from "./constant";
+import { useTheme } from "../../providers/ThemeProvider";
+import ReactMarkdown from "react-markdown";
+
+// --- Type Definitions ---
+export interface BalanceSheetAnalysisData {
+  summary: string;
+  keyMetrics: {
+    label: string;
+    value: string;
+    trend: "up" | "down" | "stable";
+    interpretation: string;
+  }[];
+  assetsLiabilitiesChart: {
+    labels: string[];
+    datasets: { label: string; data: number[] }[];
+  };
+  debtToEquityChart: {
+    labels: string[];
+    datasets: { label: string; data: number[] }[];
+  };
+  keyTakeaways: string[];
+}
 
 // --- Sub-Components ---
-const TrendIcon = ({ trend }) => {
-  if (trend === "up")
-    return <TrendingUp className="h-4 w-4 text-green-500" />;
+const TrendIcon = ({ trend }: { trend: "up" | "down" | "stable" }) => {
+  if (trend === "up") return <TrendingUp className="h-4 w-4 text-green-500" />;
   if (trend === "down")
     return <TrendingDown className="h-4 w-4 text-red-500" />;
-  return <Minus className="h-4 w-4 text-gray-500" />;
+  return <Minus className="h-4 w-4 text-text-tertiary" />;
 };
 
 const formatChartData = (chartData) => {
+  if (!chartData?.labels) return [];
   return chartData.labels.map((label, i) => {
     const entry = { name: label };
     chartData.datasets.forEach((dataset) => {
@@ -32,137 +54,164 @@ const formatChartData = (chartData) => {
 };
 
 // --- Main Component ---
-export default function BalanceSheetAnalysisCard() {
-  const data = sampleDataofBalanceSheetAnalysisCard;
+export function BalanceSheetAnalysisCard({
+  title,
+  data,
+}: {
+  title: string;
+  data: BalanceSheetAnalysisData;
+}) {
+  const { theme } = useTheme();
+
+  const themeColors = useMemo(
+    () => ({
+      text: theme === "light" ? "#374151" : "#a1a1aa",
+      tooltipBg: theme === "light" ? "#ffffff" : "#1f2937",
+      tooltipBorder: theme === "light" ? "#e5e7eb" : "#374151",
+      muted:
+        theme === "light"
+          ? "rgba(229, 231, 235, 0.6)"
+          : "rgba(75, 85, 99, 0.5)",
+    }),
+    [theme]
+  );
+
+  if (!data) {
+    return (
+      <div className="text-text-secondary">
+        Balance sheet data not available.
+      </div>
+    );
+  }
+
   const assetsLiabilitiesData = formatChartData(data.assetsLiabilitiesChart);
   const debtEquityData = formatChartData(data.debtToEquityChart);
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-card text-card-foreground rounded-xl shadow-md space-y-8">
-      {/* Executive Summary */}
+    <div className="w-full text-sm space-y-6">
+      <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
+
       <div>
-        <h3 className="text-lg font-semibold mb-2">Executive Summary</h3>
-        <p className="text-sm text-muted-foreground">{data.summary}</p>
+        <h3 className="text-base font-semibold text-text-primary mb-1">
+          Executive Summary
+        </h3>
+        <p className="text-text-secondary prose prose-sm max-w-none prose-p:my-1">
+          {data.summary}
+        </p>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {data.keyMetrics.map((metric) => (
           <div
             key={metric.label}
-            className="p-4 bg-muted rounded-lg shadow-sm hover:shadow-md transition-shadow"
+            className="rounded-lg border border-element-border bg-element-bg p-3"
           >
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-medium text-muted-foreground truncate">
+              <p className="text-xs text-text-secondary truncate">
                 {metric.label}
               </p>
               <TrendIcon trend={metric.trend} />
             </div>
-            <p className="text-lg font-bold">{metric.value}</p>
-            <p className="text-xs text-muted-foreground mt-2 line-clamp-3">
+            <p className="text-lg font-bold text-text-primary">
+              {metric.value}
+            </p>
+            <p className="text-xs text-text-tertiary mt-2 line-clamp-3">
               {metric.interpretation}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Assets vs Liabilities Chart */}
       <div>
-        <h3 className="text-lg font-semibold mb-2">
-          Assets vs. Liabilities Trend (5 Years)
+        <h3 className="text-base font-semibold text-text-primary mb-2">
+          Assets vs. Liabilities Trend
         </h3>
-        <div className="h-64 bg-card rounded-lg p-4">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={assetsLiabilitiesData}>
-              <XAxis
-                dataKey="name"
-                stroke="var(--color-muted-foreground)"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                stroke="var(--color-muted-foreground)"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `${(value / 100000).toFixed(0)}k Cr`}
-              />
-              <ChartTooltip
-                contentStyle={{
-                  backgroundColor: "var(--color-card)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                }}
-              />
-              <Legend />
-              <Bar
-                dataKey="Total Assets"
-                fill="rgba(74, 222, 128, 0.6)"
-                radius={[4, 4, 0, 0]}
-              />
-              <Bar
-                dataKey="Total Liabilities"
-                fill="rgba(251, 146, 60, 0.6)"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={assetsLiabilitiesData}>
+            <XAxis
+              dataKey="name"
+              stroke={themeColors.text}
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              stroke={themeColors.text}
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `${(value / 10000000).toFixed(0)} Cr`}
+            />
+            <ChartTooltip
+              cursor={{ fill: themeColors.muted }}
+              contentStyle={{
+                backgroundColor: themeColors.tooltipBg,
+                border: `1px solid ${themeColors.tooltipBorder}`,
+                borderRadius: "0.5rem",
+              }}
+            />
+            <Legend wrapperStyle={{ fontSize: "12px" }} />
+            <Bar dataKey="Total Assets" fill="#2dd4bf" radius={[4, 4, 0, 0]} />
+            <Bar
+              dataKey="Total Liabilities"
+              fill="#fb923c"
+              radius={[4, 4, 0, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
-      {/* Debt to Equity Ratio Chart */}
       <div>
-        <h3 className="text-lg font-semibold mb-2">
-          Debt-to-Equity Ratio Trend (5 Years)
+        <h3 className="text-base font-semibold text-text-primary mb-2">
+          Debt-to-Equity Ratio Trend
         </h3>
-        <div className="h-64 bg-card rounded-lg p-4">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={debtEquityData}>
-              <XAxis
-                dataKey="name"
-                stroke="var(--color-muted-foreground)"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                domain={["auto", "auto"]}
-                stroke="var(--color-muted-foreground)"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <ChartTooltip
-                contentStyle={{
-                  backgroundColor: "var(--color-card)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                }}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="Debt to Equity Ratio"
-                stroke="rgba(239, 68, 68, 0.8)"
-                strokeWidth={2}
-                dot={{ fill: "rgba(239, 68, 68, 0.8)", strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        <ResponsiveContainer width="100%" height={250}>
+          <LineChart data={debtEquityData}>
+            <XAxis
+              dataKey="name"
+              stroke={themeColors.text}
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              domain={["auto", "auto"]}
+              stroke={themeColors.text}
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <ChartTooltip
+              cursor={{ fill: themeColors.muted }}
+              contentStyle={{
+                backgroundColor: themeColors.tooltipBg,
+                border: `1px solid ${themeColors.tooltipBorder}`,
+                borderRadius: "0.5rem",
+              }}
+            />
+            <Legend wrapperStyle={{ fontSize: "12px" }} />
+            <Line
+              type="monotone"
+              dataKey="Debt to Equity Ratio"
+              stroke="#f472b6"
+              strokeWidth={2}
+              dot={{ fill: "#f472b6", strokeWidth: 1 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
 
-      {/* Key Takeaways */}
       <div>
-        <h3 className="text-lg font-semibold mb-2">Key Takeaways</h3>
-        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-          {data.keyTakeaways.map((takeaway, index) => (
-            <li key={index}>{takeaway}</li>
-          ))}
-        </ul>
+        <h3 className="text-base font-semibold text-text-primary mb-1">
+          Key Takeaways
+        </h3>
+        <div className="text-text-secondary prose prose-sm max-w-none prose-p:my-1">
+          <ul className="list-disc list-inside space-y-1">
+            {data.keyTakeaways.map((takeaway, index) => (
+              <li key={index}>{takeaway}</li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
