@@ -2,7 +2,11 @@ import React, { useEffect, useMemo, useRef } from "react";
 import type { AiResponse } from "@/redux/slices/chat/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAppSelector, type RootState } from "@/redux/store";
-import Markdown from "react-markdown";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 import RenderGenUiComponent from "./gen_ui/RenderGenUiComponent";
 
 const ChatMessages: React.FC = () => {
@@ -65,7 +69,12 @@ const ChatMessages: React.FC = () => {
               <div>
                 <div className="bg-accent/20 p-2 text-sm border max-w-2xl px-4 flex w-fit items-center gap-2 rounded-lg">
                   <div className="flex flex-col gap-4">
-                    <Markdown>{parsedMsg.text_response}</Markdown>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm, remarkMath]}
+                      rehypePlugins={[rehypeKatex]}
+                    >
+                      {parsedMsg.text_response}
+                    </ReactMarkdown>
                   </div>
                 </div>
                 {parsedMsg.ui_components.length > 0 && (
