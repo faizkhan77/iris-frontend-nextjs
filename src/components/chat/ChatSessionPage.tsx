@@ -2,27 +2,60 @@ import { useParams } from "react-router";
 import ChatMessages from "./ChatMessages";
 import { useGetSingleConversationQuery } from "@/redux/slices/chat/chat.api";
 import ChatInputForm from "./ChatInputForm";
-import { useEffect } from "react";
-import { useAppDispatch } from "@/redux/store";
+import { useEffect, useMemo } from "react";
+import { useAppDispatch, useAppSelector, type RootState } from "@/redux/store";
 import { setActiveSession, setMessages } from "@/redux/slices/chat/chat.slice";
+import SuggestedQueries from "./SuggestedQueries";
 
 const ChatSessionPage = () => {
   const { id } = useParams();
   const { data } = useGetSingleConversationQuery(id!);
 
   const dispatch = useAppDispatch();
+  const messages = useAppSelector((state: RootState) => state.chat.messages);
 
   useEffect(() => {
     if (!id) return;
 
     dispatch(setActiveSession(id));
     console.log(id);
-    
 
     if (data?.messages) {
       dispatch(setMessages(data.messages));
     }
   }, [id, data, dispatch]);
+
+  // 👇 3. Memoized logic to find the latest suggested queries
+  const latestSuggestedQueries = useMemo(() => {
+    // Find the very last message that came from the assistant
+    const lastAiMessage = [...messages]
+      .reverse()
+      .find((msg) => msg.role === "assistant");
+
+    if (!lastAiMessage) return null;
+
+    try {
+      const parsedContent = JSON.parse(lastAiMessage.content) as AiResponse;
+      if (!parsedContent.ui_components) return null;
+
+      // Find the specific ui_component for suggestions
+      const suggestionComponent = parsedContent.ui_components.find(
+        (comp) => comp.type === "suggested_queries"
+      );
+
+      // The backend response for suggestions has a `queries` array directly
+      // It might not be nested under a `data` object, so we check for `suggestionComponent.queries`
+      // We will cast it to access the property.
+      if (suggestionComponent && (suggestionComponent as any).queries) {
+        return (suggestionComponent as any).queries as string[];
+      }
+
+      return null;
+    } catch (error) {
+      // If parsing fails, it's not a valid AI message structure
+      return null;
+    }
+  }, [messages]); // This will re-run only when the messages array changes
 
   return (
     <div className="bg-background relative h-full flex flex-col items-center rounded-xl border p-2">
@@ -33,6 +66,9 @@ const ChatSessionPage = () => {
 
       {/* Input fixed at bottom */}
       <div className="w-full z-10 max-w-2xl my-3">
+        {latestSuggestedQueries && latestSuggestedQueries.length > 0 && (
+          <SuggestedQueries queries={latestSuggestedQueries} />
+        )}
         <ChatInputForm messages={true} />
       </div>
     </div>

@@ -1,9 +1,7 @@
 import { useAppSelector, type RootState } from "@/redux/store";
 import { Search } from "lucide-react";
 import { useGetConversationsQuery } from "@/redux/slices/chat/chat.api";
-import {  useNavigate } from "react-router";
-
-
+import { useNavigate } from "react-router";
 
 const ChatHistory = () => {
   const showHistory = useAppSelector(
@@ -31,8 +29,9 @@ const ChatHistory = () => {
         }`}
       >
         {showHistory && (
-          <div className="">
-            <div className="flex mb-8 border px-2 rounded-lg items-center justify-center">
+          <div className="flex flex-col h-full">
+            {/* Search Bar */}
+            <div className="flex mb-4 border px-2 rounded-lg items-center justify-center">
               <Search size={18} />
               <input
                 placeholder="Search Chats"
@@ -40,9 +39,12 @@ const ChatHistory = () => {
                 type="text"
               />
             </div>
+
             <h2 className="font-medium text-base">Recent Chats</h2>
             <hr className="my-2" />
-            <div className="flex flex-col overflow-y-auto">
+
+            {/* Scrollable History */}
+            <div className="flex-1 overflow-y-auto">
               {data?.conversations?.map(({ summary, id }) => (
                 <div onClick={() => handleActiveSession(id)} key={id}>
                   <div className="p-2 truncate text-left rounded-lg hover:bg-accent/60 cursor-pointer text-[13px]">
