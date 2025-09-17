@@ -21,6 +21,7 @@ const ChatMessages: React.FC = () => {
     return [...messages].sort((a, b) => {
       const timeDiff =
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+
       if (timeDiff !== 0) return timeDiff;
       if (a.role === "user" && b.role === "assistant") return -1;
       if (a.role === "assistant" && b.role === "user") return 1;
@@ -38,7 +39,8 @@ const ChatMessages: React.FC = () => {
   return keywords.some(keyword => lowerCaseMessage.includes(keyword));
 };
 
-  useEffect(() => {
+
+ 
     if (chatloading) {
       const lastUserMessage = [...messages]
         .reverse()
@@ -65,6 +67,7 @@ const ChatMessages: React.FC = () => {
     }
   }, [chatloading, messages]);
 
+
   return (
     <div className="flex max-w-2xl w-full min-w-3xl flex-col gap-3 mt-5">
       {sortedMessages?.map((msg) => {
@@ -83,14 +86,18 @@ const ChatMessages: React.FC = () => {
           );
         } else if (msg.role === "assistant") {
           const parsedMsg = JSON.parse(msg?.content) as AiResponse;
+
           console.log("Parsed AI Response:", parsedMsg.text_response);
+
           return (
             <div key={msg.id} className="flex gap-2 justify-start w-full">
               <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
                 <AvatarFallback>AI</AvatarFallback>
               </Avatar>
               <div>
+
                <div className="bg-accent/20 p-2 text-sm border max-w-2xl px-4 flex w-fit items-center gap-2 rounded-lg">
+
                   <div className="flex flex-col gap-4">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm, remarkMath]}
@@ -106,7 +113,9 @@ const ChatMessages: React.FC = () => {
                       return (
                         <RenderGenUiComponent
                           key={index}
+
                           data={comp?.data} 
+
                           title={comp?.title!}
                           type={comp?.type}
                         />

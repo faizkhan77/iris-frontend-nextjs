@@ -34,7 +34,7 @@ type DetailItem = {
   tooltip?: string;
 };
 
-type FundamentalAnalysisCardProps = {
+export type FundamentalAnalysisCardProps = {
   title: string;
   data: {
     chartInterpretation?: string;
@@ -45,13 +45,15 @@ type FundamentalAnalysisCardProps = {
   };
 };
 
-export function FundamentalAnalysisCard({ title, data }: FundamentalAnalysisCardProps) {
+export function FundamentalAnalysisCard({
+  title,
+  data,
+}: FundamentalAnalysisCardProps) {
   const { theme } = useTheme();
   const [isChartOpen, setIsChartOpen] = useState(true);
   const [isDetailsOpen, setIsDetailsOpen] = useState(true);
 
   // console.log(data);
-  
 
   // Helper to format values
   const formatValue = (label: string, value: string | number) => {
@@ -60,9 +62,11 @@ export function FundamentalAnalysisCard({ title, data }: FundamentalAnalysisCard
       if (value >= 1_00_00_000) return `${(value / 1_00_00_000).toFixed(2)} Cr`;
       if (value >= 1_00_000) return `${(value / 1_00_000).toFixed(2)} L`;
     }
-    if (["holding", "yield", "roce", "roe"].some((term) =>
-      label.toLowerCase().includes(term)
-    )) {
+    if (
+      ["holding", "yield", "roce", "roe"].some((term) =>
+        label.toLowerCase().includes(term)
+      )
+    ) {
       return `${value.toFixed(2)}%`;
     }
     return value.toLocaleString("en-IN", { maximumFractionDigits: 2 });
@@ -126,31 +130,33 @@ export function FundamentalAnalysisCard({ title, data }: FundamentalAnalysisCard
           />
         </button>
         <AnimatePresence>
-          {isDetailsOpen && data?.detailsTable && data?.detailsTable.length > 0 && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="grid grid-cols-2 gap-x-6 gap-y-3 p-3">
-                {data?.detailsTable.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center text-xs"
-                  >
-                    <div className="flex items-center text-text-secondary">
-                      {item.label}
-                      {item.tooltip && <InfoTooltip text={item.tooltip} />}
+          {isDetailsOpen &&
+            data?.detailsTable &&
+            data?.detailsTable.length > 0 && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="grid grid-cols-2 gap-x-6 gap-y-3 p-3">
+                  {data?.detailsTable.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center text-xs"
+                    >
+                      <div className="flex items-center text-text-secondary">
+                        {item.label}
+                        {item.tooltip && <InfoTooltip text={item.tooltip} />}
+                      </div>
+                      <span className="font-semibold text-text-primary">
+                        {formatValue(item.label, item.value)}
+                      </span>
                     </div>
-                    <span className="font-semibold text-text-primary">
-                      {formatValue(item.label, item.value)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
+                  ))}
+                </div>
+              </motion.div>
+            )}
         </AnimatePresence>
       </div>
 

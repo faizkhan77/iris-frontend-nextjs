@@ -1,14 +1,10 @@
-// In components/genui/ShareholdingDetailsCard.tsx
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ShareholdingPieChart } from "../../charts/ShareholdingPieChart";
 import ReactMarkdown from "react-markdown";
-import { DUMMY_SHAREHOLDING_DATA, type ShareholderHistory, type ShareholdingDetailsData } from "./constant";
-
-
+import type { ShareholderHistory, ShareholdingDetailsData } from "./constant";
 
 // --- Reusable Accordion Component ---
 const AccordionSection = ({
@@ -78,7 +74,7 @@ const ShareholderHistoryTable = ({
         </thead>
         <tbody className="text-text-secondary">
           {history.map((item, index) => {
-            const prevItem = history[index + 1]; // History is sorted desc, so previous is next in array
+            const prevItem = history[index + 1];
             const change = prevItem ? item.percentage - prevItem.percentage : 0;
             return (
               <tr
@@ -126,13 +122,22 @@ const ShareholderHistoryTable = ({
 // --- Main Card Component ---
 export function ShareholdingDetailsCard({
   title,
-  data = DUMMY_SHAREHOLDING_DATA, // Use dummy data as default
+  data,
 }: {
   title: string;
-  data?: ShareholdingDetailsData;
+  data: ShareholdingDetailsData;
 }) {
+  if (!data) {
+    return (
+      <div className="text-text-secondary">
+        Shareholding data is not available.
+      </div>
+    );
+  }
+
   return (
     <div className="w-full text-sm">
+      <h2 className="text-lg font-semibold text-text-primary mb-3">{title}</h2>
       <p className="text-text-secondary mb-4 px-2">
         {data.pieChartInterpretation}
       </p>
@@ -164,7 +169,7 @@ export function ShareholdingDetailsCard({
                   title={
                     <div className="flex flex-col text-left">
                       <span className="text-sm font-normal text-text-primary">
-                        {holder.name } 
+                        {holder.name}
                       </span>
                     </div>
                   }
