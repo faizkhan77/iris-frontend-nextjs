@@ -98,8 +98,10 @@ const ChatIconBar = () => {
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
       </div>
-
-      <ChatHistory />
+      <div className="h-screen overflow-y-auto overflow-x-hidden sticky top-0 flex-1">
+  <ChatHistory />
+</div>
+    
     </div>
   );
 };
