@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React, { useEffect, useRef, useMemo } from "react";
-=======
 import React, { useEffect, useMemo, useRef } from "react";
->>>>>>> 65d8bf3522765b70080e77b67618375ecd93dd2e
 import type { AiResponse } from "@/redux/slices/chat/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAppSelector, type RootState } from "@/redux/store";
