@@ -5,6 +5,7 @@ import { Sparkles, ChevronLeft } from "lucide-react";
  
 interface SuggestedQueriesProps {
   queries: string[];
+    onQueryClick: (query: string) => void;
 }
  
 const containerVariants = {
@@ -31,11 +32,12 @@ const itemVariants = {
   },
 };
  
-const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ queries }) => {
+const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ queries,onQueryClick }) => {
   const [open, setOpen] = useState(false);
  
   const handleQueryClick = (query: string) => {
     console.log("Clicked suggested query:", query);
+    onQueryClick(query);
   };
  
   return (
