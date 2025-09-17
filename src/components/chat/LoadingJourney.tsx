@@ -5,9 +5,6 @@ import TypingAnimation from "./TypingAnimation";
 import { journeys } from "./constant";
 import { Bot } from "lucide-react";
 
-
-
-
 journeys.save_ltm = {
   steps: [{ text: "Saving to memory...", duration: 2000 }],
   icon: Bot,
@@ -63,18 +60,20 @@ export default function LoadingJourney({ route }: LoadingJourneyProps) {
         </div>
 
         {/* Step text */}
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={currentStep}
-            initial={{ y: 8, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -8, opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="font-mono tracking-wide text-text-primary"
-          >
-            {journey.steps[currentStep].text}
-          </motion.p>
-        </AnimatePresence>
+        <div className="overflow-hidden"> {/* Add a container to hide the text before it enters */}
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={currentStep}
+              initial={{ x: "-100%", opacity: 0 }} // Start from the left, completely outside
+              animate={{ x: 0, opacity: 1 }} // Animate to its original position
+              exit={{ x: "100%", opacity: 0 }} // Exit to the right
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="font-mono tracking-wide text-text-primary"
+            >
+              {journey.steps[currentStep].text}
+            </motion.p>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
