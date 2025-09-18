@@ -10,6 +10,7 @@ import "katex/dist/katex.min.css";
 import RenderGenUiComponent from "./gen_ui/RenderGenUiComponent";
 import LoadingJourney from "./LoadingJourney";
 
+
 const ChatMessages: React.FC = () => {
 
   const messages = useAppSelector((state: RootState) => state.chat.messages);
@@ -112,6 +113,7 @@ const ChatMessages: React.FC = () => {
                         />
                       );
                     })}
+                 
                   </div>
                 )}
               </div>
