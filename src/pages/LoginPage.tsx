@@ -1,7 +1,6 @@
-import { GalleryVerticalEnd } from "lucide-react"
-
 import { LoginForm } from "@/components/login-form"
-import IrisLogo from "@/assets/Logo"
+import loginImage from "../assets/sidelogin.png"
+
 
 export default function LoginPage() {
   return (
@@ -18,9 +17,9 @@ export default function LoginPage() {
       </div>
       <div className="bg-muted relative hidden lg:block">
         <img
-          src="/placeholder.svg"
+          src={loginImage}
           alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          className="absolute inset-0 h-full w-full object-cover "
         />
       </div>
     </div>
