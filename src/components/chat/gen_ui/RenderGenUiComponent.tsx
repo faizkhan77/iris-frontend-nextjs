@@ -2,6 +2,7 @@ import React from "react";
 import { FundamentalAnalysisCard } from "./FundamentalAnalysisCard";
 import ClarificationTabs from "../ClarificationTabs";
 import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
+import SuggestedQueries from "./suggested_queries";
 
 interface GenUiComponentProps {
   title: string;
@@ -37,6 +38,26 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
           options={data?.options}
           onOptionClick={onOptionClick}
         />
+      );
+      case "suggested_queries":
+      return (
+        // <div>
+        //   <h2 className="text-lg font-semibold mb-2">{title}</h2> 
+        //   <div className="flex flex-wrap gap-2">
+        //     {data?.map((query: string, index: number) => (
+        //       <button
+        //         key={index} 
+
+        //         onClick={() => onOptionClick(query)}
+        //         className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm hover:bg-blue-600 transition-colors"
+        //       >
+        //         {query}
+        //       </button>
+        //     ))}
+        //   </div>
+        // </div>
+
+        <SuggestedQueries title={title} data={data} onOptionClick={onOptionClick} />
       );
     case "loading":
       return <div className="animate-pulse h-6 w-40 bg-gray-300 rounded-md my-2" />;
