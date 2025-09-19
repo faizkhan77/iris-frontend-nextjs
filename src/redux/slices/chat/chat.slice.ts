@@ -1,11 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { chatapi } from "./chat.api";
-import type {
-  AiResponse,
-  ChatMessage,
-  Conversation,
-  MessageContent,
-} from "./types";
+import type { ChatMessage, Conversation, ShareChatState } from "./types";
 
 interface ChatState {
   showHistory: boolean;
@@ -13,7 +8,8 @@ interface ChatState {
   activeSession?: string | null;
   messages: ChatMessage[];
   loading: boolean;
-  inputValue: string; 
+  inputValue: string;
+  share : ShareChatState
 }
 
 const initialState: ChatState = {
@@ -22,14 +18,18 @@ const initialState: ChatState = {
   conversations: [],
   messages: [],
   activeSession: null,
-  inputValue: "", 
+  inputValue: "",
+  share : {
+    session_id : null,
+    message : null,
+    modal : false
+  }
 };
 
 const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-  
     setInputValue: (state, action: PayloadAction<string>) => {
       state.inputValue = action.payload;
     },
@@ -42,7 +42,9 @@ const chatSlice = createSlice({
     setActiveSession: (state, action: PayloadAction<string | null>) => {
       state.activeSession = action.payload;
     },
-  
+    clickShareMessage : (state , action : PayloadAction<ChatMessage>)=>{
+      state.share.message = action.payload
+    },
     addMessage: (state, action: PayloadAction<ChatMessage>) => {
       state.messages.push(action.payload);
     },
@@ -57,13 +59,13 @@ const chatSlice = createSlice({
     builder.addMatcher(chatapi.endpoints.sendMessage.matchPending, (state) => {
       state.loading = true;
       // Clear the input field after the message is sent
-      state.inputValue = ""; 
+      state.inputValue = "";
     });
     builder.addMatcher(
       chatapi.endpoints.sendMessage.matchFulfilled,
       (state, action) => {
         state.loading = false;
-        
+
         // push AI message when the API call succeeds
         state.messages.push({
           id: action.payload.message.message_id,
@@ -84,6 +86,7 @@ export const {
   setMessages,
   addAiMessage,
   setLoading,
+  clickShareMessage
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
