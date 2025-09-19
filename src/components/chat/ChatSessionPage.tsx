@@ -71,9 +71,9 @@ const ChatSessionPage = () => {
  
       {/* Input fixed at bottom */}
       <div className="w-full z-10 max-w-2xl my-3">
-        {/* {latestSuggestedQueries && latestSuggestedQueries.length > 0 && (
+        {latestSuggestedQueries && latestSuggestedQueries.length > 0 && (
           <SuggestedQueries queries={latestSuggestedQueries} onQueryClick={submitMessage} />
-        )} */}
+        )}
 
      
         <ChatInputForm messages={true} />
