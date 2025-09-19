@@ -41,23 +41,25 @@ const ChatMessages: React.FC = () => {
     return keywords.some((keyword) => lowerCaseMessage.includes(keyword));
   };
 
- useEffect(() => {
-  if (!chatloading) return;
+  useEffect(() => {
+    if (!chatloading) return;
 
-  const lastUserMessage = [...messages].reverse().find(m => m.role === "user");
-  if (!lastUserMessage || typeof lastUserMessage.content !== "string") return;
+    const lastUserMessage = [...messages]
+      .reverse()
+      .find((m) => m.role === "user");
+    if (!lastUserMessage || typeof lastUserMessage.content !== "string") return;
 
-  const content = lastUserMessage.content;
+    const content = lastUserMessage.content;
 
-  for (const [route, keywords] of Object.entries(ROUTE_KEYWORDS)) {
-    if (messageContains(content, keywords)) {
-      setCurrentJourneyRoute(route);
-      return;
+    for (const [route, keywords] of Object.entries(ROUTE_KEYWORDS)) {
+      if (messageContains(content, keywords)) {
+        setCurrentJourneyRoute(route);
+        return;
+      }
     }
-  }
 
-  setCurrentJourneyRoute("unknown");
-}, [chatloading, messages]);
+    setCurrentJourneyRoute("unknown");
+  }, [chatloading, messages]);
   console.log("sortedMessages:", sortedMessages);
 
   return (

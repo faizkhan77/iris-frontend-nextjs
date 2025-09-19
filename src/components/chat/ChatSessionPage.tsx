@@ -5,7 +5,6 @@ import ChatInputForm from "./ChatInputForm";
 import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector, type RootState } from "@/redux/store";
 import { setActiveSession, setMessages } from "@/redux/slices/chat/chat.slice";
-import SuggestedQueries from "./SuggestedQueries";
 import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
 import type { AiResponse } from "@/redux/slices/chat/types"; // Assuming AiResponse type is defined here
 
@@ -58,13 +57,13 @@ const ChatSessionPage = () => {
     <div className="bg-background relative min-h-screen flex flex-col items-center rounded-xl border p-2 sm:p-4">
       {/* Messages container */}
       {/* CHANGE: Added `pb-4` to prevent messages from hiding under the input form on scroll */}
-      <div className="flex-1 z-10 w-full flex items-center flex-col-reverse overflow-y-auto rounded-md p-2 pb-4">
+      <div className="flex-1 z-10 w-full flex items-center flex-col-reverse overflow-y-auto rounded-md p-2 pb-28">
         <ChatMessages />
       </div>
 
       {/* Input fixed at bottom */}
       {/* CHANGE: Reduced vertical margin on mobile */}
-      <div className="w-full z-10 max-w-2xl my-2 sm:my-3">
+      <div className="w-full z-20 max-w-2xl fixed bottom-0 left-1/2 -translate-x-1/2 p-2 sm:p-3">
         <ChatInputForm messages={true} />
       </div>
     </div>
