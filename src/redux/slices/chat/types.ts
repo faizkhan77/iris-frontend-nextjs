@@ -16,10 +16,16 @@ export interface Conversation {
 export interface AiResponse {
   message(message: any): unknown;
   text_response: string;
-  data : any
+  data: any;
   ui_components: UiComponent[];
   message_id: string; // UUID comes as string in JSON
   route: string;
+}
+
+export interface ShareChatState {
+  session_id: string | null;
+  message: ChatMessage | null;
+  modal: boolean;
 }
 
 export interface ChatMessage {

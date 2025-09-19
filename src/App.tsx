@@ -20,7 +20,7 @@ import CompanyPage from "./pages/CompanySearchPage";
 import ProtectedRoutes from "./components/providers/ProtectedRoutes";
 import PersistLogin from "./components/providers/PersistLogin";
 import ScreenerIndexPage from "./components/screener/ScreenerDashboard";
-
+import ChatShareSessionPage from "./pages/ChatShareSessionPage";
 
 const router = createBrowserRouter([
   {
@@ -94,15 +94,23 @@ const router = createBrowserRouter([
           },
         ],
       },
-        {
+      {
         path: "/dummycheck",
-        Component: DummydataCheck
+        Component: DummydataCheck,
       },
-       {
+      {
         path: "/screener/:id",
-        element: <ScreenerDetailspage />
-      }
+        element: <ScreenerDetailspage />,
+      },
     ],
+  },
+  {
+    path: "/share/:message_id",
+    element: (
+      // <ProtectedRoutes>
+      <ChatShareSessionPage />
+      // </ProtectedRoutes>
+    ),
   },
   {
     path: "/login",
