@@ -38,12 +38,12 @@ export const useSendMessageHandler = () => {
         const newSession = await createConversation().unwrap();
         currentSessionId = newSession.chat_session_id;
 
+        navigate(`/c/${currentSessionId}`, { replace: true });
         await sendMessage({
           message: trimmedPrompt,
           chat_session_id: currentSessionId,
         });
 
-        navigate(`/c/${currentSessionId}`, { replace: true });
       } catch (error) {
         console.error("Failed to create conversation or send message:", error);
       }

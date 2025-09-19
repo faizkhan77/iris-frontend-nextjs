@@ -73,7 +73,7 @@ export function FundamentalAnalysisCard({
   };
 
   return (
-    <div className="w-full text-sm">
+    <div className="w-full p-5 rounded-lg bg-accent/20 border my-2 text-sm">
       {/* Title */}
       <h2 className="text-lg font-semibold text-text-primary mb-3">{title}</h2>
 

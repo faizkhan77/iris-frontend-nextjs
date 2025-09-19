@@ -9,6 +9,8 @@ import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import RenderGenUiComponent from "./gen_ui/RenderGenUiComponent";
 import LoadingJourney from "./LoadingJourney";
+import ActionButtons from "./ActionButtons";
+import TypingAnimation from "./TypingAnimation";
 
 const ChatMessages: React.FC = () => {
   const messages = useAppSelector((state: RootState) => state.chat.messages);
@@ -101,9 +103,10 @@ const ChatMessages: React.FC = () => {
       }
     }
   }, [chatloading, messages]);
+  console.log("sortedMessages:", sortedMessages);
 
   return (
-    <div className="flex max-w-2xl w-full min-w-3xl flex-col gap-3 mt-5">
+    <div className="flex max-w-2xl w-full flex-col gap-5 mt-5">
       {sortedMessages?.map((msg) => {
         if (msg.role === "user") {
           return (
@@ -119,17 +122,16 @@ const ChatMessages: React.FC = () => {
           );
         } else if (msg.role === "assistant") {
           const parsedMsg = JSON.parse(msg?.content) as AiResponse;
-
-          console.log("Parsed AI Response:", parsedMsg.text_response);
-
+          console.log("parsedMsg:", parsedMsg);
           return (
             <div key={msg.id} className="flex gap-2 justify-start w-full">
-              <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
+              <Avatar className="h-[2.3rem] hidden sm:block w-[2.3rem] mt-1">
                 <AvatarFallback>AI</AvatarFallback>
               </Avatar>
-              <div>
-                <div className="bg-accent/20 p-2 text-sm border max-w-2xl px-4 flex w-fit items-center gap-2 rounded-lg">
-                  <div className="flex flex-col gap-4">
+
+              <div className="w-fullc overflow-hidden">
+                <div className="bg-accent/20 p-3 text-sm border max-w-full px-4 flex w-fit items-center rounded-lg">
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm, remarkMath]}
                       rehypePlugins={[rehypeKatex]}
@@ -138,33 +140,40 @@ const ChatMessages: React.FC = () => {
                     </ReactMarkdown>
                   </div>
                 </div>
-                {parsedMsg.ui_components.length > 0 && (
-                  <div className="mt-2 p-5 rounded-md bg-accent/20 border">
-                    {parsedMsg.ui_components.map((comp, index) => {
-                      return (
-                        <RenderGenUiComponent
-                          key={index}
-                          data={comp?.data}
-                          title={comp?.title!}
-                          type={comp?.type}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
+                <div>
+                  {parsedMsg.ui_components.length > 0 && (
+                    <div className="flex flex-col gap-3 rounded-md">
+                      {parsedMsg.ui_components.map((comp, index) => {
+                        return (
+                          <RenderGenUiComponent
+                            key={index}
+                            data={comp?.data}
+                            title={comp?.title!}
+                            type={comp?.type}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                  <ActionButtons />
+                </div>
               </div>
             </div>
           );
         }
       })}
       {chatloading && (
-        <div className="flex gap-2 justify-start w-full">
-          <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
+        <div className="flex gap-2  items-start justify-start w-full">
+          <Avatar className="h-[2.3rem] w-[2.3rem]">
             <AvatarFallback>AI</AvatarFallback>
           </Avatar>
-          <LoadingJourney route={currentJourneyRoute} />
+          <div className="">
+            <TypingAnimation />
+            <LoadingJourney route={currentJourneyRoute} />
+          </div>
         </div>
       )}
+
       <div ref={messagesEndRef} />
     </div>
   );
