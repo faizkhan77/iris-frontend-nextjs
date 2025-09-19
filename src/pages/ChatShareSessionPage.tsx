@@ -45,18 +45,18 @@ const ChatShareSessionPage = () => {
           <p className="text-xs">Stock Advisory</p>
         </div>
       </div>
-      <div className="w-full max-w-2xl p-10 flex flex-col items-center rounded-xl border">
+      <div className="w-full max-w-2xl p-5 sm:p-10 flex flex-col items-center rounded-xl border">
         <h2 className="text-lg font-semibold mb-4">Shared Message</h2>
 
         {isLoading && <p>Loading message...</p>}
         {isError && <p className="text-red-500">Failed to load message.</p>}
 
         {isSuccess && data?.message && (
-          <div className="h-[20rem] border bg-accent/20 rounded-md overflow-auto p-10">
+          <div className="h-[20rem] border bg-accent/20 rounded-md overflow-auto p-4 sm:p-10">
             <PreviewMessage message={data.message} />
           </div>
         )}
-        <div className="flex w-full my-4 justify-between">
+        <div className="flex flex-col sm:flex-row gap-2 w-full my-4 justify-between">
           <div className="text-sm p-2 border px-5 rounded-md">
             {formatFullDate(data?.message.created_at!)}
           </div>
