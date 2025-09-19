@@ -29,7 +29,7 @@ const ChatInputForm: React.FC<ChatInputProps> = ({ messages }) => {
         <div className="flex items-center gap-2">
           <input
             autoComplete="off"
-            className="flex-1 w-full outline-none bg-transparent py-2 px-2 rounded-md text-sm sm:text-base disabled:opacity-50"
+            className="flex-1 w-full outline-none bg-transparent py-2 px-2 rounded-md text-sm disabled:opacity-50"
             type="text"
             placeholder="Type your message..."
             value={inputValue}
@@ -37,7 +37,6 @@ const ChatInputForm: React.FC<ChatInputProps> = ({ messages }) => {
             disabled={isLoading}
           />
 
-         
           <Button
             className={messages ? "flex" : "hidden"}
             type="submit"
@@ -59,7 +58,6 @@ const ChatInputForm: React.FC<ChatInputProps> = ({ messages }) => {
           )}
         </div>
 
-        
         {!messages && (
           // This entire div is now visible on all screen sizes for the welcome screen
           <div className="flex items-center justify-between mt-2">
@@ -75,7 +73,7 @@ const ChatInputForm: React.FC<ChatInputProps> = ({ messages }) => {
             {/* The text "Submit" button is now ONLY for desktop */}
             <Button
               type="submit"
-              className="hidden md:flex" 
+              className="hidden md:flex"
               disabled={!inputValue.trim() || isLoading}
             >
               Submit

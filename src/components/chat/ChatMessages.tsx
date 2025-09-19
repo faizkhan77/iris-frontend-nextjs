@@ -10,6 +10,7 @@ import "katex/dist/katex.min.css";
 import RenderGenUiComponent from "./gen_ui/RenderGenUiComponent";
 import LoadingJourney from "./LoadingJourney";
 import ActionButtons from "./ActionButtons";
+import TypingAnimation from "./TypingAnimation";
 
 const ChatMessages: React.FC = () => {
   const messages = useAppSelector((state: RootState) => state.chat.messages);
@@ -32,44 +33,80 @@ const ChatMessages: React.FC = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [sortedMessages]);
-  
-  const messageContains = (message: string, keywords: string[]): boolean => {
 
+  const messageContains = (message: string, keywords: string[]): boolean => {
     const lowerCaseMessage = message.toLowerCase();
-    return keywords.some(keyword => lowerCaseMessage.includes(keyword));
+    return keywords.some((keyword) => lowerCaseMessage.includes(keyword));
   };
-  
-    useEffect(() => {
-      if (chatloading) {
-        const lastUserMessage = [...messages]
-          .reverse()
-          .find((msg) => msg.role === "user");
-  
-        if (lastUserMessage && typeof lastUserMessage.content === "string") {
-          const content = lastUserMessage.content;
-          if (messageContains(content, ["shareholding", "promoter", "who owns", "ownership"])) {
-            setCurrentJourneyRoute("shareholding");
-          } else if (messageContains(content, ["compare", "vs", "versus", "analyze both"])) {
-            setCurrentJourneyRoute("cross_agent_reasoning");
-          } else if (messageContains(content, ["fundamentals", "balance sheet", "p/e ratio", "roe"])) {
-            setCurrentJourneyRoute("fundamentals");
-          } else if (messageContains(content, ["technicals", "chart", "rsi", "macd", "candlesticks"])) {
-            setCurrentJourneyRoute("technicals");
-          } else if (messageContains(content, ["sentiment", "news", "headlines", "market mood"])) {
-            setCurrentJourneyRoute("sentiment");
-          } else if (messageContains(content, ["what is", "explain", "define", "tell me about"])) {
-            setCurrentJourneyRoute("knowledge_base");
-          } else {
-            setCurrentJourneyRoute("unknown");
-          }
+
+  useEffect(() => {
+    if (chatloading) {
+      const lastUserMessage = [...messages]
+        .reverse()
+        .find((msg) => msg.role === "user");
+
+      if (lastUserMessage && typeof lastUserMessage.content === "string") {
+        const content = lastUserMessage.content;
+        if (
+          messageContains(content, [
+            "shareholding",
+            "promoter",
+            "who owns",
+            "ownership",
+          ])
+        ) {
+          setCurrentJourneyRoute("shareholding");
+        } else if (
+          messageContains(content, ["compare", "vs", "versus", "analyze both"])
+        ) {
+          setCurrentJourneyRoute("cross_agent_reasoning");
+        } else if (
+          messageContains(content, [
+            "fundamentals",
+            "balance sheet",
+            "p/e ratio",
+            "roe",
+          ])
+        ) {
+          setCurrentJourneyRoute("fundamentals");
+        } else if (
+          messageContains(content, [
+            "technicals",
+            "chart",
+            "rsi",
+            "macd",
+            "candlesticks",
+          ])
+        ) {
+          setCurrentJourneyRoute("technicals");
+        } else if (
+          messageContains(content, [
+            "sentiment",
+            "news",
+            "headlines",
+            "market mood",
+          ])
+        ) {
+          setCurrentJourneyRoute("sentiment");
+        } else if (
+          messageContains(content, [
+            "what is",
+            "explain",
+            "define",
+            "tell me about",
+          ])
+        ) {
+          setCurrentJourneyRoute("knowledge_base");
+        } else {
+          setCurrentJourneyRoute("unknown");
         }
       }
-    }, [chatloading, messages]);
-    console.log("sortedMessages:", sortedMessages);
-
+    }
+  }, [chatloading, messages]);
+  console.log("sortedMessages:", sortedMessages);
 
   return (
-    <div className="flex max-w-2xl w-full flex-col gap-3 mt-5">
+    <div className="flex max-w-2xl w-full flex-col gap-5 mt-5">
       {sortedMessages?.map((msg) => {
         if (msg.role === "user") {
           return (
@@ -88,13 +125,13 @@ const ChatMessages: React.FC = () => {
           console.log("parsedMsg:", parsedMsg);
           return (
             <div key={msg.id} className="flex gap-2 justify-start w-full">
-              <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
+              <Avatar className="h-[2.3rem] hidden sm:block w-[2.3rem] mt-1">
                 <AvatarFallback>AI</AvatarFallback>
               </Avatar>
 
-              <div className="w-full overflow-hidden"> 
-                <div className="bg-accent/20 p-3 text-sm border max-w-full px-4 flex w-fit items-center gap-2 rounded-lg">
- <div className="prose prose-sm dark:prose-invert max-w-none">
+              <div className="w-fullc overflow-hidden">
+                <div className="bg-accent/20 p-3 text-sm border max-w-full px-4 flex w-fit items-center rounded-lg">
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm, remarkMath]}
                       rehypePlugins={[rehypeKatex]}
@@ -103,34 +140,40 @@ const ChatMessages: React.FC = () => {
                     </ReactMarkdown>
                   </div>
                 </div>
-                {parsedMsg.ui_components.length > 0 && (
-                  <div className="mt-2 p-3 sm:p-5 rounded-md">
-                    {parsedMsg.ui_components.map((comp, index) => {
-                      return (
-                        <RenderGenUiComponent
-                          key={index}
-                          data={comp?.data}
-                          title={comp?.title!}
-                          type={comp?.type}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
+                <div>
+                  {parsedMsg.ui_components.length > 0 && (
+                    <div className="flex flex-col gap-3 rounded-md">
+                      {parsedMsg.ui_components.map((comp, index) => {
+                        return (
+                          <RenderGenUiComponent
+                            key={index}
+                            data={comp?.data}
+                            title={comp?.title!}
+                            type={comp?.type}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                  <ActionButtons />
+                </div>
               </div>
             </div>
           );
         }
       })}
       {chatloading && (
-        <div className="flex gap-2 justify-start w-full">
-          <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
+        <div className="flex gap-2  items-start justify-start w-full">
+          <Avatar className="h-[2.3rem] w-[2.3rem]">
             <AvatarFallback>AI</AvatarFallback>
           </Avatar>
-          <LoadingJourney route={currentJourneyRoute} />
+          <div className="">
+            <TypingAnimation />
+            <LoadingJourney route={currentJourneyRoute} />
+          </div>
         </div>
       )}
-      <ActionButtons/>
+
       <div ref={messagesEndRef} />
     </div>
   );

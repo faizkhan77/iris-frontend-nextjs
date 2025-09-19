@@ -9,10 +9,10 @@ interface SuggestedQueriesProps {
 const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ title, data, onOptionClick }) => {
   return (
     // Reduced top margin for a tighter layout
-    <div className="mt-3">
+    <div className="my-4">
       {/* Title is now extra small (text-xs) and has less bottom margin */}
       {title && (
-        <h2 className="text-xs font-medium text-gray-500 mb-2">
+        <h2 className="text-xs font-medium text-gray-500">
           {title}
         </h2>
       )}

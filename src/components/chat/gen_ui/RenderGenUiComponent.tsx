@@ -13,8 +13,6 @@ import { BalanceSheetAnalysisCard } from "./BalanceSheetAnalysisCard";
 import { CashFlowAnalysisCard } from "./CashFlowAnalysisCard";
 import { RankingBarChart } from "../../charts/RankingBarChart";
 
-
-
 interface GenUiComponentProps {
   title: string;
   type: string;
@@ -72,28 +70,18 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
           onOptionClick={onOptionClick}
         />
       );
-      case "suggested_queries":
+    case "suggested_queries":
       return (
-        // <div>
-        //   <h2 className="text-lg font-semibold mb-2">{title}</h2> 
-        //   <div className="flex flex-wrap gap-2">
-        //     {data?.map((query: string, index: number) => (
-        //       <button
-        //         key={index} 
-
-        //         onClick={() => onOptionClick(query)}
-        //         className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm hover:bg-blue-600 transition-colors"
-        //       >
-        //         {query}
-        //       </button>
-        //     ))}
-        //   </div>
-        // </div>
-
-        <SuggestedQueries title={title} data={data} onOptionClick={onOptionClick} />
+        <SuggestedQueries
+          title={title}
+          data={data}
+          onOptionClick={onOptionClick}
+        />
       );
-    case "loading":
-      return <div className="animate-pulse h-6 w-40 bg-gray-300 rounded-md my-2" />;
+    // case "loading":
+    //   return (
+    //     <div className="animate-pulse h-6 w-40 bg-gray-300 rounded-md my-2" />
+    //   );
 
     default:
       return null;

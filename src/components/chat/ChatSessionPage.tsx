@@ -65,9 +65,7 @@ const ChatSessionPage = () => {
       {/* Input fixed at bottom */}
       {/* CHANGE: Reduced vertical margin on mobile */}
       <div className="w-full z-10 max-w-2xl my-2 sm:my-3">
-        {latestSuggestedQueries && latestSuggestedQueries.length > 0 && (
-          <SuggestedQueries queries={latestSuggestedQueries} onQueryClick={submitMessage} />
-        )}
+        
         <ChatInputForm messages={true} />
       </div>
     </div>
