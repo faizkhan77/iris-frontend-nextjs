@@ -1,4 +1,3 @@
-
 "use client";
 
 // import { useTheme } from "next-themes";
@@ -13,7 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-
   // ChartConfig,
   ChartContainer,
   ChartLegend,
@@ -21,7 +19,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-   
 } from "@/components/ui/chart";
 import {
   Select,
@@ -32,7 +29,6 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { useTheme } from "../providers/ThemeProvider";
-
 
 // STEP 1: Define the shape of OUR data
 export interface ChartDataPoint {
@@ -45,6 +41,9 @@ interface StockPriceChartProps {
   data: ChartDataPoint[];
   title: string;
   animationDuration?: number;
+  // These props are now required to be passed from the parent
+  timeRange: "1y" | "6m" | "3m";
+  setTimeRange: (value: "1y" | "6m" | "3m") => void;
 }
 
 // STEP 2: Configure the chart. We will map our data keys to the template's keys.
@@ -71,8 +70,9 @@ export function StockPriceChart({
   data,
   title,
   animationDuration = 500,
+  timeRange,
+  setTimeRange,
 }: StockPriceChartProps) {
-  const [timeRange, setTimeRange] = React.useState("1y");
   const { theme } = useTheme();
 
   const [mounted, setMounted] = useState(false);

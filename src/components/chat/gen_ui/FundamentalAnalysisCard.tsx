@@ -37,7 +37,11 @@ type DetailItem = {
 export type FundamentalAnalysisCardProps = {
   title: string;
   data: {
-    chartInterpretation?: string;
+    // These are the new, specific interpretation fields
+    chartInterpretation1Y?: string;
+    chartInterpretation6M?: string;
+    chartInterpretation3M?: string;
+
     priceChartData?: any[];
     detailsTable?: DetailItem[];
     finalVerdict?: string;
@@ -53,7 +57,20 @@ export function FundamentalAnalysisCard({
   const [isChartOpen, setIsChartOpen] = useState(true);
   const [isDetailsOpen, setIsDetailsOpen] = useState(true);
 
-  // console.log(data);
+  const [timeRange, setTimeRange] = useState<"1y" | "6m" | "3m">("1y");
+
+  const currentInterpretation = () => {
+    switch (timeRange) {
+      case "1y":
+        return data?.chartInterpretation1Y;
+      case "6m":
+        return data?.chartInterpretation6M;
+      case "3m":
+        return data?.chartInterpretation3M;
+      default:
+        return data?.chartInterpretation1Y; // Default to 1 year
+    }
+  };
 
   // Helper to format values
   const formatValue = (label: string, value: string | number) => {
@@ -101,12 +118,15 @@ export function FundamentalAnalysisCard({
             >
               <div className="pb-4">
                 <p className="text-xs text-text-secondary mb-5">
-                  {data?.chartInterpretation}
+                  {currentInterpretation()}
                 </p>
                 {data?.priceChartData && data?.priceChartData.length > 0 && (
+                  // --- CHANGE 5: PASS STATE AND SETTER TO THE CHART ---
                   <StockPriceChart
                     data={data?.priceChartData}
                     title="Price vs Moving Averages"
+                    timeRange={timeRange}
+                    setTimeRange={setTimeRange}
                   />
                 )}
               </div>
