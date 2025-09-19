@@ -13,6 +13,7 @@ interface ChatState {
   activeSession?: string | null;
   messages: ChatMessage[];
   loading: boolean;
+  inputValue: string; 
 }
 
 const initialState: ChatState = {
@@ -21,12 +22,17 @@ const initialState: ChatState = {
   conversations: [],
   messages: [],
   activeSession: null,
+  inputValue: "", 
 };
 
 const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
+  
+    setInputValue: (state, action: PayloadAction<string>) => {
+      state.inputValue = action.payload;
+    },
     setShowHistory: (state, action: PayloadAction<boolean>) => {
       state.showHistory = action.payload;
     },
@@ -36,6 +42,7 @@ const chatSlice = createSlice({
     setActiveSession: (state, action: PayloadAction<string | null>) => {
       state.activeSession = action.payload;
     },
+  
     addMessage: (state, action: PayloadAction<ChatMessage>) => {
       state.messages.push(action.payload);
     },
@@ -49,18 +56,19 @@ const chatSlice = createSlice({
   extraReducers: (builder) => {
     builder.addMatcher(chatapi.endpoints.sendMessage.matchPending, (state) => {
       state.loading = true;
+      // Clear the input field after the message is sent
+      state.inputValue = ""; 
     });
     builder.addMatcher(
       chatapi.endpoints.sendMessage.matchFulfilled,
       (state, action) => {
         state.loading = false;
         
-
-        // push AI message immediately
+        // push AI message when the API call succeeds
         state.messages.push({
-          id: action.payload.message.message_id, // backend id if available
+          id: action.payload.message.message_id,
           role: "assistant",
-          content: JSON.stringify(action.payload.message), // keep same format
+          content: JSON.stringify(action.payload.message),
           created_at: new Date().toISOString(),
         });
       }
@@ -69,6 +77,7 @@ const chatSlice = createSlice({
 });
 
 export const {
+  setInputValue,
   setShowHistory,
   setActiveSession,
   addMessage,

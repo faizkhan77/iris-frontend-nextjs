@@ -1,15 +1,15 @@
 import React from "react";
 import { motion } from "framer-motion";
 import AnimatedOrb from "@/components/animated-orbit";
-import { Send } from "lucide-react";
+import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
 
 const recommendations = [
-  { title: "Compare Two Stocks", question: "Compare the fundamentals of ICICI Bank and HDFC Bank" },
-  { title: "Find Top Performers", question: "What are the top 5 companies by market capitalization?" },
-  { title: "Get News Sentiment", question: "What is the recent news sentiment for Infosys?" },
-  { title: "Shareholding patterns", question: "Shareholding patterns for Titan Company?" },
-  { title: "Check Technicals", question: "Technical Analysis of Tata Motors?" },
-  { title: "Get a Broad Outlook", question: "Is HDFC Bank a good buy right now?" },
+    { title: "Compare Two Stocks", question: "Compare the fundamentals of ICICI Bank and HDFC Bank" },
+    { title: "Find Top Performers", question: "What are the top 5 companies by market capitalization?" },
+    { title: "Get News Sentiment", question: "What is the recent news sentiment for Infosys?" },
+    { title: "Shareholding patterns", question: "Shareholding patterns for Titan Company?" },
+    { title: "Check Technicals", question: "Technical Analysis of Tata Motors?" },
+    { title: "Get a Broad Outlook", question: "Is HDFC Bank a good buy right now?" },
 ];
 
 interface WrapperProps {
@@ -18,37 +18,36 @@ interface WrapperProps {
 }
 
 const ChatWelcomeScreen: React.FC<WrapperProps> = ({ show, children }) => {
-  if (!show) return <>{children}</>; // If show is false, render only children
+  const { submitMessage, isLoading } = useSendMessageHandler();
+
+  if (!show) return <>{children}</>;
+
+  const handleRecommendationClick = async (question: string) => {
+      await submitMessage(question);
+  };
 
   return (
-    <div className="z-10">
+    // THE FIX: Added `relative` here to ensure `z-10` is always applied correctly.
+    <div className="relative z-10 flex justify-center">
       <div className="w-full max-w-2xl">
-        {/* Animated Orb */}
         <div className="mb-6 flex justify-center">
           <AnimatedOrb />
         </div>
-
-        {/* Title */}
-        <h1 className="text-center text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+        <h1 className="text-center text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
           Just talk to <span className="text-[#0dd3ff]">IRIS</span>
         </h1>
-
-        {/* Chat Input Box */}
-        <div className="my-10">
-
-        {children}
-        </div>
-
-        {/* Recommendation Cards */}
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="my-6 sm:my-8">{children}</div>
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {recommendations.map((rec) => (
-            <motion.div
+            <motion.button
               key={rec.title}
-              className="rounded-lg border bg-card p-3 text-left text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              onClick={() => handleRecommendationClick(rec.question)}
+              disabled={isLoading}
+              className="rounded-lg border bg-card p-3 text-left text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="font-medium text-foreground">{rec.title}</span>
               <p className="mt-1 line-clamp-2 text-xs">{rec.question}</p>
-            </motion.div>
+            </motion.button>
           ))}
         </div>
       </div>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+  <circle cx="32" cy="32" r="30" fill="url(#grad)" stroke="#164E63" stroke-width="3"/>
+  <text x="50%" y="55%" text-anchor="middle" fill="white" font-size="16" font-weight="bold" font-family="Arial">IRIS</text>
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#083344"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+  </defs>
+</svg>
