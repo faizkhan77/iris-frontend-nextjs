@@ -1,10 +1,5 @@
 import React from "react";
 import { FundamentalAnalysisCard } from "./FundamentalAnalysisCard";
-import ClarificationTabs from "../ClarificationTabs";
-import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
-
-import SuggestedQueries from "./suggested_queries";
-
 import { TechnicalSummaryCard } from "./TechnicalSummaryCard";
 import { SentimentAnalysisCard } from "./SentimentAnalysisCard";
 import { CrossAgentAnalysisCard } from "./CrossAgentAnalysisCard";
@@ -12,6 +7,9 @@ import { ShareholdingDetailsCard } from "./ShareholdingDetailsCard";
 import { BalanceSheetAnalysisCard } from "./BalanceSheetAnalysisCard";
 import { CashFlowAnalysisCard } from "./CashFlowAnalysisCard";
 import { RankingBarChart } from "../../charts/RankingBarChart";
+import ClarificationTabs from "../ClarificationTabs";
+import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
+import SuggestedQueries from "./suggested_queries";
 
 interface GenUiComponentProps {
   title: string;
@@ -19,21 +17,17 @@ interface GenUiComponentProps {
   data?: any;
 }
 
-/**
- * RenderGenUiComponent dynamically renders a UI component
- * based on the type returned from the AI.
- */
 const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
   title,
   type,
   data,
 }) => {
-  // Move the hook call inside the component function
   const { submitMessage } = useSendMessageHandler();
 
+  // This function will be passed as a prop to child components.
   const onOptionClick = (query: string) => {
-    submitMessage(query); // Now you can safely use the hook here
-    console.log("Clarification option clicked:", query);
+    submitMessage(query);
+    console.log("Option clicked, sending query:", query);
   };
 
   switch (type) {
@@ -61,15 +55,15 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
     case "ranking_bar_chart":
       return <RankingBarChart title={title} data={data} />;
 
-    case "loading":
+    case "clarification_options":
       return (
         <ClarificationTabs
-          key={title}
           title={title}
-          options={data?.options}
+          data={data}
           onOptionClick={onOptionClick}
         />
       );
+
     case "suggested_queries":
       return (
         <SuggestedQueries
@@ -78,10 +72,11 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
           onOptionClick={onOptionClick}
         />
       );
-    // case "loading":
-    //   return (
-    //     <div className="animate-pulse h-6 w-40 bg-gray-300 rounded-md my-2" />
-    //   );
+
+    case "loading":
+      return (
+        <div className="animate-pulse h-6 w-40 bg-gray-300 rounded-md my-2" />
+      );
 
     default:
       return null;

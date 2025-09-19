@@ -3,7 +3,7 @@ import { Sparkles } from "lucide-react";
 
 interface ClarificationTabProps {
   title: string;
-  options: { label: string; query: string }[];
+  data: { label: string; query: string }[];
   onOptionClick: (query: string) => void;
 }
 
@@ -25,7 +25,7 @@ const itemVariants = {
 
 export default function ClarificationTabs({
   title,
-  options,
+  data,
   onOptionClick,
 }: ClarificationTabProps) {
   return (
@@ -40,7 +40,7 @@ export default function ClarificationTabs({
         animate="visible"
         className="flex flex-wrap gap-2"
       >
-        {options.map((option, index) => (
+        {data?.map((option, index) => (
           <motion.button
             key={index}
             variants={itemVariants}
