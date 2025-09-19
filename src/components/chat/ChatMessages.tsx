@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react"; 
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { AiResponse } from "@/redux/slices/chat/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAppSelector, type RootState } from "@/redux/store";
@@ -11,7 +11,6 @@ import RenderGenUiComponent from "./gen_ui/RenderGenUiComponent";
 import LoadingJourney from "./LoadingJourney";
 
 const ChatMessages: React.FC = () => {
-
   const messages = useAppSelector((state: RootState) => state.chat.messages);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const chatloading = useAppSelector((state: RootState) => state.chat.loading);
@@ -33,14 +32,12 @@ const ChatMessages: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [sortedMessages]);
 
-
   const messageContains = (message: string, keywords: string[]): boolean => {
-  const lowerCaseMessage = message.toLowerCase();
-  return keywords.some(keyword => lowerCaseMessage.includes(keyword));
-};
+    const lowerCaseMessage = message.toLowerCase();
+    return keywords.some((keyword) => lowerCaseMessage.includes(keyword));
+  };
 
-
- 
+  useEffect(() => {
     if (chatloading) {
       const lastUserMessage = [...messages]
         .reverse()
@@ -48,17 +45,55 @@ const ChatMessages: React.FC = () => {
 
       if (lastUserMessage && typeof lastUserMessage.content === "string") {
         const content = lastUserMessage.content;
-        if (messageContains(content, ["shareholding", "promoter", "who owns", "ownership"])) {
+        if (
+          messageContains(content, [
+            "shareholding",
+            "promoter",
+            "who owns",
+            "ownership",
+          ])
+        ) {
           setCurrentJourneyRoute("shareholding");
-        } else if (messageContains(content, ["compare", "vs", "versus", "analyze both"])) {
+        } else if (
+          messageContains(content, ["compare", "vs", "versus", "analyze both"])
+        ) {
           setCurrentJourneyRoute("cross_agent_reasoning");
-        } else if (messageContains(content, ["fundamentals", "balance sheet", "p/e ratio", "roe"])) {
+        } else if (
+          messageContains(content, [
+            "fundamentals",
+            "balance sheet",
+            "p/e ratio",
+            "roe",
+          ])
+        ) {
           setCurrentJourneyRoute("fundamentals");
-        } else if (messageContains(content, ["technicals", "chart", "rsi", "macd", "candlesticks"])) {
+        } else if (
+          messageContains(content, [
+            "technicals",
+            "chart",
+            "rsi",
+            "macd",
+            "candlesticks",
+          ])
+        ) {
           setCurrentJourneyRoute("technicals");
-        } else if (messageContains(content, ["sentiment", "news", "headlines", "market mood"])) {
+        } else if (
+          messageContains(content, [
+            "sentiment",
+            "news",
+            "headlines",
+            "market mood",
+          ])
+        ) {
           setCurrentJourneyRoute("sentiment");
-        } else if (messageContains(content, ["what is", "explain", "define", "tell me about"])) {
+        } else if (
+          messageContains(content, [
+            "what is",
+            "explain",
+            "define",
+            "tell me about",
+          ])
+        ) {
           setCurrentJourneyRoute("knowledge_base");
         } else {
           setCurrentJourneyRoute("unknown");
@@ -67,12 +102,10 @@ const ChatMessages: React.FC = () => {
     }
   }, [chatloading, messages]);
 
-
   return (
     <div className="flex max-w-2xl w-full min-w-3xl flex-col gap-3 mt-5">
       {sortedMessages?.map((msg) => {
         if (msg.role === "user") {
-      
           return (
             <div key={msg.id} className="flex gap-2 justify-end w-full">
               <div className="p-2 border text-sm bg-accent/20 flex px-4 items-center gap-2 rounded-lg">
@@ -95,9 +128,7 @@ const ChatMessages: React.FC = () => {
                 <AvatarFallback>AI</AvatarFallback>
               </Avatar>
               <div>
-
-               <div className="bg-accent/20 p-2 text-sm border max-w-2xl px-4 flex w-fit items-center gap-2 rounded-lg">
-
+                <div className="bg-accent/20 p-2 text-sm border max-w-2xl px-4 flex w-fit items-center gap-2 rounded-lg">
                   <div className="flex flex-col gap-4">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm, remarkMath]}
@@ -107,15 +138,13 @@ const ChatMessages: React.FC = () => {
                     </ReactMarkdown>
                   </div>
                 </div>
-               {parsedMsg.ui_components.length > 0 && (
+                {parsedMsg.ui_components.length > 0 && (
                   <div className="mt-2 p-5 rounded-md bg-accent/20 border">
                     {parsedMsg.ui_components.map((comp, index) => {
                       return (
                         <RenderGenUiComponent
                           key={index}
-
-                          data={comp?.data} 
-
+                          data={comp?.data}
                           title={comp?.title!}
                           type={comp?.type}
                         />
@@ -133,7 +162,7 @@ const ChatMessages: React.FC = () => {
           <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
             <AvatarFallback>AI</AvatarFallback>
           </Avatar>
-           <LoadingJourney route={currentJourneyRoute} />
+          <LoadingJourney route={currentJourneyRoute} />
         </div>
       )}
       <div ref={messagesEndRef} />

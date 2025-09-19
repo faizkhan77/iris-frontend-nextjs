@@ -2,20 +2,12 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/button";
 import { Sparkles, ChevronLeft } from "lucide-react";
-<<<<<<< HEAD
 
 interface SuggestedQueriesProps {
   queries: string[];
+  onQueryClick: (query: string) => void;
 }
 
-=======
- 
-interface SuggestedQueriesProps {
-  queries: string[];
-    onQueryClick: (query: string) => void;
-}
- 
->>>>>>> ritesh-repo/refactor/next-to-react
 const containerVariants = {
   hidden: { opacity: 0, x: -20 },
   visible: {
@@ -27,7 +19,7 @@ const containerVariants = {
     },
   },
 };
- 
+
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
   visible: {
@@ -39,15 +31,18 @@ const itemVariants = {
     },
   },
 };
- 
-const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ queries,onQueryClick }) => {
+
+const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
+  queries,
+  onQueryClick,
+}) => {
   const [open, setOpen] = useState(false);
- 
+
   const handleQueryClick = (query: string) => {
     console.log("Clicked suggested query:", query);
     onQueryClick(query);
   };
- 
+
   return (
     <div className="flex items-center gap-2 mb-3 relative">
       {/* Toggle Button */}
@@ -59,7 +54,7 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ queries,onQueryClic
       >
         {open ? <ChevronLeft size={18} /> : <Sparkles size={18} />}
       </Button>
- 
+
       {/* Animated Queries Row */}
       <AnimatePresence>
         {open && (
@@ -86,7 +81,7 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ queries,onQueryClic
                 </Button>
               </motion.div>
             ))}
- 
+
             {/* Gradient fade edges */}
             <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-background to-transparent" />
             <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-background to-transparent" />
@@ -96,5 +91,5 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ queries,onQueryClic
     </div>
   );
 };
- 
+
 export default SuggestedQueries;

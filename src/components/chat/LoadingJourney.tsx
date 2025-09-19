@@ -60,13 +60,15 @@ export default function LoadingJourney({ route }: LoadingJourneyProps) {
         </div>
 
         {/* Step text */}
-        <div className="overflow-hidden"> {/* Add a container to hide the text before it enters */}
+        <div className="overflow-hidden">
+          {" "}
+          {/* Add a container to hide the text before it enters */}
           <AnimatePresence mode="wait">
             <motion.p
               key={currentStep}
-              initial={{ x: "-100%", opacity: 0 }} // Start from the left, completely outside
-              animate={{ x: 0, opacity: 1 }} // Animate to its original position
-              exit={{ x: "100%", opacity: 0 }} // Exit to the right
+              initial={{ y: 8, opacity: 0 }} // Enter from below, invisible
+              animate={{ y: 0, opacity: 1 }} // Move into place, fade in
+              exit={{ y: -8, opacity: 0 }} // Exit upward, fade out
               transition={{ duration: 0.5, ease: "easeInOut" }}
               className="font-mono tracking-wide text-text-primary"
             >
