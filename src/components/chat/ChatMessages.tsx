@@ -18,10 +18,15 @@ const ChatMessages: React.FC = () => {
   const [currentJourneyRoute, setCurrentJourneyRoute] = useState("unknown");
 
   const sortedMessages = useMemo(() => {
-    // Simplified sorting logic
-    return [...messages].sort(
-      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-    );
+    return [...messages].sort((a, b) => {
+      const timeDiff =
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+
+      if (timeDiff !== 0) return timeDiff;
+      if (a.role === "user" && b.role === "assistant") return -1;
+      if (a.role === "assistant" && b.role === "user") return 1;
+      return a.id.localeCompare(b.id);
+    });
   }, [messages]);
 
   useEffect(() => {
@@ -29,6 +34,7 @@ const ChatMessages: React.FC = () => {
   }, [sortedMessages]);
   
   const messageContains = (message: string, keywords: string[]): boolean => {
+
     const lowerCaseMessage = message.toLowerCase();
     return keywords.some(keyword => lowerCaseMessage.includes(keyword));
   };
@@ -61,6 +67,7 @@ const ChatMessages: React.FC = () => {
     }, [chatloading, messages]);
     console.log("sortedMessages:", sortedMessages);
 
+
   return (
     <div className="flex max-w-2xl w-full flex-col gap-3 mt-5">
       {sortedMessages?.map((msg) => {
@@ -84,6 +91,7 @@ const ChatMessages: React.FC = () => {
               <Avatar className="h-[2.3rem] w-[2.3rem] mt-1">
                 <AvatarFallback>AI</AvatarFallback>
               </Avatar>
+
               <div className="w-full overflow-hidden"> 
                 <div className="bg-accent/20 p-3 text-sm border max-w-full px-4 flex w-fit items-center gap-2 rounded-lg">
  <div className="prose prose-sm dark:prose-invert max-w-none">
