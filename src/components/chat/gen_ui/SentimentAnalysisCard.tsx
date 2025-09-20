@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ExternalLink } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -11,14 +11,23 @@ import {
 import { ShareholdingPieChart } from "../../charts/ShareholdingPieChart";
 import ReactMarkdown from "react-markdown";
 
-// --- Sub-Components ---
+// --- Sub-Components (NEW Collapsible News Item) ---
 
 interface NewsListItemProps {
   headline: string;
-  url: string;
+  caption: string;
+  details: string;
   sentiment: "bullish" | "bearish" | "neutral";
 }
-const NewsListItem = ({ headline, url, sentiment }: NewsListItemProps) => {
+
+const NewsListItem = ({
+  headline,
+  caption,
+  details,
+  sentiment,
+}: NewsListItemProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   const sentimentConfig = {
     bullish: { color: "bg-green-500", label: "Positive" },
     bearish: { color: "bg-red-500", label: "Negative" },
@@ -26,34 +35,49 @@ const NewsListItem = ({ headline, url, sentiment }: NewsListItemProps) => {
   };
 
   return (
-    <div className="flex items-center gap-3 py-2 border-b border-element-bg last:border-b-0">
-      <TooltipProvider delayDuration={100}>
-        <Tooltip>
-          <TooltipTrigger>
-            <div
-              className={cn(
-                "w-2 h-2 rounded-full",
-                sentimentConfig[sentiment].color
-              )}
-            />
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <p>{sentimentConfig[sentiment].label} Sentiment</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <p className="text-xs text-text-secondary flex-grow line-clamp-1">
-        {headline}
-      </p>
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-text-tertiary hover:text-cyan-400 transition-colors"
-        title="Read full article"
+    <div className="border-b border-element-bg last:border-b-0">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-3 py-2 w-full text-left"
       >
-        <ExternalLink size={14} />
-      </a>
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger>
+              <div
+                className={cn(
+                  "w-2 h-2 rounded-full flex-shrink-0",
+                  sentimentConfig[sentiment]?.color || "bg-gray-400"
+                )}
+              />
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p>{sentimentConfig[sentiment]?.label || "Unknown"} Sentiment</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <p className="text-xs text-text-secondary flex-grow">{headline}</p>
+        <ChevronDown
+          size={14}
+          className={cn("transition-transform flex-shrink-0", {
+            "rotate-180": isOpen,
+          })}
+        />
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0, marginTop: 0 }}
+            animate={{ height: "auto", opacity: 1, marginTop: "0.5rem" }}
+            exit={{ height: 0, opacity: 0, marginTop: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="pb-3 pl-5 pr-2 text-xs text-text-tertiary space-y-2">
+              {caption && <p className="font-semibold">{caption}</p>}
+              {details && <p className="leading-relaxed">{details}</p>}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -79,6 +103,8 @@ export function SentimentAnalysisCard({
   title,
   data,
 }: SentimentAnalysisCardProps) {
+  // Your existing main component logic is fine and doesn't need changes.
+  // The magic happens in the new NewsListItem sub-component.
   const [isPieChartOpen, setIsPieChartOpen] = useState(true);
   const [isNewsListOpen, setIsNewsListOpen] = useState(true);
 
@@ -94,40 +120,41 @@ export function SentimentAnalysisCard({
       <h2 className="text-lg font-semibold text-text-primary mb-3">{title}</h2>
       <p className="text-text-secondary mb-4">{data?.summaryText}</p>
 
-      {/* Pie Chart Collapsible */}
-      <div className="border-t border-element-border">
-        <button
-          onClick={() => setIsPieChartOpen(!isPieChartOpen)}
-          className="flex w-full justify-between items-center py-3 text-left font-medium text-text-primary"
-        >
-          Sentiment Breakdown
-          <ChevronDown
-            size={18}
-            className={cn("transition-transform", {
-              "rotate-180": isPieChartOpen,
-            })}
-          />
-        </button>
-        <AnimatePresence>
-          {isPieChartOpen && data?.pieChartData && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="pb-4">
-                <ShareholdingPieChart
-                  data={data.pieChartData}
-                  title="Sentiment Breakdown"
-                  description="Based on analysis of recent news headlines"
-                  animationDuration={500}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      {/* Pie Chart Collapsible (Only render if data exists) */}
+      {data?.pieChartData && data.pieChartData.length > 0 && (
+        <div className="border-t border-element-border">
+          <button
+            onClick={() => setIsPieChartOpen(!isPieChartOpen)}
+            className="flex w-full justify-between items-center py-3 text-left font-medium text-text-primary"
+          >
+            Sentiment Breakdown
+            <ChevronDown
+              size={18}
+              className={cn("transition-transform", {
+                "rotate-180": isPieChartOpen,
+              })}
+            />
+          </button>
+          <AnimatePresence>
+            {isPieChartOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="pb-4">
+                  <ShareholdingPieChart
+                    data={data.pieChartData}
+                    title="Sentiment Breakdown"
+                    description="Based on analysis of recent news headlines"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
 
       {/* News List Collapsible */}
       <div className="border-y border-element-border">
