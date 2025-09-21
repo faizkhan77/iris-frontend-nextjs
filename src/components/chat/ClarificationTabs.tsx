@@ -27,7 +27,7 @@ export default function ClarificationTabs({
 }: ClarificationTabProps) {
   return (
     <div className="w-full my-4">
-      <h4 className="text-xs font-semibold mb-3 px-2 flex items-center gap-2 text-gray-400 dark:text-gray-300 uppercase tracking-wide">
+      <h4 className="text-xs font-semibold mb-3 px-2 flex items-center gap-2 text-gray-600 dark:text-gray-300 uppercase tracking-wide">
         <Sparkles size={14} className="text-yellow-400" />
         {title}
       </h4>
@@ -44,11 +44,11 @@ export default function ClarificationTabs({
             variants={itemVariants}
             onClick={() => onOptionClick(option.query)}
             className="relative flex items-center gap-2 px-4 py-2 min-w-[120px] rounded-lg
-                       bg-gradient-to-br from-gray-900/80 to-gray-800/80 dark:from-gray-800/70 dark:to-gray-700/70
+                       bg-gradient-to-br from-gray-100/80 to-gray-200/80 dark:from-gray-800/70 dark:to-gray-700/70
                        border-l-4 border-cyan-400 dark:border-cyan-500
-                       text-gray-200 dark:text-gray-100
-                       shadow-md
-                       hover:bg-gray-800/70 dark:hover:bg-gray-700/60
+                       text-gray-800 dark:text-gray-100
+                       shadow-sm dark:shadow-md
+                       hover:bg-gray-200/60 dark:hover:bg-gray-700/60
                        transition-colors duration-300 overflow-hidden"
           >
             <Sparkles size={12} className="text-yellow-400 flex-shrink-0" />
