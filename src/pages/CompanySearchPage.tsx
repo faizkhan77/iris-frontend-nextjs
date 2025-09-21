@@ -36,7 +36,8 @@ const CompanyPage = () => {
     setIsLoading(true);
 
     const delayDebounce = setTimeout(() => {
-      fetch(`https://irisapi.brainfogagency.com/api/company/search?q=${encodeURIComponent(query)}`)
+      const baseUrl = import.meta.env.VITE_BASE_URL;
+      fetch(`${baseUrl}/company/search?q=${encodeURIComponent(query)}`)
         .then((res) => {
           if (!res.ok) {
             throw new Error("Network response was not ok");
