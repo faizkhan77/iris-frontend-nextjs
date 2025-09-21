@@ -63,7 +63,7 @@ const ChatMessages: React.FC = () => {
   console.log("sortedMessages:", sortedMessages);
 
   return (
-    <div className="flex max-w-3xl w-full flex-col gap-5 mt-5">
+    <div className="flex max-w-4xl w-full flex-col gap-10 mt-5">
       {sortedMessages?.map((msg) => {
         if (msg.role === "user") {
           return (
