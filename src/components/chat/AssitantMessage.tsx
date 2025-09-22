@@ -18,6 +18,8 @@ import { Dialog, DialogTrigger } from "../ui/dialog";
 import ShareChatMessage from "./ShareChatMessage";
 import { useAppDispatch } from "@/redux/store";
 import { clickShareMessage } from "@/redux/slices/chat/chat.slice";
+import SuggestedQueries from "./gen_ui/suggested_queries";
+import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
 
 // Adjust this type to your actual AiResponse type
 
@@ -28,6 +30,12 @@ interface AssistantMessageProps {
 const AssistantMessage: React.FC<AssistantMessageProps> = ({ message }) => {
   const parsedMsg = JSON.parse(message.content) as AiResponse;
   const dispatch = useAppDispatch();
+  const { submitMessage } = useSendMessageHandler();
+
+  const onOptionClick = (query: string) => {
+    submitMessage(query);
+    console.log("Option clicked, sending query:", query);
+  };
 
   return (
     <div key={message.id} className="flex gap-2 justify-start w-full">
@@ -51,12 +59,23 @@ const AssistantMessage: React.FC<AssistantMessageProps> = ({ message }) => {
           {parsedMsg.ui_components.length > 0 && (
             <div className="flex flex-col gap-3 rounded-md">
               {parsedMsg.ui_components.map((comp, index) => (
-                <RenderGenUiComponent
-                  key={index}
-                  data={comp?.data}
-                  title={comp?.title!}
-                  type={comp?.type}
-                />
+                <div>
+                  <RenderGenUiComponent
+                    key={index}
+                    data={comp?.data}
+                    title={comp?.title!}
+                    type={comp?.type}
+                  />
+                  <div>
+                    {comp.type === "suggested_queries" && (
+                      <SuggestedQueries
+                        title={comp.title}
+                        data={comp.data}
+                        onOptionClick={onOptionClick}
+                      />
+                    )}
+                  </div>
+                </div>
               ))}
             </div>
           )}

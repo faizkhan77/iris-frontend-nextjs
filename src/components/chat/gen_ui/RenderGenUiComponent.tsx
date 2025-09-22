@@ -9,7 +9,6 @@ import { CashFlowAnalysisCard } from "./CashFlowAnalysisCard";
 import { RankingBarChart } from "../../charts/RankingBarChart";
 import ClarificationTabs from "../ClarificationTabs";
 import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
-import SuggestedQueries from "./suggested_queries";
 
 interface GenUiComponentProps {
   title: string;
@@ -32,41 +31,64 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
 
   switch (type) {
     case "fundamental_analysis_card":
-      return <FundamentalAnalysisCard title={title} data={data} />;
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg" >
+          <FundamentalAnalysisCard title={title} data={data} />;
+        </div>
+      );
 
     case "technical_summary_card":
-      return <TechnicalSummaryCard title={title} data={data} />;
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg" >
+          <TechnicalSummaryCard title={title} data={data} />;
+        </div>
+      );
 
     case "sentiment_analysis_card":
-      return <SentimentAnalysisCard title={title} data={data} />;
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg" >
+          <SentimentAnalysisCard title={title} data={data} />;
+        </div>
+      );
 
     case "cross_agent_analysis_card":
-      return <CrossAgentAnalysisCard title={title} data={data} />;
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg" >
+          <CrossAgentAnalysisCard title={title} data={data} />;
+        </div>
+      );
 
     case "shareholding_details_card":
-      return <ShareholdingDetailsCard title={title} data={data} />;
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg" >
+          <ShareholdingDetailsCard title={title} data={data} />;
+        </div>
+      );
 
     case "balancesheet_analysis_card":
-      return <BalanceSheetAnalysisCard title={title} data={data} />;
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg" >
+          <BalanceSheetAnalysisCard title={title} data={data} />;
+        </div>
+      );
 
     case "cashflow_analysis_card":
-      return <CashFlowAnalysisCard title={title} data={data} />;
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg" >
+          <CashFlowAnalysisCard title={title} data={data} />;
+        </div>
+      );
 
     case "ranking_bar_chart":
-      return <RankingBarChart title={title} data={data} />;
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg" >
+          <RankingBarChart title={title} data={data} />;
+        </div>
+      );
 
     case "clarification_options":
       return (
         <ClarificationTabs
-          title={title}
-          data={data}
-          onOptionClick={onOptionClick}
-        />
-      );
-
-    case "suggested_queries":
-      return (
-        <SuggestedQueries
           title={title}
           data={data}
           onOptionClick={onOptionClick}

@@ -116,7 +116,7 @@ export function SentimentAnalysisCard({
   };
 
   return (
-    <div className="w-full p-5 my-2 bg-accent/20 border rounded-lg text-sm">
+    <div className="w-full my-2  rounded-lg text-sm">
       <h2 className="text-lg font-semibold text-text-primary mb-3">{title}</h2>
       <p className="text-text-secondary mb-4">{data?.summaryText}</p>
 
