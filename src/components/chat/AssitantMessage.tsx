@@ -92,12 +92,12 @@ const AssistantMessage: React.FC<AssistantMessageProps> = ({ message }) => {
                 <ShareChatMessage />
               </Dialog>
 
-              <button
+              {/* <button
                 className="text-gray-400 p-2 hover:bg-muted rounded-md hover:text-gray-200 transition-colors duration-200"
                 aria-label="Download"
               >
                 <ArrowDownCircle size={18} />
-              </button>
+              </button> */}
 
               <button
                 className="text-gray-400 p-2 hover:bg-muted rounded-md hover:text-gray-200 transition-colors duration-200"

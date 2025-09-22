@@ -23,7 +23,7 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
 }) => {
   const { submitMessage } = useSendMessageHandler();
 
-  // This function will be passed as a prop to child components.
+  
   const onOptionClick = (query: string) => {
     submitMessage(query);
     console.log("Option clicked, sending query:", query);
@@ -33,56 +33,56 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
     case "fundamental_analysis_card":
       return (
         <div className="p-5 border bg-accent/20 rounded-lg" >
-          <FundamentalAnalysisCard title={title} data={data} />;
+          <FundamentalAnalysisCard title={title} data={data} />
         </div>
       );
 
     case "technical_summary_card":
       return (
         <div className="p-5 border bg-accent/20 rounded-lg" >
-          <TechnicalSummaryCard title={title} data={data} />;
+          <TechnicalSummaryCard title={title} data={data} />
         </div>
       );
 
     case "sentiment_analysis_card":
       return (
         <div className="p-5 border bg-accent/20 rounded-lg" >
-          <SentimentAnalysisCard title={title} data={data} />;
+          <SentimentAnalysisCard title={title} data={data} />
         </div>
       );
 
     case "cross_agent_analysis_card":
       return (
         <div className="p-5 border bg-accent/20 rounded-lg" >
-          <CrossAgentAnalysisCard title={title} data={data} />;
+          <CrossAgentAnalysisCard title={title} data={data} />
         </div>
       );
 
     case "shareholding_details_card":
       return (
         <div className="p-5 border bg-accent/20 rounded-lg" >
-          <ShareholdingDetailsCard title={title} data={data} />;
+          <ShareholdingDetailsCard title={title} data={data} />
         </div>
       );
 
     case "balancesheet_analysis_card":
       return (
         <div className="p-5 border bg-accent/20 rounded-lg" >
-          <BalanceSheetAnalysisCard title={title} data={data} />;
+          <BalanceSheetAnalysisCard title={title} data={data} />
         </div>
       );
 
     case "cashflow_analysis_card":
       return (
         <div className="p-5 border bg-accent/20 rounded-lg" >
-          <CashFlowAnalysisCard title={title} data={data} />;
+          <CashFlowAnalysisCard title={title} data={data} />
         </div>
       );
 
     case "ranking_bar_chart":
       return (
         <div className="p-5 border bg-accent/20 rounded-lg" >
-          <RankingBarChart title={title} data={data} />;
+          <RankingBarChart title={title} data={data} />
         </div>
       );
 
