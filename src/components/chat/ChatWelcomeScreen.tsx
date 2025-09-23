@@ -34,7 +34,7 @@ const ChatWelcomeScreen: React.FC<WrapperProps> = ({ show, children }) => {
           <AnimatedOrb />
         </div>
         <h1 className="text-center text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-          Just talk to <span className="text-[#0dd3ff]">IRIS</span>
+          Just talk to <span className="text-[#0dd3ff] relative">IRIS <span className="p-1 absolute top-0 px-2 text-xs bg-black dark:bg-white rounded-lg dark:text-black">beta</span></span>
         </h1>
         <div className="my-6 sm:my-8">{children}</div>
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
