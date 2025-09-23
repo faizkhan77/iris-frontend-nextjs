@@ -26,10 +26,10 @@ const ChatShareSessionPage = () => {
   const handleContinueSession = async (messageId: string) => {
     try {
       const { session } = await openSharedMessage(messageId).unwrap();
-      if(token){
+      if (token) {
         navigate(`/c/${session.id}`);
-      }else{
-        navigate("/login")
+      } else {
+        navigate("/login");
       }
     } catch (err) {
       console.error("Failed to open shared message:", err);
