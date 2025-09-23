@@ -20,6 +20,7 @@ import { useAppDispatch, useAppSelector, type RootState } from "@/redux/store";
 import { clickShareMessage } from "@/redux/slices/chat/chat.slice";
 import SuggestedQueries from "./gen_ui/suggested_queries";
 import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
+import { toast } from "sonner";
 
 // Adjust this type to your actual AiResponse type
 
@@ -31,6 +32,67 @@ const AssistantMessage: React.FC<AssistantMessageProps> = ({ message }) => {
   const parsedMsg = JSON.parse(message.content) as AiResponse;
   const dispatch = useAppDispatch();
   const { submitMessage } = useSendMessageHandler();
+  const accessToken = useAppSelector((state: RootState) => state.auth.token);
+
+  const API_URL = import.meta.env.VITE_BASE_URL || "http://127.0.0.1:8000";
+
+  const handleCopy = () => {
+    // A simple copy function for the text response
+    navigator.clipboard.writeText(parsedMsg.text_response);
+    toast.success("Copied to clipboard!");
+  };
+
+  const handleDownload = async () => {
+    if (!accessToken) {
+      toast.error("Authentication error. Please log in again.");
+      return;
+    }
+
+    toast.info("Preparing your download...");
+
+    try {
+      const response = await fetch(
+        `${API_URL}/chat/message/${message.id}/download`,
+        {
+          method: "GET",
+          headers: {
+            // This is the crucial part: sending the token
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        // Handle errors from the server, like 401, 404, 500
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to download PDF.");
+      }
+
+      // 1. Get the file data as a "blob"
+      const blob = await response.blob();
+
+      // 2. Create a temporary URL for the blob in the browser's memory
+      const url = window.URL.createObjectURL(blob);
+
+      // 3. Create a temporary, invisible link element
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `iris_analysis_${message.id}.pdf`);
+
+      // 4. Append to the document, "click" it, and then remove it
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+
+      // 5. Clean up the temporary URL
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error);
+      toast.error(
+        error instanceof Error ? error.message : "An unknown error occurred."
+      );
+    }
+  };
 
   const onOptionClick = (query: string) => {
     submitMessage(query);
@@ -92,12 +154,13 @@ const AssistantMessage: React.FC<AssistantMessageProps> = ({ message }) => {
                 <ShareChatMessage />
               </Dialog>
 
-              {/* <button
+              <button
+                onClick={handleDownload}
                 className="text-gray-400 p-2 hover:bg-muted rounded-md hover:text-gray-200 transition-colors duration-200"
                 aria-label="Download"
               >
                 <ArrowDownCircle size={18} />
-              </button> */}
+              </button>
 
               <button
                 className="text-gray-400 p-2 hover:bg-muted rounded-md hover:text-gray-200 transition-colors duration-200"
