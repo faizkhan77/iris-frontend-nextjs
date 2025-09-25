@@ -34,6 +34,21 @@ export interface BalanceSheetAnalysisData {
   keyTakeaways: string[];
 }
 
+const formatYearMonth = (label: string): string => {
+  if (typeof label !== "string" || label.length !== 6) {
+    return label; // Return original if format is unexpected
+  }
+  const year = label.substring(0, 4);
+  const month = parseInt(label.substring(4, 6), 10);
+
+  // Create a date object to get the month name.
+  // Using a specific day (like the 2nd) avoids timezone issues.
+  const date = new Date(parseInt(year), month - 1, 2);
+  const monthName = date.toLocaleString("default", { month: "long" });
+
+  return `${year} ${monthName}`;
+};
+
 // --- Sub-Components ---
 const TrendIcon = ({ trend }: { trend: "up" | "down" | "stable" }) => {
   if (trend === "up") return <TrendingUp className="h-4 w-4 text-green-500" />;
@@ -45,7 +60,12 @@ const TrendIcon = ({ trend }: { trend: "up" | "down" | "stable" }) => {
 const formatChartData = (chartData) => {
   if (!chartData?.labels) return [];
   return chartData.labels.map((label, i) => {
-    const entry = { name: label };
+    const entry = {
+      // Apply formatting here for the tooltip display
+      name: formatYearMonth(label),
+      // Keep original for potential filtering if needed
+      originalLabel: label,
+    };
     chartData.datasets.forEach((dataset) => {
       entry[dataset.label] = dataset.data[i];
     });
@@ -134,13 +154,16 @@ export function BalanceSheetAnalysisCard({
               fontSize={12}
               tickLine={false}
               axisLine={false}
+              // --- APPLY FORMATTING TO THE AXIS TICK ---
+              tickFormatter={formatYearMonth}
             />
             <YAxis
               stroke={themeColors.text}
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `${(value / 10000000).toFixed(0)} Cr`}
+              // Corrected the tickFormatter logic from your original file
+              tickFormatter={(value) => `${(value / 100000).toFixed(0)} Cr`}
             />
             <ChartTooltip
               cursor={{ fill: themeColors.muted }}
@@ -173,6 +196,8 @@ export function BalanceSheetAnalysisCard({
               fontSize={12}
               tickLine={false}
               axisLine={false}
+              // --- APPLY FORMATTING TO THE AXIS TICK ---
+              tickFormatter={formatYearMonth}
             />
             <YAxis
               domain={["auto", "auto"]}
@@ -181,6 +206,7 @@ export function BalanceSheetAnalysisCard({
               tickLine={false}
               axisLine={false}
             />
+
             <ChartTooltip
               cursor={{ fill: themeColors.muted }}
               contentStyle={{
