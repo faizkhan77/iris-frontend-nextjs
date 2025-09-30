@@ -9,6 +9,7 @@ import { CashFlowAnalysisCard } from "./CashFlowAnalysisCard";
 import { RankingBarChart } from "../../charts/RankingBarChart";
 import ClarificationTabs from "../ClarificationTabs";
 import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
+import { FundamentalComparisonCard } from "./FundamentalComparisonCard";
 
 interface GenUiComponentProps {
   title: string;
@@ -23,7 +24,6 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
 }) => {
   const { submitMessage } = useSendMessageHandler();
 
-  
   const onOptionClick = (query: string) => {
     submitMessage(query);
     console.log("Option clicked, sending query:", query);
@@ -32,56 +32,56 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
   switch (type) {
     case "fundamental_analysis_card":
       return (
-        <div className="p-5 border bg-accent/20 rounded-lg" >
+        <div className="p-5 border bg-accent/20 rounded-lg">
           <FundamentalAnalysisCard title={title} data={data} />
         </div>
       );
 
     case "technical_summary_card":
       return (
-        <div className="p-5 border bg-accent/20 rounded-lg" >
+        <div className="p-5 border bg-accent/20 rounded-lg">
           <TechnicalSummaryCard title={title} data={data} />
         </div>
       );
 
     case "sentiment_analysis_card":
       return (
-        <div className="p-5 border bg-accent/20 rounded-lg" >
+        <div className="p-5 border bg-accent/20 rounded-lg">
           <SentimentAnalysisCard title={title} data={data} />
         </div>
       );
 
     case "cross_agent_analysis_card":
       return (
-        <div className="p-5 border bg-accent/20 rounded-lg" >
+        <div className="p-5 border bg-accent/20 rounded-lg">
           <CrossAgentAnalysisCard title={title} data={data} />
         </div>
       );
 
     case "shareholding_details_card":
       return (
-        <div className="p-5 border bg-accent/20 rounded-lg" >
+        <div className="p-5 border bg-accent/20 rounded-lg">
           <ShareholdingDetailsCard title={title} data={data} />
         </div>
       );
 
     case "balancesheet_analysis_card":
       return (
-        <div className="p-5 border bg-accent/20 rounded-lg" >
+        <div className="p-5 border bg-accent/20 rounded-lg">
           <BalanceSheetAnalysisCard title={title} data={data} />
         </div>
       );
 
     case "cashflow_analysis_card":
       return (
-        <div className="p-5 border bg-accent/20 rounded-lg" >
+        <div className="p-5 border bg-accent/20 rounded-lg">
           <CashFlowAnalysisCard title={title} data={data} />
         </div>
       );
 
     case "ranking_bar_chart":
       return (
-        <div className="p-5 border bg-accent/20 rounded-lg" >
+        <div className="p-5 border bg-accent/20 rounded-lg">
           <RankingBarChart title={title} data={data} />
         </div>
       );
@@ -93,6 +93,13 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
           data={data}
           onOptionClick={onOptionClick}
         />
+      );
+
+    case "fundamentals_comparison_card":
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg">
+          <FundamentalComparisonCard title={title} data={data} />
+        </div>
       );
 
     case "loading":
