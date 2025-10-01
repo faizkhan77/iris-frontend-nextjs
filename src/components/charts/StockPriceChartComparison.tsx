@@ -1,7 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  ComposedChart,
+  Bar,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -58,66 +65,91 @@ export function StockPriceChartComparison({
     setMounted(true);
   }, []);
 
-  // Theme-aware stroke colors (similar to StockPriceChart)
-  const strokeColorPrimary = theme === "dark" ? "#10b981" : "#059669"; // green tone
-  const strokeColorSecondary = theme === "dark" ? "#0dd3ff" : "#0284c7"; // cyan/blue tone
+  // Theme-aware stroke colors (like StockPriceChart)
+  const strokeColorPrimary = theme === "dark" ? "#10b981" : "#059669"; // green
+  const strokeColorSecondary = theme === "dark" ? "#0dd3ff" : "#0284c7"; // cyan/blue
 
   const chartConfig = useMemo(() => {
+    const priceColorA = strokeColorPrimary;
+    const priceColorB = strokeColorSecondary;
+    const volumeColorA =
+      theme === "dark" ? "rgba(16,185,129,0.3)" : "rgba(5,150,105,0.3)"; // green vol
+    const volumeColorB =
+      theme === "dark" ? "rgba(13,211,255,0.3)" : "rgba(2,132,199,0.3)"; // cyan vol
+
     const config: ChartConfig = {};
+    // Price configs
     config[companyA.name] = {
       label: companyA.name,
-      color:
-        companyA.name === preferredCompany
-          ? strokeColorPrimary
-          : "var(--muted-foreground)",
+      color: priceColorA,
     };
     config[companyB.name] = {
       label: companyB.name,
-      color:
-        companyB.name === preferredCompany
-          ? strokeColorPrimary
-          : strokeColorSecondary,
+      color: priceColorB,
+    };
+    // Volume configs
+    config[`${companyA.name}_volume`] = {
+      label: `${companyA.name} Vol`,
+      color: volumeColorA,
+    };
+    config[`${companyB.name}_volume`] = {
+      label: `${companyB.name} Vol`,
+      color: volumeColorB,
     };
     return config;
-  }, [
-    companyA.name,
-    companyB.name,
-    preferredCompany,
-    strokeColorPrimary,
-    strokeColorSecondary,
-  ]);
+  }, [companyA.name, companyB.name, theme]);
 
   const mergedData = useMemo(() => {
     const dataMap = new Map<string, { [key: string]: number | undefined }>();
+    const aVolKey = `${companyA.name}_volume`;
+    const bVolKey = `${companyB.name}_volume`;
 
     companyA.data.forEach((point) => {
       if (!dataMap.has(point.date)) dataMap.set(point.date, {});
-      dataMap.get(point.date)![companyA.name] = point.close;
+      const entry = dataMap.get(point.date)!;
+      entry[companyA.name] = point.close;
+      entry[aVolKey] = point.volume;
     });
 
     companyB.data.forEach((point) => {
       if (!dataMap.has(point.date)) dataMap.set(point.date, {});
-      dataMap.get(point.date)![companyB.name] = point.close;
+      const entry = dataMap.get(point.date)!;
+      entry[companyB.name] = point.close;
+      entry[bVolKey] = point.volume;
     });
 
     const sortedDates = Array.from(dataMap.keys()).sort(
       (a, b) => new Date(a).getTime() - new Date(b).getTime()
     );
 
-    let lastA: number | null = null;
-    let lastB: number | null = null;
+    let lastA_price: number | null = null,
+      lastB_price: number | null = null;
+    let lastA_vol: number | null = null,
+      lastB_vol: number | null = null;
 
     return sortedDates
       .map((date) => {
         const values = dataMap.get(date)!;
-        if (values[companyA.name] !== undefined) lastA = values[companyA.name]!;
-        if (values[companyB.name] !== undefined) lastB = values[companyB.name]!;
+        if (values[companyA.name] !== undefined)
+          lastA_price = values[companyA.name]!;
+        if (values[companyB.name] !== undefined)
+          lastB_price = values[companyB.name]!;
+        if (values[aVolKey] !== undefined) lastA_vol = values[aVolKey]!;
+        if (values[bVolKey] !== undefined) lastB_vol = values[bVolKey]!;
         return {
           date,
           [companyA.name]:
-            values[companyA.name] === undefined ? lastA : values[companyA.name],
+            values[companyA.name] === undefined
+              ? lastA_price
+              : values[companyA.name],
           [companyB.name]:
-            values[companyB.name] === undefined ? lastB : values[companyB.name],
+            values[companyB.name] === undefined
+              ? lastB_price
+              : values[companyB.name],
+          [aVolKey]:
+            values[aVolKey] === undefined ? lastA_vol : values[aVolKey],
+          [bVolKey]:
+            values[bVolKey] === undefined ? lastB_vol : values[bVolKey],
         };
       })
       .filter((d) => d[companyA.name] !== null || d[companyB.name] !== null);
@@ -177,11 +209,11 @@ export function StockPriceChartComparison({
           config={chartConfig}
           className="aspect-video h-[250px] w-full"
         >
-          <LineChart
+          <ComposedChart
             data={filteredData}
-            margin={{ left: -24, right: 12, top: 10 }}
+            margin={{ left: -24, right: -24, top: 10 }}
           >
-            <CartesianGrid vertical={false} stroke="var(--border)" />
+            <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -195,7 +227,11 @@ export function StockPriceChartComparison({
                 })
               }
             />
+
+            {/* Y-Axis for Price (left) */}
             <YAxis
+              yAxisId="left"
+              orientation="left"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
@@ -204,26 +240,54 @@ export function StockPriceChartComparison({
                 `₹${Number(value).toLocaleString("en-IN")}`
               }
             />
+
+            {/* Y-Axis for Volume (right) - hidden for clarity */}
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              tick={false}
+              axisLine={false}
+            />
+
             <ChartTooltip
               cursor
               content={<ChartTooltipContent indicator="dot" />}
             />
+
+            {/* Volume Bars - rendered first to be in the background */}
+            <Bar
+              dataKey={`${companyA.name}_volume`}
+              yAxisId="right"
+              fill={chartConfig[`${companyA.name}_volume`].color}
+              radius={4}
+            />
+            <Bar
+              dataKey={`${companyB.name}_volume`}
+              yAxisId="right"
+              fill={chartConfig[`${companyB.name}_volume`].color}
+              radius={4}
+            />
+
+            {/* Price Lines */}
             <Line
               dataKey={companyA.name}
+              yAxisId="left"
               type="natural"
-              stroke={strokeColorPrimary}
+              stroke={chartConfig[companyA.name].color}
               strokeWidth={companyA.name === preferredCompany ? 2.5 : 2}
               dot={false}
             />
             <Line
               dataKey={companyB.name}
+              yAxisId="left"
               type="natural"
-              stroke={strokeColorSecondary}
+              stroke={chartConfig[companyB.name].color}
               strokeWidth={companyB.name === preferredCompany ? 2.5 : 2}
               dot={false}
             />
+
             <ChartLegend content={<ChartLegendContent />} />
-          </LineChart>
+          </ComposedChart>
         </ChartContainer>
       </CardContent>
     </Card>
