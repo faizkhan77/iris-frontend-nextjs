@@ -257,13 +257,21 @@ const CompanyCard = ({
           : "opacity-80 md:opacity-70 md:scale-95 bg-muted/30 dark:bg-slate-800/30 border-2 border-transparent hover:border-border"
       )}
     >
-      {isPreferred && (
-        <div className="absolute top-3 right-3 flex items-center gap-1 text-xs font-medium text-green-700 dark:text-green-300 bg-green-500/10 px-2.5 py-1 rounded-full">
+      <div className="flex flex-col items-center gap-2 mb-2">
+        <div
+          className={cn(
+            "flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full",
+            isPreferred
+              ? "text-green-700 dark:text-green-300 bg-green-500/10"
+              : "text-muted-foreground bg-muted/30 dark:bg-slate-700/30"
+          )}
+        >
           <Crown size={14} />
-          <span>Preferred</span>
+          <span>{isPreferred ? "Preferred" : "Not Preferred"}</span>
         </div>
-      )}
-      <h4 className="text-xl font-bold mb-4">{company.companyName}</h4>
+
+        <h4 className="text-xl font-bold">{company.companyName}</h4>
+      </div>
 
       <div className="mb-4 w-full">
         <AnimatedSentimentGauge
@@ -272,7 +280,7 @@ const CompanyCard = ({
         />
       </div>
 
-      <p className="text-xs text-muted-foreground mb-4 h-12 flex items-center">
+      <p className="text-xs text-muted-foreground mb-4 min-h-[48px]">
         {company.summaryText}
       </p>
 
@@ -395,8 +403,8 @@ export function SentimentComparisonCard({
                 key={company.companyName}
                 variant={
                   preferredCompany === company.companyName
-                    ? "success"
-                    : "outline"
+                    ? "outline"
+                    : "success"
                 }
                 size="sm"
                 className="flex-1 transition-transform active:scale-95"

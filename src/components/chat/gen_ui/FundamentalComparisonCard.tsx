@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { StockPriceChart } from "../../charts/StockPriceChart";
+import { StockPriceChartComparison } from "../../charts/StockPriceChartComparison";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
@@ -140,7 +140,9 @@ export default function FundamentalComparisonCard({
       )}
       role="group"
     >
-      {/* Header */}
+      {/* ==================================================================== */}
+      {/* SECTION 1: HEADER (This part has no changes)                       */}
+      {/* ==================================================================== */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col">
           <h3 className="font-semibold leading-none">{title}</h3>
@@ -175,7 +177,54 @@ export default function FundamentalComparisonCard({
         </div>
       </div>
 
-      {/* Main content: two columns */}
+      {/* ==================================================================== */}
+      {/* SECTION 2: NEW COMBINED CHART & INTERPRETATION SECTION             */}
+      {/* This entire block is new and placed here, at the top level.        */}
+      {/* ==================================================================== */}
+      <div className="mt-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-muted/20 overflow-hidden">
+        <StockPriceChartComparison
+          companyA={{
+            name: companyA.companyName,
+            data: companyA.priceChartData || [],
+          }}
+          companyB={{
+            name: companyB.companyName,
+            data: companyB.priceChartData || [],
+          }}
+          preferredCompany={preferredCompany}
+          timeRange={timeRange}
+          setTimeRange={setTimeRange}
+        />
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700">
+          <Tabs defaultValue={companyA.companyName} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value={companyA.companyName}>
+                {companyA.companyName}
+              </TabsTrigger>
+              <TabsTrigger value={companyB.companyName}>
+                {companyB.companyName}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value={companyA.companyName}>
+              <p className="mt-3 text-xs text-muted-foreground leading-relaxed">
+                {interpretation(companyA) ||
+                  "No interpretation available for this time range."}
+              </p>
+            </TabsContent>
+            <TabsContent value={companyB.companyName}>
+              <p className="mt-3 text-xs text-muted-foreground leading-relaxed">
+                {interpretation(companyB) ||
+                  "No interpretation available for this time range."}
+              </p>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+
+      {/* ==================================================================== */}
+      {/* SECTION 3: COMPANY DETAIL CARDS (NOW WITHOUT CHARTS)               */}
+      {/* The grid and cards are still here, but their contents are simpler. */}
+      {/* ==================================================================== */}
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Company A Card */}
         <motion.div
@@ -219,7 +268,6 @@ export default function FundamentalComparisonCard({
                 </div>
               </div>
             </div>
-
             <div className="flex items-center gap-2">
               <div className="text-xs text-muted-foreground">Score</div>
               <div className="w-20 bg-muted/40 rounded-full h-2 overflow-hidden">
@@ -236,20 +284,7 @@ export default function FundamentalComparisonCard({
             </div>
           </div>
 
-          <div className="mt-3">
-            <div className="border rounded-md p-1 bg-muted/20 dark:bg-slate-900/20">
-              <StockPriceChart
-                data={companyA.priceChartData || []}
-                title={companyA.companyName}
-                timeRange={timeRange}
-                setTimeRange={(r: any) => setTimeRange(r)}
-                compact
-              />
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              {interpretation(companyA)}
-            </p>
-          </div>
+          {/* THE INDIVIDUAL CHART AND INTERPRETATION FOR COMPANY A USED TO BE HERE. IT IS NOW REMOVED. */}
 
           <div className="mt-3 grid grid-cols-2 gap-2">
             {(companyA.metrics || []).slice(0, 4).map((m, idx) => (
@@ -345,7 +380,6 @@ export default function FundamentalComparisonCard({
                 </div>
               </div>
             </div>
-
             <div className="flex items-center gap-2">
               <div className="text-xs text-muted-foreground">Score</div>
               <div className="w-20 bg-muted/40 rounded-full h-2 overflow-hidden">
@@ -362,21 +396,7 @@ export default function FundamentalComparisonCard({
             </div>
           </div>
 
-          <div className="mt-3">
-            <div className="border rounded-md p-1 bg-muted/20 dark:bg-slate-900/20">
-              <StockPriceChart
-                data={companyB.priceChartData || []}
-                title={companyB.companyName}
-                timeRange={timeRange}
-                setTimeRange={(r: any) => setTimeRange(r)}
-                compact
-                accent="green"
-              />
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              {interpretation(companyB)}
-            </p>
-          </div>
+          {/* THE INDIVIDUAL CHART AND INTERPRETATION FOR COMPANY B USED TO BE HERE. IT IS NOW REMOVED. */}
 
           <div className="mt-3 grid grid-cols-2 gap-2">
             {(companyB.metrics || []).slice(0, 4).map((m, idx) => (
@@ -431,42 +451,12 @@ export default function FundamentalComparisonCard({
         </motion.div>
       </div>
 
+      {/* ==================================================================== */}
+      {/* SECTION 4 & BEYOND: REMAINING SECTIONS (No changes here)           */}
+      {/* ==================================================================== */}
       {/* Comparison table / metrics */}
       {comparisonTable && (
         <div className="mt-4 rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-muted/20">
-          {/* <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold">Quick metrics</div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <button
-                className={cn(
-                  "px-2 py-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700",
-                  timeRange === "1y" && "bg-slate-200 dark:bg-slate-700"
-                )}
-                onClick={() => setTimeRange("1y")}
-              >
-                1y
-              </button>
-              <button
-                className={cn(
-                  "px-2 py-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700",
-                  timeRange === "6m" && "bg-slate-200 dark:bg-slate-700"
-                )}
-                onClick={() => setTimeRange("6m")}
-              >
-                6m
-              </button>
-              <button
-                className={cn(
-                  "px-2 py-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700",
-                  timeRange === "3m" && "bg-slate-200 dark:bg-slate-700"
-                )}
-                onClick={() => setTimeRange("3m")}
-              >
-                3m
-              </button>
-            </div>
-          </div> */}
-
           <div className="mt-3 overflow-x-auto">
             <table className="w-full table-fixed text-sm">
               <thead>
@@ -543,7 +533,6 @@ export default function FundamentalComparisonCard({
         <h3 className="font-semibold text-sm mb-2 text-foreground">
           Analyst Verdicts
         </h3>
-
         <Tabs defaultValue={companyA.companyName}>
           <TabsList className="grid grid-cols-2 rounded-md overflow-hidden">
             <TabsTrigger value={companyA.companyName}>
@@ -553,27 +542,21 @@ export default function FundamentalComparisonCard({
               {companyB.companyName}
             </TabsTrigger>
           </TabsList>
-
           <TabsContent
             value={companyA.companyName}
             className="mt-3 prose prose-sm dark:prose-invert max-w-none text-muted-foreground"
           >
-            <ReactMarkdown>
-              {`${companyA.finalVerdict || ""}\n\n${
-                companyA.recommendation || ""
-              }`}
-            </ReactMarkdown>
+            <ReactMarkdown>{`${companyA.finalVerdict || ""}\n\n${
+              companyA.recommendation || ""
+            }`}</ReactMarkdown>
           </TabsContent>
-
           <TabsContent
             value={companyB.companyName}
             className="mt-3 prose prose-sm dark:prose-invert max-w-none text-muted-foreground"
           >
-            <ReactMarkdown>
-              {`${companyB.finalVerdict || ""}\n\n${
-                companyB.recommendation || ""
-              }`}
-            </ReactMarkdown>
+            <ReactMarkdown>{`${companyB.finalVerdict || ""}\n\n${
+              companyB.recommendation || ""
+            }`}</ReactMarkdown>
           </TabsContent>
         </Tabs>
       </div>
@@ -584,7 +567,6 @@ export default function FundamentalComparisonCard({
           <h4 className="font-semibold text-foreground mb-2">
             Head-to-Head Summary
           </h4>
-
           <div className="prose prose-sm dark:prose-invert max-w-none mb-4">
             <ReactMarkdown
               components={{
@@ -599,7 +581,6 @@ export default function FundamentalComparisonCard({
               {finalSuggestion}
             </ReactMarkdown>
           </div>
-
           <div className="flex flex-col sm:flex-row gap-2">
             <Button
               size="sm"
@@ -613,7 +594,6 @@ export default function FundamentalComparisonCard({
             >
               Buy {companyA.companyName}
             </Button>
-
             <Button
               size="sm"
               variant="outline"
