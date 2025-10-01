@@ -12,6 +12,27 @@ const ROUTE_KEYWORDS: Record<string, string[]> = {
   technicals: ["technicals", "chart", "rsi", "macd", "candlesticks"],
   sentiment: ["sentiment", "news", "headlines", "market mood"],
   knowledge_base: ["what is", "explain", "define", "tell me about"],
+
+  cashflow: [
+    "cash flow",
+    "cash flow analysis",
+    "cash",
+    "cash reserves",
+    "financing cash",
+    "cashflow",
+  ],
+
+  balancesheet: [
+    "current assets",
+    "liabilities",
+    "debt to equity ratio",
+    "assets",
+    "liabilities",
+    "balance sheet",
+    "balancesheet",
+  ],
+
+  comparison_between_stocks: ["vs", "compare", "comparison", "between"],
 };
 
 const ChatMessages: React.FC = () => {

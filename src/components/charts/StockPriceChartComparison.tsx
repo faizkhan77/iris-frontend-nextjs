@@ -258,13 +258,13 @@ export function StockPriceChartComparison({
             <Bar
               dataKey={`${companyA.name}_volume`}
               yAxisId="right"
-              fill={chartConfig[`${companyA.name}_volume`].color}
+              fill={chartConfig[companyA.name].color}
               radius={4}
             />
             <Bar
               dataKey={`${companyB.name}_volume`}
               yAxisId="right"
-              fill={chartConfig[`${companyB.name}_volume`].color}
+              fill={chartConfig[companyB.name].color}
               radius={4}
             />
 

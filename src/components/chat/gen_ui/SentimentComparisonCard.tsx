@@ -159,16 +159,18 @@ const AnimatedSentimentGauge = ({
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
-      <div className="relative w-40 h-20">
+      <div className="relative w-40 h-24 pt-4">
+        {" "}
+        {/* added pt-4 */}
         <svg
           width="160"
-          height="80"
-          viewBox="0 0 160 80"
+          height="100" // increase from 80 → 100
+          viewBox="0 0 160 100" // match height
           className="w-full h-full"
         >
           {/* Background Arc */}
           <path
-            d="M 10 70 A 60 60 0 0 1 150 70"
+            d="M 10 80 A 60 60 0 0 1 150 80"
             stroke="hsl(var(--muted))"
             strokeWidth="12"
             fill="none"
@@ -189,14 +191,13 @@ const AnimatedSentimentGauge = ({
             </linearGradient>
           </defs>
           <path
-            d="M 10 70 A 60 60 0 0 1 150 70"
+            d="M 10 80 A 60 60 0 0 1 150 80" // gradient arc
             stroke="url(#gaugeGradient)"
             strokeWidth="12"
             fill="none"
             strokeLinecap="round"
           />
         </svg>
-
         {/* Needle */}
         <motion.div
           className="absolute bottom-2 left-1/2 w-0.5 h-[56px] bg-foreground origin-bottom"
@@ -257,7 +258,9 @@ const CompanyCard = ({
           : "opacity-80 md:opacity-70 md:scale-95 bg-muted/30 dark:bg-slate-800/30 border-2 border-transparent hover:border-border"
       )}
     >
-      <div className="flex flex-col items-center gap-2 mb-2">
+      <div className="flex flex-col items-center gap-2 mb-4">
+        {" "}
+        {/* increased mb from 2 to 4 */}
         <div
           className={cn(
             "flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full",
@@ -269,8 +272,8 @@ const CompanyCard = ({
           <Crown size={14} />
           <span>{isPreferred ? "Preferred" : "Not Preferred"}</span>
         </div>
-
-        <h4 className="text-xl font-bold">{company.companyName}</h4>
+        <h4 className="text-xl font-bold mb-2">{company.companyName}</h4>{" "}
+        {/* add mb-2 for extra spacing */}
       </div>
 
       <div className="mb-4 w-full">
