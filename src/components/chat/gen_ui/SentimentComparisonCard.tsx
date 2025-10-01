@@ -346,7 +346,7 @@ export function SentimentComparisonCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="w-full max-w-4xl rounded-2xl border bg-background p-4 md:p-6 shadow-sm dark:bg-black dark:border-slate-800"
+      className="w-full max-w-4xl rounded-2xl border p-4 md:p-6 shadow-sm dark:border-slate-800"
     >
       <div className="text-center mb-6">
         <h3 className="text-2xl font-bold tracking-tight">{title}</h3>
@@ -363,7 +363,7 @@ export function SentimentComparisonCard({
 
         <div className="flex md:flex-col items-center justify-center shrink-0 py-2 md:py-0 md:px-6">
           <div className="w-full md:w-px h-px md:h-full bg-border" />
-          <span className="mx-4 md:my-4 px-3 py-1 text-xs font-bold tracking-widest text-muted-foreground bg-background rounded-full border">
+          <span className="mx-4 md:my-4 px-3 py-1 text-xs font-bold tracking-widest text-muted-foreground rounded-full border">
             VS
           </span>
           <div className="w-full md:w-px h-px md:h-full bg-border" />
@@ -376,7 +376,7 @@ export function SentimentComparisonCard({
       </div>
 
       {finalSuggestion && (
-        <div className="mt-8 text-center rounded-xl bg-muted/40 dark:bg-slate-900/50 p-4 border border-dashed">
+        <div className="mt-8 text-center rounded-xl p-4 border border-dashed">
           <div className="inline-flex items-center gap-2 mb-2">
             <Sparkles className="h-5 w-5 text-amber-500" />
             <h4 className="font-semibold text-foreground text-base">

@@ -134,8 +134,7 @@ export default function FundamentalComparisonCard({
       transition={{ duration: 0.28 }}
       className={cn(
         "w-full rounded-2xl border p-4 shadow-sm overflow-hidden",
-        "bg-gradient-to-br from-white/60 via-slate-50 to-white/40 border-slate-200",
-        "dark:from-slate-900/60 dark:via-slate-900/50 dark:to-slate-950/60 dark:border-slate-800",
+        "border-slate-200 dark:border-slate-800",
         compact ? "text-sm" : "text-base"
       )}
       role="group"
