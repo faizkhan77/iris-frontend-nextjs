@@ -10,6 +10,7 @@ import { RankingBarChart } from "../../charts/RankingBarChart";
 import ClarificationTabs from "../ClarificationTabs";
 import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
 import { FundamentalComparisonCard } from "./FundamentalComparisonCard";
+import { SentimentComparisonCard } from "./SentimentComparisonCard";
 
 interface GenUiComponentProps {
   title: string;
@@ -99,6 +100,13 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
       return (
         <div className="p-5 border bg-accent/20 rounded-lg">
           <FundamentalComparisonCard title={title} data={data} />
+        </div>
+      );
+
+    case "sentiment_comparison_card":
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg">
+          <SentimentComparisonCard title={title} data={data} />
         </div>
       );
 
