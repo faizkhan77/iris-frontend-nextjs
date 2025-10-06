@@ -71,6 +71,17 @@ const ChatIconBar = () => {
           </Link>
         </Tooltip>
 
+        <Tooltip>
+          <Link to={"/news"}>
+            <TooltipTrigger>
+              <div className="p-3 flex items-center justify-center h-10 w-10 border rounded-xl cursor-pointer relative z-10">
+                <DynamicIcon size={20} name="newspaper" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="right">News</TooltipContent>
+          </Link>
+        </Tooltip>
+
         <div className="flex-1" />
 
         <div

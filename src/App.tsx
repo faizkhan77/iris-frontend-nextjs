@@ -21,6 +21,7 @@ import ProtectedRoutes from "./components/providers/ProtectedRoutes";
 import PersistLogin from "./components/providers/PersistLogin";
 import ScreenerIndexPage from "./components/screener/ScreenerDashboard";
 import ChatShareSessionPage from "./pages/ChatShareSessionPage";
+import NewsPage from "./pages/NewsPage";
 
 const router = createBrowserRouter([
   {
@@ -101,6 +102,10 @@ const router = createBrowserRouter([
       {
         path: "/screener/:id",
         element: <ScreenerDetailspage />,
+      },
+      {
+        path: "/news",
+        element: <NewsPage />,
       },
     ],
   },
