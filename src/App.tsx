@@ -111,11 +111,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/share/:message_id",
-    element: (
-      // <ProtectedRoutes>
-      <ChatShareSessionPage />
-      // </ProtectedRoutes>
-    ),
+    element: <ChatShareSessionPage />,
   },
   {
     path: "/login",

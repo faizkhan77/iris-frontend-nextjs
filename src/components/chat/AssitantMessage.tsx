@@ -16,10 +16,11 @@ import RenderGenUiComponent from "./gen_ui/RenderGenUiComponent";
 import type { AiResponse, ChatMessage } from "@/redux/slices/chat/types";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import ShareChatMessage from "./ShareChatMessage";
-import { useAppDispatch } from "@/redux/store";
+import { useAppDispatch, useAppSelector, type RootState } from "@/redux/store";
 import { clickShareMessage } from "@/redux/slices/chat/chat.slice";
 import SuggestedQueries from "./gen_ui/suggested_queries";
 import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
+import { toast } from "sonner";
 
 // Adjust this type to your actual AiResponse type
 
@@ -31,6 +32,16 @@ const AssistantMessage: React.FC<AssistantMessageProps> = ({ message }) => {
   const parsedMsg = JSON.parse(message.content) as AiResponse;
   const dispatch = useAppDispatch();
   const { submitMessage } = useSendMessageHandler();
+
+  const handleCopy = () => {
+    // A simple copy function for the text response
+    navigator.clipboard.writeText(parsedMsg.text_response);
+    toast.success("Copied to clipboard!");
+  };
+
+  const handleDownload = async () => {
+    console.log("Download");
+  };
 
   const onOptionClick = (query: string) => {
     submitMessage(query);
@@ -92,12 +103,13 @@ const AssistantMessage: React.FC<AssistantMessageProps> = ({ message }) => {
                 <ShareChatMessage />
               </Dialog>
 
-              {/* <button
+              <button
+                onClick={handleDownload}
                 className="text-gray-400 p-2 hover:bg-muted rounded-md hover:text-gray-200 transition-colors duration-200"
                 aria-label="Download"
               >
                 <ArrowDownCircle size={18} />
-              </button> */}
+              </button>
 
               <button
                 className="text-gray-400 p-2 hover:bg-muted rounded-md hover:text-gray-200 transition-colors duration-200"
@@ -114,6 +126,7 @@ const AssistantMessage: React.FC<AssistantMessageProps> = ({ message }) => {
               </button>
 
               <button
+                onClick={handleCopy}
                 className="text-gray-400 p-2 hover:bg-muted rounded-md hover:text-gray-200 transition-colors duration-200"
                 aria-label="Copy"
               >
