@@ -124,23 +124,43 @@ const VerdictDisplay = ({
       : score < -0.5
       ? "text-red-500"
       : "text-amber-500";
+
+  // Clamp score to range [-1, 1] for safety
+  const normalizedScore = Math.max(-1, Math.min(1, score));
+
   return (
     <div className="text-center p-2 rounded-lg bg-background border">
       <div className="text-xs text-muted-foreground">Overall Verdict</div>
-      <div className={cn("text-lg font-bold", scoreColor)}>
+      <div className={cn("text-lg font-bold break-words", scoreColor)}>
         {verdict.replace(/_/g, " ")}
       </div>
-      <div className="w-full bg-muted rounded-full h-1.5 mt-2">
-        <div
-          className={cn(
-            "h-1.5 rounded-full",
-            score > 0 ? "bg-green-500" : "bg-red-500"
-          )}
-          style={{
-            width: `${Math.abs(score) * 100}%`,
-            marginLeft: score > 0 ? "50%" : `${50 - Math.abs(score) * 100}%`,
-          }}
-        />
+
+      {/* Responsive, centered progress bar */}
+      <div className="w-full bg-muted rounded-full h-1.5 mt-2 overflow-hidden">
+        <div className="flex w-full">
+          {/* Negative side (left) */}
+          <div
+            className={cn(
+              "h-1.5 bg-red-500 transition-all duration-300",
+              normalizedScore < 0 ? "rounded-r-full" : "rounded-none"
+            )}
+            style={{
+              width: `${Math.abs(Math.min(normalizedScore, 0)) * 50}%`,
+            }}
+          />
+          {/* Center divider */}
+          <div className="h-1.5 w-px bg-background" />
+          {/* Positive side (right) */}
+          <div
+            className={cn(
+              "h-1.5 bg-green-500 transition-all duration-300",
+              normalizedScore > 0 ? "rounded-l-full" : "rounded-none"
+            )}
+            style={{
+              width: `${Math.abs(Math.max(normalizedScore, 0)) * 50}%`,
+            }}
+          />
+        </div>
       </div>
     </div>
   );
@@ -386,13 +406,13 @@ export const TechnicalComparisonCard: React.FC<
           </div>
           {/* --- FIX #3: Buy Button --- */}
           <Button
-            variant={
+            variant="outline"
+            className={
               preferredCompany?.toLowerCase().trim() ===
               companyA.companyName?.toLowerCase().trim()
-                ? "success"
-                : "outline"
+                ? "mt-auto border-green-500 text-green-700 bg-green-50 dark:bg-green-900/20"
+                : "mt-auto"
             }
-            className="mt-auto"
           >
             <ShoppingCart size={16} className="mr-2" /> Buy{" "}
             {companyA.companyName}
@@ -446,13 +466,13 @@ export const TechnicalComparisonCard: React.FC<
           </div>
           {/* --- FIX #3: Buy Button --- */}
           <Button
-            variant={
+            variant="outline"
+            className={
               preferredCompany?.toLowerCase().trim() ===
               companyB.companyName?.toLowerCase().trim()
-                ? "success"
-                : "outline"
+                ? "mt-auto border-green-500 text-green-700 bg-green-50 dark:bg-green-900/20"
+                : "mt-auto"
             }
-            className="mt-auto"
           >
             <ShoppingCart size={16} className="mr-2" /> Buy{" "}
             {companyB.companyName}
