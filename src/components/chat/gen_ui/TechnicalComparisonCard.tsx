@@ -9,9 +9,7 @@ import {
   Crown,
   Zap,
   BarChart,
-  GitCompare,
-  Shield,
-  TrendingUp,
+  ShoppingCart,
   HelpCircle,
   Info,
 } from "lucide-react";
@@ -22,6 +20,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
 // --- Types ---
 type HistoricalPerformance = {
@@ -167,29 +166,36 @@ const ComparativeGaugeBar = ({
   } = gauge;
   const range = config.max - config.min;
 
-  const getPosition = (value: number) => ((value - config.min) / range) * 100;
+  const getPosition = (value: number) => {
+    // Clamp the value to ensure it's within the min/max range
+    const clampedValue = Math.max(config.min, Math.min(value, config.max));
+    return ((clampedValue - config.min) / range) * 100;
+  };
+
+  // --- FIX #2: Unique default value for each tab group ---
+  const gaugeTabValue = `gauge-${indicator.replace(/\s+/g, "-")}`;
+  const interpTabValue = `interp-${indicator.replace(/\s+/g, "-")}`;
 
   return (
     <div className="rounded-lg border bg-background p-3">
-      <div className="flex items-center justify-between gap-4 mb-2">
-        <h5 className="font-semibold text-sm">{indicator}</h5>
-        <Tabs defaultValue="gauge" className="text-xs">
+      {/* The ENTIRE content is now wrapped in a single Tabs component */}
+      <Tabs defaultValue={gaugeTabValue} className="w-full">
+        <div className="flex items-center justify-between gap-4 mb-3">
+          <h5 className="font-semibold text-sm">{indicator}</h5>
           <TabsList className="h-7 text-xs">
-            <TabsTrigger value="gauge" className="h-6 text-xs px-2">
+            <TabsTrigger value={gaugeTabValue} className="h-6 text-xs px-2">
               Gauge
             </TabsTrigger>
-            <TabsTrigger value="interp" className="h-6 text-xs px-2">
+            <TabsTrigger value={interpTabValue} className="h-6 text-xs px-2">
               Analysis
             </TabsTrigger>
           </TabsList>
-        </Tabs>
-      </div>
+        </div>
 
-      <Tabs defaultValue="gauge">
-        <TabsContent value="gauge">
-          <div className="relative w-full h-8 mt-2">
+        <TabsContent value={gaugeTabValue}>
+          <div className="relative w-full h-8 pt-2">
             {/* Background Zones */}
-            <div className="absolute top-0 left-0 w-full h-2 rounded-full flex overflow-hidden">
+            <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-2 rounded-full flex overflow-hidden">
               {config.zones.map((zone) => (
                 <div
                   key={zone.label}
@@ -201,12 +207,12 @@ const ComparativeGaugeBar = ({
               ))}
             </div>
 
-            {/* Stock A Marker */}
+            {/* Stock A Marker (Blue) */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <motion.div
-                    className="absolute -top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-background shadow-lg"
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-500 border-2 border-background shadow-lg z-10 cursor-pointer"
                     style={{
                       left: `${getPosition(valueA)}%`,
                       transform: "translateX(-50%)",
@@ -225,12 +231,12 @@ const ComparativeGaugeBar = ({
               </Tooltip>
             </TooltipProvider>
 
-            {/* Stock B Marker */}
+            {/* Stock B Marker (Green) */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <motion.div
-                    className="absolute top-5 w-4 h-4 rounded-full bg-green-500 border-2 border-background shadow-lg"
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-green-500 border-2 border-background shadow-lg z-20 cursor-pointer"
                     style={{
                       left: `${getPosition(valueB)}%`,
                       transform: "translateX(-50%)",
@@ -250,8 +256,7 @@ const ComparativeGaugeBar = ({
             </TooltipProvider>
           </div>
 
-          {/* Legend */}
-          <div className="flex justify-between items-center mt-6 text-xs text-muted-foreground">
+          <div className="flex justify-between items-center mt-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-blue-500" />{" "}
               <span>{companyAName}</span>
@@ -262,10 +267,14 @@ const ComparativeGaugeBar = ({
             </div>
           </div>
         </TabsContent>
-        <TabsContent value="interp">
-          <div className="text-xs text-muted-foreground mt-2 bg-muted/30 p-2 rounded-md leading-relaxed">
-            <Info size={14} className="inline-block mr-2 text-blue-500" />
-            {interpretation}
+
+        <TabsContent value={interpTabValue}>
+          <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded-md leading-relaxed flex items-start gap-2 h-full min-h-[64px]">
+            <Info
+              size={16}
+              className="inline-block text-blue-500 flex-shrink-0 mt-0.5"
+            />
+            <span>{interpretation}</span>
           </div>
         </TabsContent>
       </Tabs>
@@ -285,7 +294,7 @@ export const TechnicalComparisonCard: React.FC<
     finalSuggestion,
     preferredCompany,
     comparativeGauges,
-  } = data; // Destructure new data
+  } = data;
   const [companyA, companyB] = comparisonData;
   const [timeRange, setTimeRange] = React.useState<"1y" | "6m" | "3m">("1y");
 
@@ -296,7 +305,7 @@ export const TechnicalComparisonCard: React.FC<
       className="w-full rounded-2xl border p-4 shadow-sm space-y-4"
     >
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-4">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
         <div>
           <h3 className="font-semibold text-lg">{title}</h3>
           <p className="text-xs text-muted-foreground">
@@ -329,9 +338,9 @@ export const TechnicalComparisonCard: React.FC<
       </div>
 
       {/* Comparison Grids */}
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Company A */}
-        <div className="rounded-xl border p-3 bg-background space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Company A Card */}
+        <div className="rounded-xl border p-3 bg-background space-y-3 flex flex-col">
           <h4 className="font-semibold text-center">{companyA.companyName}</h4>
           <VerdictDisplay
             verdict={companyA.overallVerdict}
@@ -375,10 +384,23 @@ export const TechnicalComparisonCard: React.FC<
               }
             />
           </div>
+          {/* --- FIX #3: Buy Button --- */}
+          <Button
+            variant={
+              preferredCompany?.toLowerCase().trim() ===
+              companyA.companyName?.toLowerCase().trim()
+                ? "success"
+                : "outline"
+            }
+            className="mt-auto"
+          >
+            <ShoppingCart size={16} className="mr-2" /> Buy{" "}
+            {companyA.companyName}
+          </Button>
         </div>
 
-        {/* Company B */}
-        <div className="rounded-xl border p-3 bg-background space-y-3">
+        {/* Company B Card */}
+        <div className="rounded-xl border p-3 bg-background space-y-3 flex flex-col">
           <h4 className="font-semibold text-center">{companyB.companyName}</h4>
           <VerdictDisplay
             verdict={companyB.overallVerdict}
@@ -422,11 +444,25 @@ export const TechnicalComparisonCard: React.FC<
               }
             />
           </div>
+          {/* --- FIX #3: Buy Button --- */}
+          <Button
+            variant={
+              preferredCompany?.toLowerCase().trim() ===
+              companyB.companyName?.toLowerCase().trim()
+                ? "success"
+                : "outline"
+            }
+            className="mt-auto"
+          >
+            <ShoppingCart size={16} className="mr-2" /> Buy{" "}
+            {companyB.companyName}
+          </Button>
         </div>
       </div>
 
+      {/* Indicator Gauges Section */}
       {comparativeGauges && comparativeGauges.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-3 pt-2">
           <h4 className="font-semibold text-foreground flex items-center gap-2">
             <BarChart size={16} className="text-blue-500" />
             Indicator Head-to-Head
@@ -444,9 +480,9 @@ export const TechnicalComparisonCard: React.FC<
         </div>
       )}
 
-      {/* Final Suggestion */}
+      {/* Final Suggestion Section */}
       {finalSuggestion && (
-        <div className="mt-4 rounded-xl border-t pt-4">
+        <div className="rounded-xl border-t pt-4">
           <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
             <Zap size={16} className="text-amber-500" />
             Analyst's Final Suggestion
