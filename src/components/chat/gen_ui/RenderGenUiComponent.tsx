@@ -11,6 +11,7 @@ import ClarificationTabs from "../ClarificationTabs";
 import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
 import { FundamentalComparisonCard } from "./FundamentalComparisonCard";
 import { SentimentComparisonCard } from "./SentimentComparisonCard";
+import { TechnicalComparisonCard } from "./TechnicalComparisonCard";
 
 interface GenUiComponentProps {
   title: string;
@@ -107,6 +108,13 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
       return (
         <div className="p-5 border bg-accent/20 rounded-lg">
           <SentimentComparisonCard title={title} data={data} />
+        </div>
+      );
+
+    case "technicals_comparison_card":
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg">
+          <TechnicalComparisonCard title={title} data={data} />
         </div>
       );
 
