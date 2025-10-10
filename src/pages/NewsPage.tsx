@@ -28,7 +28,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { DynamicIcon } from "lucide-react/dynamic";
-import { useGetNewsQuery } from "@/redux/slices/news/news.api";
+import { useGetNewsQuery, useLazySearchCompanyNewsQuery } from "@/redux/slices/news/news.api";
 
 const newsCategories = [
   "company_news",
@@ -65,44 +65,63 @@ const formatCategoryName = (name: string) => {
 };
 const PAGE_SIZE = 20;
 const NewsPage = () => {
-  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc"); // State for sorting
+  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
   const [offset, setOffset] = useState(0);
   const [allNews, setAllNews] = useState<NewsArticle[]>([]);
-  const [filter, setFilter] = useState("Newest First");
   const [activeCategory, setActiveCategory] = useState(newsCategories[0]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
   const { data: newsData, isLoading, error, isFetching } = useGetNewsQuery({
     news_type: activeCategory,
     order: sortOrder,
     offset: offset,
     limit: PAGE_SIZE,
+  }, {
+    skip: !!debouncedSearchTerm,
   });
 
+  const [
+    triggerSearch,
+    { data: searchData, isLoading: isSearchLoading, isError: isSearchError },
+  ] = useLazySearchCompanyNewsQuery();
+
   useEffect(() => {
-    if (newsData && newsData.length > 0) {
-      // Prevent adding duplicate articles if the hook re-runs
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (debouncedSearchTerm) {
+      triggerSearch({ query: debouncedSearchTerm });
+    }
+  }, [debouncedSearchTerm, triggerSearch]);
+
+  useEffect(() => {
+    if (newsData && newsData.length > 0 && !debouncedSearchTerm) {
       setAllNews(prevNews => {
-          const existingIds = new Set(prevNews.map(n => n.NEWSID));
-          const newArticles = newsData.filter(n => !existingIds.has(n.NEWSID));
-          return [...prevNews, ...newArticles];
+        const existingIds = new Set(prevNews.map(n => n.NEWSID));
+        const newArticles = newsData.filter(n => !existingIds.has(n.NEWSID));
+        return [...prevNews, ...newArticles];
       });
     }
-  }, [newsData]);
+  }, [newsData, debouncedSearchTerm]);
 
-  // This effect RESETS the news list when the category or sort order changes.
   useEffect(() => {
-    setAllNews([]); // Clear the existing news
-    setOffset(0);   // Go back to the first page
+    setAllNews([]);
+    setOffset(0);
   }, [activeCategory, sortOrder]);
 
-
-  // --- EVENT HANDLERS ---
-  
   const handleShowMore = () => {
-    // Increase the offset to fetch the next page of news
     setOffset(prevOffset => prevOffset + PAGE_SIZE);
   };
-  
+
   const handleSortChange = (value: "desc" | "asc") => {
     setSortOrder(value);
   };
@@ -186,10 +205,11 @@ const NewsPage = () => {
         </span>
       </div>
 
-      <div>
-        <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
-          <TabsList
-            className="
+      {!debouncedSearchTerm && (
+        <div>
+          <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
+            <TabsList
+              className="
       w-full             
       justify-start      
       relative          
@@ -199,42 +219,85 @@ const NewsPage = () => {
       pb-4               
       border-b           
     "
-          >
-            {newsCategories.map((category) => (
-              <TabsTrigger
-                key={category}
-                className="p-2 data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground"
-                value={category}
-              >
-                {formatCategoryName(category)}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-      </div>
-
-      <div className="flex gap-2">
-        <Input placeholder="Search by stock, index, or keyword..." className="flex-1" />
-        <Select value={sortOrder} onValueChange={handleSortChange}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="desc">Newest First</SelectItem>
-            <SelectItem value="asc">Oldest First</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {renderContent()}
-      {!isFetching && newsData && newsData.length === PAGE_SIZE && (
-        <div className="flex justify-center mt-4">
-          <Button onClick={handleShowMore}>
-            Show More
-          </Button>
+            >
+              {newsCategories.map((category) => (
+                <TabsTrigger
+                  key={category}
+                  className="p-2 data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground"
+                  value={category}
+                >
+                  {formatCategoryName(category)}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
         </div>
       )}
-    
+
+      <div className="flex gap-2">
+        <Input
+          placeholder="Search by company name or fincode..."
+          className="flex-1"
+
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        {!debouncedSearchTerm && (
+          <Select value={sortOrder} onValueChange={handleSortChange}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="desc">Newest First</SelectItem>
+              <SelectItem value="asc">Oldest First</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+      </div>
+
+      {debouncedSearchTerm ? (
+        isSearchLoading ? (
+          <p>Searching...</p>
+        ) : isSearchError ? (
+          <p className="text-red-500">Search failed or company not found.</p>
+        ) : searchData && searchData.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {searchData.map((news) => (
+              <Card key={news.NEWSID} className="shadow-md cursor-pointer" onClick={() => handleCardClick(news)}>
+                <CardHeader>
+                  <CardTitle className="line-clamp-2">{news.HEADING}</CardTitle>
+                  <CardDescription>Search Result</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground line-clamp-3">
+                    {news.CAPTION}
+                  </p>
+                </CardContent>
+                <CardFooter className="flex justify-between text-xs text-muted-foreground">
+                  <span>{new Date(news.DATE).toLocaleDateString()}</span>
+                  <Button onClick={(event) => {
+                    event.stopPropagation();
+                    handleShare(news);
+                  }}
+                    variant="ghost" size="sm">
+                    <DynamicIcon name="share-2" />
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <p>No news found for '{debouncedSearchTerm}'.</p>
+        )
+      ) : (
+        renderContent()
+      )}
+      {!debouncedSearchTerm && !isFetching && newsData && newsData.length === PAGE_SIZE && (
+        <div className="flex justify-center mt-4">
+          <Button onClick={handleShowMore}>Show More</Button>
+        </div>
+      )}
+
       {isFetching && allNews.length > 0 && <p>Loading more...</p>}
       <Dialog open={!!selectedNews} onOpenChange={(isOpen) => !isOpen && setSelectedNews(null)}>
         <DialogContent className="sm:max-w-[625px]">
