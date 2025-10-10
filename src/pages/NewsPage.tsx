@@ -210,20 +210,29 @@ const NewsPage = () => {
           <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
             <TabsList
               className="
-      w-full             
-      justify-start      
-      relative          
-      overflow-x-auto    
-      custom-scrollbar 
-      whitespace-nowrap  
-      pb-4               
-      border-b           
-    "
+        gap-2
+        w-full justify-start relative
+        overflow-x-auto custom-scrollbar whitespace-nowrap
+        h-auto 
+        bg-transparent
+        border-none
+      "
             >
               {newsCategories.map((category) => (
                 <TabsTrigger
                   key={category}
-                  className="p-2 data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground"
+
+                  // --- 2. APPLY THE NEW "PILL" STYLES HERE ---
+                  className="
+            p-2 rounded-md transition-all
+            border border-transparent
+            text-muted-foreground  // Default text color for inactive tabs
+            hover:bg-muted hover:text-foreground // Hover effect for inactive tabs
+            data-[state=active]:text-primary
+    data-[state=active]:!border-primary/50
+    data-[state=active]:!bg-primary/10
+    data-[state=active]:!shadow-[0_0_12px_-1px_theme(colors.primary)]
+          "
                   value={category}
                 >
                   {formatCategoryName(category)}

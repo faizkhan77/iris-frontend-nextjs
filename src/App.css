@@ -59,27 +59,6 @@
   }
 }
 
-/* In your globals.css file */
-
-/* --- Custom Scrollbar for Webkit browsers (Chrome, Safari, Edge) --- */
-
-/* This targets our specific scrolling container using the class we added */
 .custom-scrollbar::-webkit-scrollbar {
-  height: 5px; /* Makes the scrollbar thin and minimal */
-}
-
-/* This targets the track (the "trough" the scrollbar slides in) */
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent; /* Hides the track completely for a cleaner look */
-}
-
-/* This targets the thumb (the handle itself) */
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #4A4A4A;      /* A dark grey that fits your theme */
-  border-radius: 10px;     /* Makes the handle a modern, rounded pill shape */
-}
-
-/* This makes the thumb slightly lighter when you hover over it */
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #6a6a6a;
+  display: none; 
 }
