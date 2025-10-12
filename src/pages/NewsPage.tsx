@@ -104,19 +104,22 @@ const NewsPage = () => {
   }, [debouncedSearchTerm, triggerSearch]);
 
   useEffect(() => {
-    if (newsData && newsData.length > 0 && !debouncedSearchTerm) {
+  if (newsData) {
+    if (offset === 0) {
+      setAllNews(newsData);
+    } else {
       setAllNews(prevNews => {
         const existingIds = new Set(prevNews.map(n => n.NEWSID));
         const newArticles = newsData.filter(n => !existingIds.has(n.NEWSID));
         return [...prevNews, ...newArticles];
       });
     }
-  }, [newsData, debouncedSearchTerm]);
+  }
+}, [newsData]); 
 
-  useEffect(() => {
-    setAllNews([]);
-    setOffset(0);
-  }, [activeCategory, sortOrder]);
+useEffect(() => {
+  setOffset(0);
+}, [activeCategory, sortOrder]);
 
   const handleShowMore = () => {
     setOffset(prevOffset => prevOffset + PAGE_SIZE);
