@@ -2,6 +2,9 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import type { NewsArticle } from "@/redux/slices/news/types";
 import {
   Card,
@@ -28,7 +31,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { DynamicIcon } from "lucide-react/dynamic";
-import { useGetNewsQuery, useLazySearchCompanyNewsQuery } from "@/redux/slices/news/news.api";
+import {
+  useGetNewsQuery,
+  useLazySearchCompanyNewsQuery,
+} from "@/redux/slices/news/news.api";
+import ReactMarkdown from "react-markdown";
 
 const newsCategories = [
   "company_news",
@@ -57,11 +64,11 @@ const newsCategories = [
   "money_bonds",
   "money_callmoney",
   "money_forexrates",
-  "finance_currency"
+  "finance_currency",
 ];
 
 const formatCategoryName = (name: string) => {
-  return name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  return name.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 };
 const PAGE_SIZE = 20;
 const NewsPage = () => {
@@ -73,14 +80,22 @@ const NewsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
-  const { data: newsData, isLoading, error, isFetching } = useGetNewsQuery({
-    news_type: activeCategory,
-    order: sortOrder,
-    offset: offset,
-    limit: PAGE_SIZE,
-  }, {
-    skip: !!debouncedSearchTerm,
-  });
+  const {
+    data: newsData,
+    isLoading,
+    error,
+    isFetching,
+  } = useGetNewsQuery(
+    {
+      news_type: activeCategory,
+      order: sortOrder,
+      offset: offset,
+      limit: PAGE_SIZE,
+    },
+    {
+      skip: !!debouncedSearchTerm,
+    }
+  );
 
   const [
     triggerSearch,
@@ -104,25 +119,27 @@ const NewsPage = () => {
   }, [debouncedSearchTerm, triggerSearch]);
 
   useEffect(() => {
-  if (newsData) {
-    if (offset === 0) {
-      setAllNews(newsData);
-    } else {
-      setAllNews(prevNews => {
-        const existingIds = new Set(prevNews.map(n => n.NEWSID));
-        const newArticles = newsData.filter(n => !existingIds.has(n.NEWSID));
-        return [...prevNews, ...newArticles];
-      });
+    if (newsData) {
+      if (offset === 0) {
+        setAllNews(newsData);
+      } else {
+        setAllNews((prevNews) => {
+          const existingIds = new Set(prevNews.map((n) => n.NEWSID));
+          const newArticles = newsData.filter(
+            (n) => !existingIds.has(n.NEWSID)
+          );
+          return [...prevNews, ...newArticles];
+        });
+      }
     }
-  }
-}, [newsData]); 
+  }, [newsData]);
 
-useEffect(() => {
-  setOffset(0);
-}, [activeCategory, sortOrder]);
+  useEffect(() => {
+    setOffset(0);
+  }, [activeCategory, sortOrder]);
 
   const handleShowMore = () => {
-    setOffset(prevOffset => prevOffset + PAGE_SIZE);
+    setOffset((prevOffset) => prevOffset + PAGE_SIZE);
   };
 
   const handleSortChange = (value: "desc" | "asc") => {
@@ -161,7 +178,11 @@ useEffect(() => {
     }
 
     if (error) {
-      return <p className="text-red-500">Failed to load news. Please try again later.</p>;
+      return (
+        <p className="text-red-500">
+          Failed to load news. Please try again later.
+        </p>
+      );
     }
 
     if (allNews.length === 0 && !isFetching) {
@@ -171,10 +192,16 @@ useEffect(() => {
     return (
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {allNews.map((news) => (
-          <Card key={news.NEWSID} className="shadow-md cursor-pointer" onClick={() => handleCardClick(news)}>
+          <Card
+            key={news.NEWSID}
+            className="shadow-md cursor-pointer"
+            onClick={() => handleCardClick(news)}
+          >
             <CardHeader>
               <CardTitle className="line-clamp-2">{news.HEADING}</CardTitle>
-              <CardDescription>{formatCategoryName(activeCategory)}</CardDescription>
+              <CardDescription>
+                {formatCategoryName(activeCategory)}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground line-clamp-3">
@@ -184,11 +211,14 @@ useEffect(() => {
             <CardFooter className="flex justify-between text-xs text-muted-foreground">
               <span>{new Date(news.DATE).toLocaleDateString()}</span>
 
-              <Button onClick={(event) => {
-                event.stopPropagation();
-                handleShare(news);
-              }}
-                variant="ghost" size="sm">
+              <Button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleShare(news);
+                }}
+                variant="ghost"
+                size="sm"
+              >
                 <DynamicIcon name="share-2" />
               </Button>
             </CardFooter>
@@ -200,7 +230,6 @@ useEffect(() => {
 
   return (
     <section className="p-5 h-full flex flex-col gap-6">
-
       <div className="flex flex-col">
         <h1 className="text-xl font-semibold">MarketPulse India</h1>
         <span className="text-sm text-muted-foreground">
@@ -210,7 +239,11 @@ useEffect(() => {
 
       {!debouncedSearchTerm && (
         <div>
-          <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
+          <Tabs
+            value={activeCategory}
+            onValueChange={setActiveCategory}
+            className="w-full"
+          >
             <TabsList
               className="
         gap-2
@@ -224,7 +257,6 @@ useEffect(() => {
               {newsCategories.map((category) => (
                 <TabsTrigger
                   key={category}
-
                   // --- 2. APPLY THE NEW "PILL" STYLES HERE ---
                   className="
             p-2 rounded-md transition-all
@@ -250,7 +282,6 @@ useEffect(() => {
         <Input
           placeholder="Search by company name or fincode..."
           className="flex-1"
-
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -275,7 +306,11 @@ useEffect(() => {
         ) : searchData && searchData.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {searchData.map((news) => (
-              <Card key={news.NEWSID} className="shadow-md cursor-pointer" onClick={() => handleCardClick(news)}>
+              <Card
+                key={news.NEWSID}
+                className="shadow-md cursor-pointer"
+                onClick={() => handleCardClick(news)}
+              >
                 <CardHeader>
                   <CardTitle className="line-clamp-2">{news.HEADING}</CardTitle>
                   <CardDescription>Search Result</CardDescription>
@@ -287,11 +322,14 @@ useEffect(() => {
                 </CardContent>
                 <CardFooter className="flex justify-between text-xs text-muted-foreground">
                   <span>{new Date(news.DATE).toLocaleDateString()}</span>
-                  <Button onClick={(event) => {
-                    event.stopPropagation();
-                    handleShare(news);
-                  }}
-                    variant="ghost" size="sm">
+                  <Button
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleShare(news);
+                    }}
+                    variant="ghost"
+                    size="sm"
+                  >
                     <DynamicIcon name="share-2" />
                   </Button>
                 </CardFooter>
@@ -304,28 +342,48 @@ useEffect(() => {
       ) : (
         renderContent()
       )}
-      {!debouncedSearchTerm && !isFetching && newsData && newsData.length === PAGE_SIZE && (
-        <div className="flex justify-center mt-4">
-          <Button onClick={handleShowMore}>Show More</Button>
-        </div>
-      )}
+      {!debouncedSearchTerm &&
+        !isFetching &&
+        newsData &&
+        newsData.length === PAGE_SIZE && (
+          <div className="flex justify-center mt-4">
+            <Button onClick={handleShowMore}>Show More</Button>
+          </div>
+        )}
 
       {isFetching && allNews.length > 0 && <p>Loading more...</p>}
-      <Dialog open={!!selectedNews} onOpenChange={(isOpen) => !isOpen && setSelectedNews(null)}>
+      <Dialog
+        open={!!selectedNews}
+        onOpenChange={(isOpen) => !isOpen && setSelectedNews(null)}
+      >
         <DialogContent className="sm:max-w-[625px]">
           <DialogHeader>
             <DialogTitle>{selectedNews?.HEADING}</DialogTitle>
             <DialogDescription>
-              {selectedNews ? new Date(selectedNews.DATE).toLocaleString() : ''}
+              {selectedNews ? new Date(selectedNews.DATE).toLocaleString() : ""}
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4 whitespace-pre-wrap max-h-[60vh] overflow-y-auto"
+          <div>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm, remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+            >
+              
+            </ReactMarkdown>
+          </div>
+          <div
+            className="p-5 text-sm whitespace-pre-wrap max-h-[60vh] overflow-y-auto"
             dangerouslySetInnerHTML={{
-              __html: selectedNews?.DETAILS || "Full article content not available."
-            }} />
+              __html:
+                selectedNews?.DETAILS || "Full article content not available.",
+            }}
+          />
 
           <DialogFooter>
-            <Button onClick={() => selectedNews && handleShare(selectedNews)} variant="outline">
+            <Button
+              onClick={() => selectedNews && handleShare(selectedNews)}
+              variant="outline"
+            >
               Share
             </Button>
           </DialogFooter>

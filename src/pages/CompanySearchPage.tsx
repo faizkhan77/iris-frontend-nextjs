@@ -97,22 +97,6 @@ const CompanyPage = () => {
           financials, and performance trends.
         </motion.p>
 
-        {/* <div className="absolute inset-0 pointer-events-none opacity-10 flex items-center justify-center">
-          <svg
-            width="500"
-            height="250"
-            viewBox="0 0 500 250"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="text-green-400"
-          >
-            <polyline
-              points="0,200 50,150 100,180 150,120 200,160 250,100 300,130 350,80 400,140 450,90 500,110"
-              fill="none"
-            />
-          </svg>
-        </div> */}
 
         {/* Search Box */}
         <div className="relative w-full max-w-2xl">
