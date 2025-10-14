@@ -2,6 +2,8 @@ import { api } from "@/redux/api/api";
 import type {
   LoginRequest,
   LoginResponse,
+  NuqiLoginRequest,
+  NuqiLoginResponse,
   RefreshTokenResponse,
 } from "./types";
 
@@ -29,6 +31,13 @@ export const authapi = api.injectEndpoints({
         body: data,
       }),
     }),
+    wealthLogin: builder.mutation<NuqiLoginResponse, NuqiLoginRequest>({
+      query: (data) => ({
+        url: "/auth/nuqiwealth/login",
+        method: "POST",
+        body: data,
+      }),
+    }),
     getUser: builder.query({
       query: (data) => ({
         url: "/auth/user",
@@ -44,4 +53,5 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useRefreshMutation,
+  useWealthLoginMutation
 } = authapi;
