@@ -12,19 +12,24 @@ const ChatSessionPage = () => {
 
   const dispatch = useAppDispatch();
 
+  // Effect for handling session ID changes
   useEffect(() => {
     if (!id) return;
 
     dispatch(setActiveSession(id));
 
-    if (data?.messages) {
-      dispatch(setMessages(data.messages));
-    }
-    // Set messages to empty array when navigating to a new chat to prevent flash of old content
+    // Clear messages when navigating away from this session (on unmount or ID change)
     return () => {
       dispatch(setMessages([]));
     };
-  }, [id, data, dispatch]);
+  }, [id, dispatch]);
+
+  // Separate effect for loading messages when data arrives
+  useEffect(() => {
+    if (data?.messages) {
+      dispatch(setMessages(data.messages));
+    }
+  }, [data, dispatch]);
 
   return (
     <div className="bg-background relative min-h-screen flex flex-col items-center rounded-xl border p-2 sm:p-4">

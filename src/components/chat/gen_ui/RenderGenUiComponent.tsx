@@ -12,6 +12,7 @@ import { useSendMessageHandler } from "@/hooks/useSendMessageHandler";
 import { FundamentalComparisonCard } from "./FundamentalComparisonCard";
 import { SentimentComparisonCard } from "./SentimentComparisonCard";
 import { TechnicalComparisonCard } from "./TechnicalComparisonCard";
+import { CrossAgentComparisonCard } from "./CrossAgentComparisonCard";
 
 interface GenUiComponentProps {
   title: string;
@@ -115,6 +116,13 @@ const RenderGenUiComponent: React.FC<GenUiComponentProps> = ({
       return (
         <div className="p-5 border bg-accent/20 rounded-lg">
           <TechnicalComparisonCard title={title} data={data} />
+        </div>
+      );
+
+    case "crossagent_comparison_card":
+      return (
+        <div className="p-5 border bg-accent/20 rounded-lg">
+          <CrossAgentComparisonCard title={title} data={data} />
         </div>
       );
 
