@@ -58,3 +58,7 @@
       0 60px 60px 0 #0dd3ff inset;
   }
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none; 
+}
